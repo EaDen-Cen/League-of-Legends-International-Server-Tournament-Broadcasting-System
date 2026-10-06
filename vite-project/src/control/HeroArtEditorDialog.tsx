@@ -194,9 +194,11 @@ export function HeroArtEditorDialog({
 
   const panel = draft.panel ?? defaultHeroArtCrop('panel');
   const side = draft.side ?? defaultHeroArtCrop('side');
-  const forcedLegacy = state.artSourceMode === 'legacy' || draft.useLegacyImage === true || !hero.artLink;
-  const source = forcedLegacy ? hero.imageLink : hero.artLink!;
-  const fullSource = hero.artLink || hero.imageLink;
+  const draftPortrait = dataDraft.imageLink?.trim() || hero.imageLink;
+  const draftArt = dataDraft.artLink?.trim() || hero.artLink;
+  const forcedLegacy = state.artSourceMode === 'legacy' || draft.useLegacyImage === true || !draftArt;
+  const source = forcedLegacy ? draftPortrait : draftArt!;
+  const fullSource = draftArt || draftPortrait;
   const heroName = state.language === 'zh' ? hero.chineseName : hero.englishName;
 
   const resetLayout = (layout: HeroArtLayout) => {
@@ -271,7 +273,7 @@ export function HeroArtEditorDialog({
             <input
               type="checkbox"
               checked={draft.useLegacyImage === true}
-              disabled={!hero.artLink}
+              disabled={!draftArt}
               onChange={event => setDraft(previous => ({ ...previous, useLegacyImage: event.target.checked }))}
             />
             {t('useLegacyForHero')}
