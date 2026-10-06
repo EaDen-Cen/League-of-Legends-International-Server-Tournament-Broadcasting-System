@@ -1,48 +1,127 @@
-# LoL Broadcast · 英雄联盟赛事 BP 转播系统
+# League of Legends Tournament Broadcast System
 
-基于 HOK Broadcast 的第一轮 LoL 适配，保留 React / TypeScript / Node.js / WebSocket 架构。
+面向社区赛事的 **英雄联盟 BP / 导播 / 解说同步 / OBS 图形系统**。项目使用 React + TypeScript + Node.js + WebSocket，当前 LoL 版本拥有独立的英雄数据、赛事规则、视觉语言和运行目录，不再把 HOK 的 UI 或英雄数据当作生产依赖。
 
-- **control**：导播操作、队伍资料库、替补、选禁、阵容交换、比分与撤销。
-- **caster**：按可配置延迟读取状态，保留解说视图。
-- **overlay**：OBS 透明转播画面，保留横版与侧栏布局。
+## 当前能力
+
+- **Control**：比赛设置、BP、比分、换边、最终阵容归属、队伍资料库、替补、Champion Studio、截图识别。
+- **Caster**：只读延迟状态，适合异地解说。
+- **OBS Overlay**：固定 1920×1080 透明画布，支持 Panel / Side 两种布局。
+- **赛事状态**：BO1 / BO3 / BO5、Stage、Game、Series Score、Undo、Draft History。
+- **LoL BP**：默认每方 5 Ban + 5 Pick，支持蓝 / 红先手与跨局自定义规则。
+- **远程访问**：内置 Windows 启动脚本，可配合 Cloudflare Quick Tunnel。
+
+## LoL 版本的独立设计
+
+本仓库不是“把王者荣耀名字替换成英雄联盟”的皮肤层。
+
+### 1. 独立视觉系统
+
+Overlay 与 Control 使用 LoL 专属的深墨蓝 / 黑色底、金色赛事线框、蓝红阵营强调和中央 Draft 状态。英雄选择卡使用 Splash Art，Ban、历史记录和搜索列表使用本地 Portrait。
+
+### 2. 独立 Champion 数据链路
+
+当前基线为 **Riot Data Dragon 16.19.1，共 173 位 Champion**。
+
+`vite-project/scripts/lol-sync.mjs` 负责：
+- 使用 Riot champion key 作为稳定 ID；
+- 同步英文名和简体中文英雄名；
+- 把英文 / 中文称号作为搜索 alias；
+- 下载本地小头像到 `public/champions/`；
+- 为转播卡生成 Data Dragon Splash Art URL；
+- 重新生成 `src/data/lolHeroes.ts`。
+
+### 3. Champion Studio
+
+Control 中的 **Champion Studio** 把原来的“英雄图片设置”升级为赛事资料管理工具：
+
+- 名称 / alias / 拼音首字母搜索；
+- 英文名、中文名、主分路、副分路、搜索 alias 覆盖；
+- Panel / Side 两套独立焦点与缩放；
+- 完整 Splash Art 参考和实时裁切预览；
+- 单英雄强制使用本地 Portrait fallback；
+- 明确显示 Data Override / Artwork Override 状态。
+
+运行时 override 保存在比赛状态中，不会修改生成的 Data Dragon 基线。
 
 ## 快速启动
 
-使用 Node.js 24，在项目目录执行：
-
 ```powershell
-git clone https://github.com/EaDen-Cen/League-of-Legends-International-Server-Tournament-Broadcasting-System.git
-cd League-of-Legends-International-Server-Tournament-Broadcasting-System/vite-project
+cd vite-project
 npm ci
 npm run build
 npm run server
 ```
 
-本地入口：[操作台](http://127.0.0.1:3001/control#token=local-control)、[解说台](http://127.0.0.1:3001/caster#token=local-caster)、[OBS](http://127.0.0.1:3001/overlay/draft#token=local-overlay)。公网部署须在 .env 中设置三个独立口令。
+本地开发入口：
 
-## 本轮适配
+- Control: `http://127.0.0.1:3001/control#token=local-control`
+- Caster: `http://127.0.0.1:3001/caster#token=local-caster`
+- OBS: `http://127.0.0.1:3001/overlay/draft#token=local-overlay`
 
-- 英雄库采用 **Riot Data Dragon 16.19.1，173 位英雄**；ID 使用 Riot champion key，中文名、英文名及称号均可搜索。中文支持拼音首字母。
-- 位置为上路 / 打野 / 中路 / 下路 / 辅助；英雄分路是人工初始分类，不代表实时版本统计，可在英雄资料编辑器修改。
-- 默认赛事 BP 为每方 **5 Ban + 5 Pick**：首轮双方交替各禁 3 位，选取 B-RR-BB-R；第二轮 R-B-R-B 禁用，再 R-BB-R 选取。
-- 保留原简化 2 Ban 模式并明确标为自定义。默认普通 BP；选手限制和队内全局 BP 保留为自定义规则，后者不是双方共同禁用全部历史选角的 Hard Fearless。
-- 元流之子选项已移除。旧 HOK 英雄、关系、裁剪覆盖不参与 LoL 英雄库。
-- 浏览器缓存使用 lol- 前缀，默认比赛及队伍库分别保存在 data/lol/match.json 和 data/lol/team-presets.json。**不要导入 HOK 比赛文件**，两个游戏的数字英雄 ID 会重叠。
-- 173 张头像随项目本地提供，截图识别使用相同头像；加载图来自 Riot CDN，网络不可用时回退本地头像。
-- 截图识别扩展为 20 个独立槽。默认手动输入；识别框初始坐标仅为校准起点，必须针对 LoL 窗口和分辨率手动校准后试用。Windows 原生捕获开关为 LOL_CAPTURE_ENABLED=1。
+公网环境必须设置三个不同的强口令。参考 `vite-project/.env.example`。
 
-## 数据维护与验证
+Windows 一键启动与 Cloudflare：见 [Windows 启动指南](docs/guides/windows-launcher.md)。
+
+## 数据目录
+
+LoL 运行数据与其他游戏隔离：
+
+```text
+vite-project/data/lol/match.json
+vite-project/data/lol/team-presets.json
+vite-project/data/lol/uploads/player-portraits/
+```
+
+不要导入 HOK 比赛存档。不同游戏可能使用重叠的数字 ID，但语义完全不同。
+
+## Champion 数据更新
+
+在 `vite-project/`：
 
 ```powershell
 npm run hero:sync -- 16.19.1
 npm test
 npm run build
 npm run lint
+```
+
+更新到新 Data Dragon 版本时，把 `16.19.1` 替换为目标版本。同步脚本会在写入前验证每个新 Champion 都有初始分路映射，避免未知英雄静默进入生产数据。
+
+详细说明见 [LoL Champion Data Pipeline](docs/research/hero-sync.md)。
+
+## Screenshot / Auto BP
+
+默认使用手动 BP。需要截图识别时，在 Match Settings 选择 Screen Recognition，并完成当前 LoL 窗口的槽位校准。
+
+Windows 原生捕获是显式 opt-in：
+
+```env
+LOL_CAPTURE_ENABLED=1
+```
+
+详细说明见 [Screen Recognition](docs/guides/screen-recognition.md)。
+
+## 验证
+
+```powershell
+cd vite-project
+npm test
+npm run build
+npm run lint
 npm run test:e2e
 ```
 
-数据更新显式指定 Data Dragon 版本，重新生成英雄库与本地头像后审阅差异。数据源见 [Riot Data Dragon](https://developer.riotgames.com/docs/lol#data-dragon)。HOK 自动同步工作流和脚本已移到 docs/archive，LoL CI 仅测试与构建，不自动修改英雄资料。
+GitHub Actions 使用 `.github/workflows/lol-checks.yml` 进行 LoL 专用检查。
 
-原部署、队伍操作及设计说明位于 [文档索引](docs/README.md)，其中 HOK 历史示例尚未逐篇重写，LoL 差异以本 README 为准。浏览器测试需要 Chrome，可通过 CHROME_PATH 指定。
+## 文档
 
-LoL Broadcast is not endorsed by Riot Games and does not reflect the views or opinions of Riot Games or anyone officially involved in producing or managing Riot Games properties. Riot Games and all associated properties are trademarks or registered trademarks of Riot Games, Inc.
+- [文档索引](docs/README.md)
+- [快速开始](docs/guides/getting-started.md)
+- [导播操作指南](docs/guides/operator-guide.md)
+- [Windows / Cloudflare](docs/guides/windows-launcher.md)
+- [Screen Recognition](docs/guides/screen-recognition.md)
+- [Champion Data Pipeline](docs/research/hero-sync.md)
+- [项目里程碑](MILESTONES.md)
+
+旧 HOK 研究、同步器和交接资料只保存在 `docs/archive/`，用于追溯历史，不属于 LoL 当前运行方式。
