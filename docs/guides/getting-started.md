@@ -1,151 +1,77 @@
-> [文档索引](../README.md) · 除特别注明外，文件路径以仓库根目录为基准，npm 命令在 `vite-project/` 中执行。
+# 快速开始
 
-# 安装、运行与部署指南
+[返回文档索引](../README.md)
 
-当前比赛操作以 [操作指南](operator-guide.md) 为准；版本交接与旧实施计划见 [历史归档](../archive/README.md)。
+## 1. 安装
 
-基于 `qiqi47/HOK_Ban_Pick`，保留原英雄 ID、名称、图片、位置与关系数据和 MIT 许可。
-源码与执行目录：`vite-project/`。原单机组件保留在仓库中，新入口为 `src/BroadcastApp.tsx`。
-
-## 本机运行
-
-要求 Node.js 24（开发验证版本 24.14.1）。在 PowerShell 中进入 `vite-project`：
+需要 Node.js 与 npm。
 
 ```powershell
-npm install
+cd vite-project
+npm ci
 npm run build
+```
+
+## 2. 启动
+
+```powershell
 npm run server
 ```
 
-打开以下本地地址。`#token=` 是本机开发凭据，生产环境必须更换：
+默认端口为 `3001`。
 
-- 操作台：http://127.0.0.1:3001/control#token=local-control
-- 解说台：http://127.0.0.1:3001/caster#token=local-caster
-- OBS：http://127.0.0.1:3001/overlay/draft#token=local-overlay
+本地开发入口：
 
-开发热更新：另一个终端运行 `npm run dev`，打开 http://localhost:5173/control。
-Vite 转发 `/api` 与 `/ws` 到 3001 端口；开发模式前端自动使用上述本地凭据。
-生产构建不会内置这些凭据。前端默认同域连接，跨域地址可通过 `.env` 中的
-`VITE_API_URL` 与 `VITE_WS_URL` 配置，并在更改后重新构建。
+- Control：`http://127.0.0.1:3001/control#token=local-control`
+- Caster：`http://127.0.0.1:3001/caster#token=local-caster`
+- OBS：`http://127.0.0.1:3001/overlay/draft#token=local-overlay`
 
-## 三端操作
+开发默认 token 只适用于本机。公网部署使用 `.env` 中三个互不相同的强 token。
 
-### /control
+## 3. 第一次比赛
 
-1. 点 **比赛设置**，设置队名、队徽、比分、赛制、阶段和选禁模式，保存；局数按比分自动计算。
-2. 默认每队 4 Ban / 5 Pick 的赛事顺序，也可在空 BP 时切换 2 Ban 模式。
-3. 根据当前蓝/红方 Ban/Pick，点一次英雄。阶段、重复英雄与 ID 由服务器验证。
-4. 搜索支持中英文；位置过滤支持主/副位置。“界面语言”选择中文或英文并保存后，整套界面和英雄名称一起切换。
-5. Undo 撤销最后一次比赛操作，包括设置、选禁和重置；延迟设置不进入 Undo。
-6. Reset Draft 只清 BP；Reset Match 清队伍、比分与局数。两者都可以 Undo。
-7. 修改 Caster delay，支持直接输入 0–3600 秒及 ±1/5/10 秒微调。
+建议按以下顺序：
 
-多个操作员同时操作时，服务器拒绝过期版本的指令并回传最新状态。
-操作未确认前禁用按钮；断线时不离线排队、不自动重放选禁，防止恢复后意外执行旧操作。
-断线提示后应查看恢复的比赛状态再重试。
+1. 打开 Control。
+2. Match Settings 设置 BO、Stage、先手方、换边方式、语言、Overlay Layout。
+3. Team Settings 载入或创建双方队伍。
+4. 在 Hero Picker 完成 5 Ban + 5 Pick。
+5. 如果比赛中发生 help-pick / swap，在 Lineup Assignments 确认最终 5 人英雄归属。
+6. Commit Game。
+7. 更新比分、换边或进入 Next Game。
+8. OBS Browser Source 使用 `/overlay/draft`。
 
-### /caster
+## 4. Champion Studio
 
-只读。包含同一延迟时间轴上的队名、Logo、比分、局数、阶段和完整 BP；分析从该状态计算。
-Synergy、Counter、Be Countered 和克制敌方推荐使用原仓库数据，显示关系来源英雄。
-已 Ban 的英雄从分析隐藏，已 Pick 的相关英雄标记 ✓。关系数据未经当前游戏版本核验，供人工参考。
+Control 工具栏打开 **Champion Studio**：
 
-解说端 REST 和 WS 由独立 token 限制为延迟状态，修改 URL 参数不会切换成实时状态。
-不要向解说分享 Control/Overlay 凭据或实时画面。
+- 搜索 Champion；
+- 检查中文 / 英文名称与 alias；
+- 调整主 / 副分路；
+- 分别设置 Panel 与 Side 的 Splash Art 焦点和缩放；
+- 必要时单英雄切换到本地 Portrait fallback。
 
-### /overlay/draft
+这些设置是比赛运行时 override，不会改写 `lolHeroes.ts`。
 
-OBS Browser Source 尺寸设为 **1920 × 1080**，URL 使用 Overlay token。
-画布透明，可选择底部横排或左右竖排布局；中央保留游戏画面区域。
-选禁有短暂入场动画，当前行动方高亮。
-Overlay 不显示分析、后台错误或登录 UI。断线保留最后画面并自动重连；首次未授权保持透明。
-Logo 支持 HTTPS URL 或 `/teamLogo/xxx.png`，本地图片放 `public/teamLogo/` 后重新构建。
-同一路径的 Logo 不要在比赛中覆盖，换新文件名，以免历史时间轴显示新图片。
-
-## 延迟的精确定义
-
-每个比赛操作保存 `timestamp + resultingState`。每 200ms 取
-`timestamp <= serverNow - casterDelaySeconds` 的最新事件，作为解说状态。
-初始无可见事件时显示空白默认比赛。比分、下一局、结束、重置和 Undo 全部经过同一事件时间轴。
-REST 和 WS 都使用同一选择函数，重连不会回落到实时状态。
-
-调大延迟会回退到相应历史状态；调小会前进。已经看过的信息无法撤回。
-服务器数据与延迟配置落盘后才确认和广播，重启继续计算队列。
-请保持服务器系统时钟准确，赛中不要手动更改时间。
-
-**这里延迟的是数据，不是视频。** B站实际端到端延迟和不同播放器的进度必须测量，
-不能把平台自然延迟当作保证的 180 秒防窥屏措施。
-
-## 视频和音频接线
-
-```text
-Observer / Emulator
-  → 导播 OBS（游戏 + 实时 Overlay，游戏声音）
-  → B站
-  → 最终节目工作站播放该延迟画面
-  → 合成该画面声音 + 针对这份画面的解说音频
-  → Discord 观众
-```
-
-最终节目必须明确由哪台电脑合成。尽量让解说观看最终节目工作站提供的同一份画面，
-不同地区分别打开 B站播放器可能不在同一播放时间点。
-若两位解说各用播放器，必须分别对齐进度；本版本只有一套公共解说数据延迟。
-远程音频仍可能有传输偏差，需要实测校准。不要在最终延迟画面上再次叠加实时 Overlay。
-Production 通信不送入节目总线；最终节目声音也不要回送到解说监听，避免回声。
-
-## 数据恢复与运行边界
-
-- 默认持久化文件：`vite-project/data/match.json`，包含当前状态、事件历史、Undo、请求 ID 和延迟。
-- 同目录临时文件写入并 fsync，然后 rename 替换；写入失败不推进内存状态。
-- 文件损坏时启动报错，不自动清空比赛。恢复上一份完整备份后重启。
-- **只运行一个后端进程**，不要用集群模式或多副本同时写同一个文件。
-- 赛前备份、赛后归档整个数据目录（比赛 JSON、队伍资料库和上传照片）；自定义 `UPLOAD_DIR` 时一并备份该目录。历史不自动裁剪；适合社区赛事的小规模操作量。
-- 浏览器刷新、WS 重连会恢复；仍需部署平台提供进程重启和持久化磁盘。
-- Overlay 无连接状态角标，导播应同时打开 Control 监控连接。
-
-## 云端部署
-
-提供 `vite-project/Dockerfile` 和 `deploy/compose.yaml`、`deploy/Caddyfile`，尚未实际部署。
-VPS 需要域名、80/443 端口和 Docker Compose。将域名解析到 VPS 后：
-
-1. 复制 `deploy/.env.example` 为 `deploy/.env`。
-2. 填写域名和三种不同的随机 token（每个至少 24 字符，建议 32 字节随机值）。
-3. 在 `deploy` 运行 `docker compose up -d --build`。
-4. 访问 `https://你的域名/control`，输入 Control token。
-5. 给解说 `/caster#token=解说token`，给 OBS `/overlay/draft#token=OverlayToken`。
-
-容器使用命名卷保存比赛数据，Caddy 提供 HTTPS/WSS。不要运行 `docker compose down -v`，
-它会删除持久化卷。备份卷和凭据，不要将 `.env` 提交到 Git。
-生产模式强制三种不同的长 token；`ALLOWED_ORIGINS` 填写前端完整 HTTPS origin。
-token 经 Authorization 头和 WS 初始认证消息发送，分享链接使用 fragment，避免出现在 HTTP 请求 URL。
-
-## 验证
-
-比赛设置中的“界面语言”控制整套界面和英雄名称。选择中文或英文并保存后，按钮、设置、状态、错误、阵容分析与直播画面统一切换，每处只显示当前语言；搜索始终支持中英文。
-语言由服务器随比赛状态保存，刷新后保留；控制台和直播画面实时更新，解说页继续使用延迟时间轴上的语言设置。自定义队名与选手名保留原文。
-解说页的两组关系分析分别标注蓝方、红方、实际队名和对手，队名与队徽同样遵守解说延迟。
+## 5. 更新英雄库
 
 ```powershell
+npm run hero:sync -- 16.19.1
 npm test
 npm run build
-npm run test:e2e
+npm run lint
 ```
 
-浏览器测试默认使用 Windows Chrome，可通过 `CHROME_PATH` 指向其他 Chrome/Chromium。
-测试启动独立 3101 端口，数据写入 `artifacts/e2e-时间戳.json`，不会更改正式 `data/match.json`。
-测试截图位于 `artifacts/`。
+要更新版本时显式传入新的 Data Dragon 版本号。不要重新启用旧 HOK Hero Sync 工具。
 
-上线前彩排：走完两套 BP、修改比分、刷新页面、断开网络至少 30 秒、重启后端，
-确认 Overlay 恢复、Caster 无实时剧透；再测量 B站→解说→Discord 的真实音画偏差。
-本版不包含游戏识别、OCR、OBS 场景控制、赛事编排和自动视频同步。
+## 6. 运行数据
 
-实现参考：[ws 官方文档](https://github.com/websockets/ws/blob/master/README.md)、[Vite 代理文档](https://vite.dev/config/server-options.html#server-proxy)。
+默认：
 
-## 最后一步已完成：英雄名单与头像补齐
+```text
+data/lol/match.json
+data/lol/team-presets.json
+data/lol/uploads/player-portraits/
+```
 
-默认采用每队 4 Ban / 5 Pick 的赛事模式。本轮新增 21 条英雄/形态记录及全部本地头像，
-目前共 116 条有效记录，保留旧有效 ID 与旧名搜索别名。图标显示不依赖外部网站。
-未核实的新英雄关系保持“暂无数据”；Flowborn 形态及联动英雄以实际比赛房间为准。
-顺序和原则见 [WORKFLOW.md](../archive/planning/workflow-2026-09-17.md)，
-同步内容与来源见 [HERO-DATA-AUDIT.md](../research/hero-data-audit-2026-09-16.md)、
-[图标来源清单](../../research/new-hero-assets.json)。
+LoL 与 HOK 存档不可互换。
