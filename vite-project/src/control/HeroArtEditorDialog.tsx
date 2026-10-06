@@ -164,6 +164,8 @@ export function HeroArtEditorDialog({
       occupation: runtime?.occupation ?? base?.occupation ?? '',
       altOccupation: runtime?.altOccupation ?? base?.altOccupation ?? '',
       aliases: runtime?.aliases ?? base?.aliases ?? [],
+      imageLink: runtime?.imageLink ?? base?.imageLink ?? '',
+      artLink: runtime?.artLink ?? base?.artLink ?? '',
     };
   };
   const [dataDraft, setDataDraft] = useState<HeroDataOverride>(() => makeDataDraft(initialId));
@@ -256,10 +258,12 @@ export function HeroArtEditorDialog({
             <label>{t('heroEnglishName')}<input maxLength={60} value={dataDraft.englishName ?? ''} onChange={event => setDataDraft(previous => ({ ...previous, englishName: event.target.value }))} /></label>
             <label>{t('heroPrimaryLane')}<select value={dataDraft.occupation ?? ''} onChange={event => setDataDraft(previous => ({ ...previous, occupation: event.target.value }))}>{['Top Lane','Jungle','Mid Lane','Bot Lane','Support'].map(lane => <option key={lane} value={lane}>{lane}</option>)}</select></label>
             <label>{t('heroSecondaryLane')}<select value={dataDraft.altOccupation ?? ''} onChange={event => setDataDraft(previous => ({ ...previous, altOccupation: event.target.value }))}><option value="">{t('noSecondaryLane')}</option>{['Top Lane','Jungle','Mid Lane','Bot Lane','Support'].map(lane => <option key={lane} value={lane}>{lane}</option>)}</select></label>
+            <label>{t('championPortraitUrl')}<input maxLength={1000} value={dataDraft.imageLink ?? ''} onChange={event => setDataDraft(previous => ({ ...previous, imageLink: event.target.value }))} /><small>{t('championPortraitUrlHint')}</small></label>
+            <label>{t('championSplashUrl')}<input maxLength={1000} value={dataDraft.artLink ?? ''} onChange={event => setDataDraft(previous => ({ ...previous, artLink: event.target.value }))} /><small>{t('championSplashUrlHint')}</small></label>
             <label>{t('heroAliases')}<input maxLength={500} value={(dataDraft.aliases ?? []).join(', ')} onChange={event => setDataDraft(previous => ({ ...previous, aliases: event.target.value.split(',').map(value => value.trim()).filter(Boolean) }))} /><small>{t('heroAliasesHint')}</small></label>
             <div className="art-editor-actions">
               <button type="button" className="primary" disabled={disabled} onClick={() => send({ type: 'hero_data_override', heroId: hero.id, override: dataDraft })}>{t('saveHeroData')}</button>
-              <button type="button" disabled={disabled} onClick={() => { send({ type: 'reset_hero_data_override', heroId: hero.id }); const base = heroes.find(item => item.id === hero.id); if (base) setDataDraft({ englishName: base.englishName, chineseName: base.chineseName, occupation: base.occupation, altOccupation: base.altOccupation ?? '', aliases: base.aliases ?? [] }); }}>{t('resetHeroData')}</button>
+              <button type="button" disabled={disabled} onClick={() => { send({ type: 'reset_hero_data_override', heroId: hero.id }); const base = heroes.find(item => item.id === hero.id); if (base) setDataDraft({ englishName: base.englishName, chineseName: base.chineseName, occupation: base.occupation, altOccupation: base.altOccupation ?? '', aliases: base.aliases ?? [], imageLink: base.imageLink, artLink: base.artLink ?? '' }); }}>{t('resetHeroData')}</button>
             </div>
           </fieldset>
 
