@@ -1924,3 +1924,28 @@
   border-right-color:var(--card-accent);
   box-shadow:none;
 }
+
+
+.champion-studio-list-footer {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  margin-top:7px;
+}
+.champion-studio-list-actions {
+  display:flex;
+  gap:6px;
+}
+.champion-studio-list-actions button {
+  padding:4px 7px;
+  font-size:9px;
+  border:1px solid #26343e;
+  background:#0d171f;
+  color:#aab6be;
+}
+.champion-studio-list-actions button:hover {
+  border-color:#6f7c85;
+  background:#14212a;
+  color:#e2e7ea;
+}
