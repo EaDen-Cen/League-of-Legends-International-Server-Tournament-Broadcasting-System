@@ -1472,3 +1472,306 @@
 @media(max-width:560px) {
   .champion-studio-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
 }
+
+
+/* LoL minimal pass: keep hierarchy, remove ornamental competition. */
+.broadcast-overlay {
+  --lol-gold:#b89b62;
+  --lol-blue:#3a9ee8;
+  --lol-red:#df5362;
+  --lol-cream:#edf1f4;
+}
+.broadcast-top { top:20px; left:34px; right:34px; }
+.broadcast-header {
+  grid-template-columns:minmax(0,1fr) 170px minmax(0,1fr);
+  grid-template-rows:28px 66px;
+  padding:0 18px;
+  background:#050c12ee;
+  border:0;
+  border-bottom:1px solid #ffffff14;
+  box-shadow:none;
+}
+.broadcast-brand {
+  gap:0;
+  color:#aab5be;
+  font-size:10px;
+  font-weight:650;
+  letter-spacing:1.6px;
+}
+.broadcast-brand > span { display:none; }
+.broadcast-draft-label {
+  padding:0;
+  border:0;
+  color:#d6dde3;
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:1.15px;
+}
+.broadcast-meta {
+  color:#71808b;
+  font-size:10px;
+  letter-spacing:.35px;
+}
+.broadcast-team,
+.broadcast-team.display-right {
+  gap:12px;
+  border-top:0;
+  border-bottom:2px solid transparent;
+  background:none;
+}
+.broadcast-team.blue { border-bottom-color:#3a9ee899; }
+.broadcast-team.red { border-bottom-color:#df536299; }
+.broadcast-team h2 {
+  color:#f2f4f6;
+  font-size:26px;
+  font-weight:700;
+  letter-spacing:.2px;
+  text-transform:none;
+}
+.broadcast-team img { width:40px; height:40px; }
+.broadcast-team .color-label { display:none; }
+
+.broadcast-score {
+  margin:8px 14px;
+  gap:14px;
+  background:#0b141c;
+  border:0;
+  border-left:1px solid #ffffff12;
+  border-right:1px solid #ffffff12;
+  clip-path:none;
+  font-size:34px;
+}
+.broadcast-score::before { display:none; }
+.broadcast-score strong { margin:0; }
+.broadcast-score > span { font-size:18px; color:#66737d; }
+
+.broadcast-bottom { left:34px; right:34px; bottom:22px; gap:6px; }
+.broadcast-bans { gap:28px; }
+.broadcast-bans .ban-team {
+  min-height:52px;
+  padding:5px 10px;
+  gap:12px;
+  background:#050c12d9;
+  border:0;
+}
+.broadcast-bans .ban-team > span {
+  color:#6f7b85;
+  font-size:9px;
+  letter-spacing:.8px;
+}
+.broadcast-overlay .bans .hero-slot {
+  width:54px;
+  height:54px;
+  flex:0 0 54px;
+  border:0;
+  background:#0a1218;
+  filter:saturate(.82);
+}
+.broadcast-overlay .ban-mark {
+  font-size:42px;
+  color:#d8dde1c0;
+  text-shadow:none;
+}
+.broadcast-overlay .hero-slot.ban > .ban-name {
+  background:#05090dbd;
+  font-size:9px;
+  padding:2px;
+}
+
+.broadcast-card {
+  border:0;
+  border-top:2px solid transparent;
+  background:#081118;
+  box-shadow:none;
+}
+.broadcast-card.filled::after {
+  box-shadow:inset 0 -46px 44px #03070bd9;
+}
+.broadcast-overlay .acting .broadcast-card {
+  border-top-color:var(--card-accent);
+  box-shadow:none;
+}
+.position-bar {
+  background:#0a1219db;
+  color:#b8c2c9;
+  border:0;
+}
+.card-caption {
+  background:linear-gradient(180deg,transparent 0%,#02070a22 34%,#02070ae9 100%);
+  text-shadow:0 1px 4px #000;
+}
+.card-caption strong {
+  color:#f1f3f5 !important;
+  font-weight:700;
+  letter-spacing:0;
+  text-transform:none;
+}
+.card-caption .player-id { color:#9eabb4 !important; }
+
+.broadcast-bottom > .phase {
+  min-height:16px;
+  padding:0;
+  background:none;
+  border:0;
+  color:#66737d;
+  letter-spacing:.8px;
+}
+.broadcast-bottom > .phase span { display:none; }
+.broadcast-bottom > .phase small {
+  color:#66737d;
+  font-size:8px;
+  letter-spacing:.8px;
+}
+.draft-action-pick .broadcast-draft-label,
+.draft-action-ban .broadcast-draft-label { color:#d6dde3; }
+
+/* Side layout keeps the same minimal language. */
+.broadcast-side .broadcast-bans {
+  grid-template-columns:390px 390px;
+}
+.broadcast-side .broadcast-bans .ban-team {
+  min-height:62px;
+}
+.broadcast-side .broadcast-bottom > .phase {
+  left:420px;
+  right:420px;
+}
+
+/* Champion Studio: one quiet surface, fewer borders and fewer status chips. */
+.hero-art-editor-dialog {
+  border:1px solid #26323b;
+  border-radius:8px;
+  background:#0a1117;
+  box-shadow:0 28px 80px #0009;
+}
+.hero-art-editor-header {
+  padding:12px 16px;
+  background:#0d151c;
+  border-bottom:1px solid #ffffff10;
+}
+.hero-art-editor-header strong {
+  color:#eef1f3;
+  letter-spacing:.2px;
+}
+.hero-art-editor-header small { color:#74818b; }
+.hero-art-editor-body { grid-template-columns:390px minmax(0,1fr); }
+.hero-art-editor-controls {
+  padding:14px;
+  background:#0a1117;
+  border-right:1px solid #ffffff0d;
+}
+.champion-studio-selector {
+  margin-bottom:12px;
+  padding:0;
+  border:0;
+  background:none;
+}
+.champion-studio-search { margin-bottom:8px; }
+.champion-studio-search input {
+  border:1px solid #26343e;
+  border-radius:5px;
+  background:#0d171f;
+}
+.champion-studio-grid {
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:4px;
+  max-height:220px;
+}
+.champion-studio-grid button {
+  padding:4px;
+  grid-template-columns:32px minmax(0,1fr);
+  border:1px solid transparent;
+  border-radius:4px;
+  background:#0d161e;
+}
+.champion-studio-grid button:hover {
+  border-color:#344550;
+  background:#111d26;
+}
+.champion-studio-grid button.selected {
+  border-color:#687783;
+  background:#16212a;
+  box-shadow:none;
+}
+.champion-studio-grid img { width:32px; height:32px; }
+.champion-studio-grid span { color:#dce2e6; }
+.champion-studio-grid small { color:#667780; }
+.champion-studio-result-count { color:#56636c; }
+
+.hero-data-editor {
+  margin-top:10px;
+  padding:12px 0 0;
+  border:0;
+  border-top:1px solid #ffffff0d;
+  background:none;
+}
+.hero-data-editor legend {
+  padding:0;
+  color:#aeb8bf;
+  font-size:11px;
+}
+.champion-data-advanced {
+  margin:10px 0 2px;
+  padding-top:8px;
+  border-top:1px solid #ffffff0b;
+}
+.champion-data-advanced summary {
+  cursor:pointer;
+  color:#7f8d97;
+  font-size:11px;
+  user-select:none;
+}
+.champion-data-advanced[open] summary {
+  margin-bottom:9px;
+  color:#aeb8bf;
+}
+.champion-studio-summary {
+  margin-bottom:12px;
+  padding:0 0 12px;
+  border:0;
+  border-bottom:1px solid #ffffff0d;
+  background:none;
+}
+.champion-studio-summary h2 {
+  margin:2px 0;
+  color:#eef1f3;
+  font-size:25px;
+  text-transform:none;
+}
+.champion-studio-summary p { color:#6f7f89; }
+.champion-studio-badges { gap:5px; }
+.champion-studio-badges span,
+.champion-studio-badges span.active {
+  padding:3px 6px;
+  border:0;
+  border-radius:10px;
+  color:#9aa7af;
+  background:#141e25;
+  font-size:8px;
+}
+.hero-art-editor-stage { background:#080e13; }
+.art-editor-crop-controls {
+  border:0;
+  border-top:1px solid #ffffff0d;
+  border-radius:0;
+  padding:10px 0 0;
+}
+.art-editor-crop-controls legend {
+  padding:0;
+  color:#aeb8bf;
+  font-size:11px;
+}
+.art-reference-frame {
+  border:2px solid #e8ecef;
+  box-shadow:0 0 0 1px #0008;
+}
+.art-reference-frame.side-frame { border-style:dashed; }
+.art-reference-frame span {
+  background:#e8ecef;
+  color:#0a1117;
+}
+.art-editor-preview { border:1px solid #303b43; }
+
+@media(max-width:900px) {
+  .hero-art-editor-body { grid-template-columns:1fr; }
+}
