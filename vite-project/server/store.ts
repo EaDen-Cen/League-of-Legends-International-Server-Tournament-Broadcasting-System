@@ -394,6 +394,14 @@ export class Store {
         if (!Array.isArray(override.aliases) || override.aliases.length > 20) throw new Error('heroDataOverrideInvalid');
         override.aliases.forEach(alias => shortText(alias, 60));
       }
+      if (override.imageLink !== undefined) {
+        if (!override.imageLink.trim()) throw new Error('heroDataOverrideInvalid');
+        portraitURL(override.imageLink);
+      }
+      if (override.artLink !== undefined) {
+        if (!override.artLink.trim()) throw new Error('heroDataOverrideInvalid');
+        portraitURL(override.artLink);
+      }
       next.history.push(copy(state));
       state.heroDataOverrides = { ...(state.heroDataOverrides || {}), [String(action.heroId)]: copy(override) };
       break;
