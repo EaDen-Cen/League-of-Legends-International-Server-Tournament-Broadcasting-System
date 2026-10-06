@@ -6,7 +6,7 @@ const heroes: Hero[] = [
     "englishName": "Annie",
     "chineseName": "安妮",
     "imageLink": "/champions/Annie.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Annie_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Annie_0.jpg",
     "occupation": "Mid Lane",
     "altOccupation": "",
     "aliases": [
@@ -20,7 +20,7 @@ const heroes: Hero[] = [
     "englishName": "Olaf",
     "chineseName": "奥拉夫",
     "imageLink": "/champions/Olaf.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Olaf_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Olaf_0.jpg",
     "occupation": "Top Lane",
     "altOccupation": "",
     "aliases": [
@@ -34,7 +34,7 @@ const heroes: Hero[] = [
     "englishName": "Galio",
     "chineseName": "加里奥",
     "imageLink": "/champions/Galio.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Galio_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Galio_0.jpg",
     "occupation": "Mid Lane",
     "altOccupation": "",
     "aliases": [
@@ -48,7 +48,7 @@ const heroes: Hero[] = [
     "englishName": "Twisted Fate",
     "chineseName": "崔斯特",
     "imageLink": "/champions/TwistedFate.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/TwistedFate_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/TwistedFate_0.jpg",
     "occupation": "Mid Lane",
     "altOccupation": "",
     "aliases": [
@@ -62,7 +62,7 @@ const heroes: Hero[] = [
     "englishName": "Xin Zhao",
     "chineseName": "赵信",
     "imageLink": "/champions/XinZhao.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/XinZhao_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/XinZhao_0.jpg",
     "occupation": "Jungle",
     "altOccupation": "",
     "aliases": [
@@ -76,7 +76,7 @@ const heroes: Hero[] = [
     "englishName": "Urgot",
     "chineseName": "厄加特",
     "imageLink": "/champions/Urgot.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Urgot_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Urgot_0.jpg",
     "occupation": "Top Lane",
     "altOccupation": "",
     "aliases": [
@@ -90,7 +90,7 @@ const heroes: Hero[] = [
     "englishName": "LeBlanc",
     "chineseName": "乐芙兰",
     "imageLink": "/champions/Leblanc.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Leblanc_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Leblanc_0.jpg",
     "occupation": "Mid Lane",
     "altOccupation": "",
     "aliases": [
@@ -104,7 +104,7 @@ const heroes: Hero[] = [
     "englishName": "Vladimir",
     "chineseName": "弗拉基米尔",
     "imageLink": "/champions/Vladimir.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Vladimir_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Vladimir_0.jpg",
     "occupation": "Mid Lane",
     "altOccupation": "",
     "aliases": [
@@ -118,7 +118,7 @@ const heroes: Hero[] = [
     "englishName": "Fiddlesticks",
     "chineseName": "费德提克",
     "imageLink": "/champions/Fiddlesticks.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Fiddlesticks_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Fiddlesticks_0.jpg",
     "occupation": "Jungle",
     "altOccupation": "",
     "aliases": [
@@ -132,7 +132,7 @@ const heroes: Hero[] = [
     "englishName": "Kayle",
     "chineseName": "凯尔",
     "imageLink": "/champions/Kayle.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Kayle_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Kayle_0.jpg",
     "occupation": "Top Lane",
     "altOccupation": "",
     "aliases": [
@@ -146,7 +146,7 @@ const heroes: Hero[] = [
     "englishName": "Master Yi",
     "chineseName": "易",
     "imageLink": "/champions/MasterYi.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/MasterYi_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/MasterYi_0.jpg",
     "occupation": "Jungle",
     "altOccupation": "",
     "aliases": [
@@ -160,7 +160,7 @@ const heroes: Hero[] = [
     "englishName": "Alistar",
     "chineseName": "阿利斯塔",
     "imageLink": "/champions/Alistar.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Alistar_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Alistar_0.jpg",
     "occupation": "Support",
     "altOccupation": "",
     "aliases": [
@@ -174,7 +174,7 @@ const heroes: Hero[] = [
     "englishName": "Ryze",
     "chineseName": "瑞兹",
     "imageLink": "/champions/Ryze.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Ryze_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ryze_0.jpg",
     "occupation": "Mid Lane",
     "altOccupation": "",
     "aliases": [
@@ -188,7 +188,7 @@ const heroes: Hero[] = [
     "englishName": "Sion",
     "chineseName": "赛恩",
     "imageLink": "/champions/Sion.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Sion_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Sion_0.jpg",
     "occupation": "Top Lane",
     "altOccupation": "",
     "aliases": [
@@ -202,7 +202,7 @@ const heroes: Hero[] = [
     "englishName": "Sivir",
     "chineseName": "希维尔",
     "imageLink": "/champions/Sivir.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Sivir_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Sivir_0.jpg",
     "occupation": "Bot Lane",
     "altOccupation": "",
     "aliases": [
@@ -216,7 +216,7 @@ const heroes: Hero[] = [
     "englishName": "Soraka",
     "chineseName": "索拉卡",
     "imageLink": "/champions/Soraka.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Soraka_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Soraka_0.jpg",
     "occupation": "Support",
     "altOccupation": "",
     "aliases": [
@@ -230,7 +230,7 @@ const heroes: Hero[] = [
     "englishName": "Teemo",
     "chineseName": "提莫",
     "imageLink": "/champions/Teemo.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Teemo_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Teemo_0.jpg",
     "occupation": "Top Lane",
     "altOccupation": "",
     "aliases": [
@@ -244,7 +244,7 @@ const heroes: Hero[] = [
     "englishName": "Tristana",
     "chineseName": "崔丝塔娜",
     "imageLink": "/champions/Tristana.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Tristana_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Tristana_0.jpg",
     "occupation": "Bot Lane",
     "altOccupation": "",
     "aliases": [
@@ -258,7 +258,7 @@ const heroes: Hero[] = [
     "englishName": "Warwick",
     "chineseName": "沃里克",
     "imageLink": "/champions/Warwick.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Warwick_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Warwick_0.jpg",
     "occupation": "Jungle",
     "altOccupation": "",
     "aliases": [
@@ -272,7 +272,7 @@ const heroes: Hero[] = [
     "englishName": "Nunu & Willump",
     "chineseName": "努努和威朗普",
     "imageLink": "/champions/Nunu.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Nunu_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Nunu_0.jpg",
     "occupation": "Jungle",
     "altOccupation": "",
     "aliases": [
@@ -286,7 +286,7 @@ const heroes: Hero[] = [
     "englishName": "Miss Fortune",
     "chineseName": "厄运小姐",
     "imageLink": "/champions/MissFortune.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/MissFortune_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/MissFortune_0.jpg",
     "occupation": "Bot Lane",
     "altOccupation": "",
     "aliases": [
@@ -300,7 +300,7 @@ const heroes: Hero[] = [
     "englishName": "Ashe",
     "chineseName": "艾希",
     "imageLink": "/champions/Ashe.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Ashe_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ashe_0.jpg",
     "occupation": "Bot Lane",
     "altOccupation": "",
     "aliases": [
@@ -314,7 +314,7 @@ const heroes: Hero[] = [
     "englishName": "Tryndamere",
     "chineseName": "泰达米尔",
     "imageLink": "/champions/Tryndamere.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Tryndamere_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Tryndamere_0.jpg",
     "occupation": "Top Lane",
     "altOccupation": "",
     "aliases": [
@@ -328,7 +328,7 @@ const heroes: Hero[] = [
     "englishName": "Jax",
     "chineseName": "贾克斯",
     "imageLink": "/champions/Jax.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Jax_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Jax_0.jpg",
     "occupation": "Top Lane",
     "altOccupation": "",
     "aliases": [
@@ -342,7 +342,7 @@ const heroes: Hero[] = [
     "englishName": "Morgana",
     "chineseName": "莫甘娜",
     "imageLink": "/champions/Morgana.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Morgana_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Morgana_0.jpg",
     "occupation": "Support",
     "altOccupation": "",
     "aliases": [
@@ -356,7 +356,7 @@ const heroes: Hero[] = [
     "englishName": "Zilean",
     "chineseName": "基兰",
     "imageLink": "/champions/Zilean.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Zilean_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Zilean_0.jpg",
     "occupation": "Support",
     "altOccupation": "",
     "aliases": [
@@ -370,7 +370,7 @@ const heroes: Hero[] = [
     "englishName": "Singed",
     "chineseName": "辛吉德",
     "imageLink": "/champions/Singed.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Singed_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Singed_0.jpg",
     "occupation": "Top Lane",
     "altOccupation": "",
     "aliases": [
@@ -384,7 +384,7 @@ const heroes: Hero[] = [
     "englishName": "Evelynn",
     "chineseName": "伊芙琳",
     "imageLink": "/champions/Evelynn.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Evelynn_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Evelynn_0.jpg",
     "occupation": "Jungle",
     "altOccupation": "",
     "aliases": [
@@ -398,7 +398,7 @@ const heroes: Hero[] = [
     "englishName": "Twitch",
     "chineseName": "图奇",
     "imageLink": "/champions/Twitch.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Twitch_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Twitch_0.jpg",
     "occupation": "Bot Lane",
     "altOccupation": "",
     "aliases": [
@@ -412,7 +412,7 @@ const heroes: Hero[] = [
     "englishName": "Karthus",
     "chineseName": "卡尔萨斯",
     "imageLink": "/champions/Karthus.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Karthus_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Karthus_0.jpg",
     "occupation": "Jungle",
     "altOccupation": "",
     "aliases": [
@@ -426,7 +426,7 @@ const heroes: Hero[] = [
     "englishName": "Cho'Gath",
     "chineseName": "科加斯",
     "imageLink": "/champions/Chogath.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Chogath_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Chogath_0.jpg",
     "occupation": "Top Lane",
     "altOccupation": "",
     "aliases": [
@@ -440,7 +440,7 @@ const heroes: Hero[] = [
     "englishName": "Amumu",
     "chineseName": "阿木木",
     "imageLink": "/champions/Amumu.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Amumu_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Amumu_0.jpg",
     "occupation": "Jungle",
     "altOccupation": "",
     "aliases": [
@@ -454,7 +454,7 @@ const heroes: Hero[] = [
     "englishName": "Rammus",
     "chineseName": "拉莫斯",
     "imageLink": "/champions/Rammus.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Rammus_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Rammus_0.jpg",
     "occupation": "Jungle",
     "altOccupation": "",
     "aliases": [
@@ -468,7 +468,7 @@ const heroes: Hero[] = [
     "englishName": "Anivia",
     "chineseName": "艾尼维亚",
     "imageLink": "/champions/Anivia.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Anivia_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Anivia_0.jpg",
     "occupation": "Mid Lane",
     "altOccupation": "",
     "aliases": [
@@ -482,7 +482,7 @@ const heroes: Hero[] = [
     "englishName": "Shaco",
     "chineseName": "萨科",
     "imageLink": "/champions/Shaco.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Shaco_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Shaco_0.jpg",
     "occupation": "Jungle",
     "altOccupation": "",
     "aliases": [
@@ -496,7 +496,7 @@ const heroes: Hero[] = [
     "englishName": "Dr. Mundo",
     "chineseName": "蒙多医生",
     "imageLink": "/champions/DrMundo.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/DrMundo_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/DrMundo_0.jpg",
     "occupation": "Top Lane",
     "altOccupation": "",
     "aliases": [
@@ -510,7 +510,7 @@ const heroes: Hero[] = [
     "englishName": "Sona",
     "chineseName": "娑娜",
     "imageLink": "/champions/Sona.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Sona_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Sona_0.jpg",
     "occupation": "Support",
     "altOccupation": "",
     "aliases": [
@@ -524,7 +524,7 @@ const heroes: Hero[] = [
     "englishName": "Kassadin",
     "chineseName": "卡萨丁",
     "imageLink": "/champions/Kassadin.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Kassadin_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Kassadin_0.jpg",
     "occupation": "Mid Lane",
     "altOccupation": "",
     "aliases": [
@@ -538,7 +538,7 @@ const heroes: Hero[] = [
     "englishName": "Irelia",
     "chineseName": "艾瑞莉娅",
     "imageLink": "/champions/Irelia.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Irelia_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Irelia_0.jpg",
     "occupation": "Top Lane",
     "altOccupation": "",
     "aliases": [
@@ -552,7 +552,7 @@ const heroes: Hero[] = [
     "englishName": "Janna",
     "chineseName": "迦娜",
     "imageLink": "/champions/Janna.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Janna_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Janna_0.jpg",
     "occupation": "Support",
     "altOccupation": "",
     "aliases": [
@@ -566,7 +566,7 @@ const heroes: Hero[] = [
     "englishName": "Gangplank",
     "chineseName": "普朗克",
     "imageLink": "/champions/Gangplank.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Gangplank_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Gangplank_0.jpg",
     "occupation": "Top Lane",
     "altOccupation": "",
     "aliases": [
@@ -580,7 +580,7 @@ const heroes: Hero[] = [
     "englishName": "Corki",
     "chineseName": "库奇",
     "imageLink": "/champions/Corki.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Corki_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Corki_0.jpg",
     "occupation": "Bot Lane",
     "altOccupation": "",
     "aliases": [
@@ -594,7 +594,7 @@ const heroes: Hero[] = [
     "englishName": "Karma",
     "chineseName": "卡尔玛",
     "imageLink": "/champions/Karma.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Karma_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Karma_0.jpg",
     "occupation": "Support",
     "altOccupation": "",
     "aliases": [
@@ -608,7 +608,7 @@ const heroes: Hero[] = [
     "englishName": "Taric",
     "chineseName": "塔里克",
     "imageLink": "/champions/Taric.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Taric_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Taric_0.jpg",
     "occupation": "Support",
     "altOccupation": "",
     "aliases": [
@@ -622,7 +622,7 @@ const heroes: Hero[] = [
     "englishName": "Veigar",
     "chineseName": "维迦",
     "imageLink": "/champions/Veigar.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Veigar_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Veigar_0.jpg",
     "occupation": "Mid Lane",
     "altOccupation": "",
     "aliases": [
@@ -636,7 +636,7 @@ const heroes: Hero[] = [
     "englishName": "Trundle",
     "chineseName": "特朗德尔",
     "imageLink": "/champions/Trundle.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Trundle_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Trundle_0.jpg",
     "occupation": "Jungle",
     "altOccupation": "",
     "aliases": [
@@ -650,7 +650,7 @@ const heroes: Hero[] = [
     "englishName": "Swain",
     "chineseName": "斯维因",
     "imageLink": "/champions/Swain.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Swain_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Swain_0.jpg",
     "occupation": "Mid Lane",
     "altOccupation": "",
     "aliases": [
@@ -664,7 +664,7 @@ const heroes: Hero[] = [
     "englishName": "Caitlyn",
     "chineseName": "凯特琳",
     "imageLink": "/champions/Caitlyn.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Caitlyn_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Caitlyn_0.jpg",
     "occupation": "Bot Lane",
     "altOccupation": "",
     "aliases": [
@@ -678,7 +678,7 @@ const heroes: Hero[] = [
     "englishName": "Blitzcrank",
     "chineseName": "布里茨",
     "imageLink": "/champions/Blitzcrank.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Blitzcrank_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Blitzcrank_0.jpg",
     "occupation": "Support",
     "altOccupation": "",
     "aliases": [
@@ -692,7 +692,7 @@ const heroes: Hero[] = [
     "englishName": "Malphite",
     "chineseName": "墨菲特",
     "imageLink": "/champions/Malphite.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Malphite_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Malphite_0.jpg",
     "occupation": "Top Lane",
     "altOccupation": "",
     "aliases": [
@@ -706,7 +706,7 @@ const heroes: Hero[] = [
     "englishName": "Katarina",
     "chineseName": "卡特琳娜",
     "imageLink": "/champions/Katarina.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Katarina_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Katarina_0.jpg",
     "occupation": "Mid Lane",
     "altOccupation": "",
     "aliases": [
@@ -720,7 +720,7 @@ const heroes: Hero[] = [
     "englishName": "Nocturne",
     "chineseName": "魔腾",
     "imageLink": "/champions/Nocturne.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Nocturne_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Nocturne_0.jpg",
     "occupation": "Jungle",
     "altOccupation": "",
     "aliases": [
@@ -734,7 +734,7 @@ const heroes: Hero[] = [
     "englishName": "Maokai",
     "chineseName": "茂凯",
     "imageLink": "/champions/Maokai.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Maokai_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Maokai_0.jpg",
     "occupation": "Support",
     "altOccupation": "",
     "aliases": [
@@ -748,7 +748,7 @@ const heroes: Hero[] = [
     "englishName": "Renekton",
     "chineseName": "雷克顿",
     "imageLink": "/champions/Renekton.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Renekton_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Renekton_0.jpg",
     "occupation": "Top Lane",
     "altOccupation": "",
     "aliases": [
@@ -762,7 +762,7 @@ const heroes: Hero[] = [
     "englishName": "Jarvan IV",
     "chineseName": "嘉文四世",
     "imageLink": "/champions/JarvanIV.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/JarvanIV_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/JarvanIV_0.jpg",
     "occupation": "Jungle",
     "altOccupation": "",
     "aliases": [
@@ -776,7 +776,7 @@ const heroes: Hero[] = [
     "englishName": "Elise",
     "chineseName": "伊莉丝",
     "imageLink": "/champions/Elise.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Elise_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Elise_0.jpg",
     "occupation": "Jungle",
     "altOccupation": "",
     "aliases": [
@@ -790,7 +790,7 @@ const heroes: Hero[] = [
     "englishName": "Orianna",
     "chineseName": "奥莉安娜",
     "imageLink": "/champions/Orianna.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Orianna_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Orianna_0.jpg",
     "occupation": "Mid Lane",
     "altOccupation": "",
     "aliases": [
@@ -804,7 +804,7 @@ const heroes: Hero[] = [
     "englishName": "Wukong",
     "chineseName": "孙悟空",
     "imageLink": "/champions/MonkeyKing.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/MonkeyKing_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/MonkeyKing_0.jpg",
     "occupation": "Top Lane",
     "altOccupation": "",
     "aliases": [
@@ -818,7 +818,7 @@ const heroes: Hero[] = [
     "englishName": "Brand",
     "chineseName": "布兰德",
     "imageLink": "/champions/Brand.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Brand_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Brand_0.jpg",
     "occupation": "Mid Lane",
     "altOccupation": "",
     "aliases": [
@@ -832,7 +832,7 @@ const heroes: Hero[] = [
     "englishName": "Lee Sin",
     "chineseName": "李青",
     "imageLink": "/champions/LeeSin.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/LeeSin_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/LeeSin_0.jpg",
     "occupation": "Jungle",
     "altOccupation": "",
     "aliases": [
@@ -846,7 +846,7 @@ const heroes: Hero[] = [
     "englishName": "Vayne",
     "chineseName": "薇恩",
     "imageLink": "/champions/Vayne.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Vayne_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Vayne_0.jpg",
     "occupation": "Top Lane",
     "altOccupation": "",
     "aliases": [
@@ -860,7 +860,7 @@ const heroes: Hero[] = [
     "englishName": "Rumble",
     "chineseName": "兰博",
     "imageLink": "/champions/Rumble.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Rumble_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Rumble_0.jpg",
     "occupation": "Top Lane",
     "altOccupation": "",
     "aliases": [
@@ -874,7 +874,7 @@ const heroes: Hero[] = [
     "englishName": "Cassiopeia",
     "chineseName": "卡西奥佩娅",
     "imageLink": "/champions/Cassiopeia.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Cassiopeia_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Cassiopeia_0.jpg",
     "occupation": "Mid Lane",
     "altOccupation": "",
     "aliases": [
@@ -888,7 +888,7 @@ const heroes: Hero[] = [
     "englishName": "Skarner",
     "chineseName": "斯卡纳",
     "imageLink": "/champions/Skarner.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Skarner_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Skarner_0.jpg",
     "occupation": "Jungle",
     "altOccupation": "",
     "aliases": [
@@ -902,7 +902,7 @@ const heroes: Hero[] = [
     "englishName": "Heimerdinger",
     "chineseName": "黑默丁格",
     "imageLink": "/champions/Heimerdinger.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Heimerdinger_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Heimerdinger_0.jpg",
     "occupation": "Mid Lane",
     "altOccupation": "",
     "aliases": [
@@ -916,7 +916,7 @@ const heroes: Hero[] = [
     "englishName": "Nasus",
     "chineseName": "内瑟斯",
     "imageLink": "/champions/Nasus.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Nasus_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Nasus_0.jpg",
     "occupation": "Top Lane",
     "altOccupation": "",
     "aliases": [
@@ -930,7 +930,7 @@ const heroes: Hero[] = [
     "englishName": "Nidalee",
     "chineseName": "奈德丽",
     "imageLink": "/champions/Nidalee.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Nidalee_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Nidalee_0.jpg",
     "occupation": "Jungle",
     "altOccupation": "",
     "aliases": [
@@ -944,7 +944,7 @@ const heroes: Hero[] = [
     "englishName": "Udyr",
     "chineseName": "乌迪尔",
     "imageLink": "/champions/Udyr.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Udyr_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Udyr_0.jpg",
     "occupation": "Jungle",
     "altOccupation": "",
     "aliases": [
@@ -958,7 +958,7 @@ const heroes: Hero[] = [
     "englishName": "Poppy",
     "chineseName": "波比",
     "imageLink": "/champions/Poppy.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Poppy_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Poppy_0.jpg",
     "occupation": "Top Lane",
     "altOccupation": "",
     "aliases": [
@@ -972,7 +972,7 @@ const heroes: Hero[] = [
     "englishName": "Gragas",
     "chineseName": "古拉加斯",
     "imageLink": "/champions/Gragas.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Gragas_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Gragas_0.jpg",
     "occupation": "Top Lane",
     "altOccupation": "",
     "aliases": [
@@ -986,7 +986,7 @@ const heroes: Hero[] = [
     "englishName": "Pantheon",
     "chineseName": "潘森",
     "imageLink": "/champions/Pantheon.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Pantheon_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Pantheon_0.jpg",
     "occupation": "Top Lane",
     "altOccupation": "",
     "aliases": [
@@ -1000,7 +1000,7 @@ const heroes: Hero[] = [
     "englishName": "Ezreal",
     "chineseName": "伊泽瑞尔",
     "imageLink": "/champions/Ezreal.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Ezreal_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ezreal_0.jpg",
     "occupation": "Bot Lane",
     "altOccupation": "",
     "aliases": [
@@ -1014,7 +1014,7 @@ const heroes: Hero[] = [
     "englishName": "Mordekaiser",
     "chineseName": "莫德凯撒",
     "imageLink": "/champions/Mordekaiser.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Mordekaiser_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Mordekaiser_0.jpg",
     "occupation": "Top Lane",
     "altOccupation": "",
     "aliases": [
@@ -1028,7 +1028,7 @@ const heroes: Hero[] = [
     "englishName": "Yorick",
     "chineseName": "约里克",
     "imageLink": "/champions/Yorick.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Yorick_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Yorick_0.jpg",
     "occupation": "Top Lane",
     "altOccupation": "",
     "aliases": [
@@ -1042,7 +1042,7 @@ const heroes: Hero[] = [
     "englishName": "Akali",
     "chineseName": "阿卡丽",
     "imageLink": "/champions/Akali.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Akali_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Akali_0.jpg",
     "occupation": "Mid Lane",
     "altOccupation": "",
     "aliases": [
@@ -1056,7 +1056,7 @@ const heroes: Hero[] = [
     "englishName": "Kennen",
     "chineseName": "凯南",
     "imageLink": "/champions/Kennen.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Kennen_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Kennen_0.jpg",
     "occupation": "Top Lane",
     "altOccupation": "",
     "aliases": [
@@ -1070,7 +1070,7 @@ const heroes: Hero[] = [
     "englishName": "Garen",
     "chineseName": "盖伦",
     "imageLink": "/champions/Garen.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Garen_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Garen_0.jpg",
     "occupation": "Top Lane",
     "altOccupation": "",
     "aliases": [
@@ -1084,7 +1084,7 @@ const heroes: Hero[] = [
     "englishName": "Leona",
     "chineseName": "蕾欧娜",
     "imageLink": "/champions/Leona.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Leona_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Leona_0.jpg",
     "occupation": "Support",
     "altOccupation": "",
     "aliases": [
@@ -1098,7 +1098,7 @@ const heroes: Hero[] = [
     "englishName": "Malzahar",
     "chineseName": "玛尔扎哈",
     "imageLink": "/champions/Malzahar.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Malzahar_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Malzahar_0.jpg",
     "occupation": "Mid Lane",
     "altOccupation": "",
     "aliases": [
@@ -1112,7 +1112,7 @@ const heroes: Hero[] = [
     "englishName": "Talon",
     "chineseName": "泰隆",
     "imageLink": "/champions/Talon.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Talon_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Talon_0.jpg",
     "occupation": "Jungle",
     "altOccupation": "",
     "aliases": [
@@ -1126,7 +1126,7 @@ const heroes: Hero[] = [
     "englishName": "Riven",
     "chineseName": "锐雯",
     "imageLink": "/champions/Riven.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Riven_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Riven_0.jpg",
     "occupation": "Top Lane",
     "altOccupation": "",
     "aliases": [
@@ -1140,7 +1140,7 @@ const heroes: Hero[] = [
     "englishName": "Kog'Maw",
     "chineseName": "克格莫",
     "imageLink": "/champions/KogMaw.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/KogMaw_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/KogMaw_0.jpg",
     "occupation": "Bot Lane",
     "altOccupation": "",
     "aliases": [
@@ -1154,7 +1154,7 @@ const heroes: Hero[] = [
     "englishName": "Shen",
     "chineseName": "慎",
     "imageLink": "/champions/Shen.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Shen_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Shen_0.jpg",
     "occupation": "Top Lane",
     "altOccupation": "",
     "aliases": [
@@ -1168,7 +1168,7 @@ const heroes: Hero[] = [
     "englishName": "Lux",
     "chineseName": "拉克丝",
     "imageLink": "/champions/Lux.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Lux_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Lux_0.jpg",
     "occupation": "Mid Lane",
     "altOccupation": "",
     "aliases": [
@@ -1182,7 +1182,7 @@ const heroes: Hero[] = [
     "englishName": "Xerath",
     "chineseName": "泽拉斯",
     "imageLink": "/champions/Xerath.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Xerath_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Xerath_0.jpg",
     "occupation": "Mid Lane",
     "altOccupation": "",
     "aliases": [
@@ -1196,7 +1196,7 @@ const heroes: Hero[] = [
     "englishName": "Shyvana",
     "chineseName": "希瓦娜",
     "imageLink": "/champions/Shyvana.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Shyvana_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Shyvana_0.jpg",
     "occupation": "Jungle",
     "altOccupation": "",
     "aliases": [
@@ -1210,7 +1210,7 @@ const heroes: Hero[] = [
     "englishName": "Ahri",
     "chineseName": "阿狸",
     "imageLink": "/champions/Ahri.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Ahri_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ahri_0.jpg",
     "occupation": "Mid Lane",
     "altOccupation": "",
     "aliases": [
@@ -1224,7 +1224,7 @@ const heroes: Hero[] = [
     "englishName": "Graves",
     "chineseName": "格雷福斯",
     "imageLink": "/champions/Graves.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Graves_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Graves_0.jpg",
     "occupation": "Jungle",
     "altOccupation": "",
     "aliases": [
@@ -1238,7 +1238,7 @@ const heroes: Hero[] = [
     "englishName": "Fizz",
     "chineseName": "菲兹",
     "imageLink": "/champions/Fizz.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Fizz_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Fizz_0.jpg",
     "occupation": "Mid Lane",
     "altOccupation": "",
     "aliases": [
@@ -1252,7 +1252,7 @@ const heroes: Hero[] = [
     "englishName": "Volibear",
     "chineseName": "沃利贝尔",
     "imageLink": "/champions/Volibear.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Volibear_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Volibear_0.jpg",
     "occupation": "Top Lane",
     "altOccupation": "",
     "aliases": [
@@ -1266,7 +1266,7 @@ const heroes: Hero[] = [
     "englishName": "Rengar",
     "chineseName": "雷恩加尔",
     "imageLink": "/champions/Rengar.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Rengar_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Rengar_0.jpg",
     "occupation": "Jungle",
     "altOccupation": "",
     "aliases": [
@@ -1280,7 +1280,7 @@ const heroes: Hero[] = [
     "englishName": "Varus",
     "chineseName": "韦鲁斯",
     "imageLink": "/champions/Varus.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Varus_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Varus_0.jpg",
     "occupation": "Bot Lane",
     "altOccupation": "",
     "aliases": [
@@ -1294,7 +1294,7 @@ const heroes: Hero[] = [
     "englishName": "Nautilus",
     "chineseName": "诺提勒斯",
     "imageLink": "/champions/Nautilus.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Nautilus_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Nautilus_0.jpg",
     "occupation": "Support",
     "altOccupation": "",
     "aliases": [
@@ -1308,7 +1308,7 @@ const heroes: Hero[] = [
     "englishName": "Viktor",
     "chineseName": "维克托",
     "imageLink": "/champions/Viktor.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Viktor_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Viktor_0.jpg",
     "occupation": "Mid Lane",
     "altOccupation": "",
     "aliases": [
@@ -1322,7 +1322,7 @@ const heroes: Hero[] = [
     "englishName": "Sejuani",
     "chineseName": "瑟庄妮",
     "imageLink": "/champions/Sejuani.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Sejuani_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Sejuani_0.jpg",
     "occupation": "Jungle",
     "altOccupation": "",
     "aliases": [
@@ -1336,7 +1336,7 @@ const heroes: Hero[] = [
     "englishName": "Fiora",
     "chineseName": "菲奥娜",
     "imageLink": "/champions/Fiora.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Fiora_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Fiora_0.jpg",
     "occupation": "Top Lane",
     "altOccupation": "",
     "aliases": [
@@ -1350,7 +1350,7 @@ const heroes: Hero[] = [
     "englishName": "Ziggs",
     "chineseName": "吉格斯",
     "imageLink": "/champions/Ziggs.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Ziggs_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ziggs_0.jpg",
     "occupation": "Bot Lane",
     "altOccupation": "",
     "aliases": [
@@ -1364,7 +1364,7 @@ const heroes: Hero[] = [
     "englishName": "Lulu",
     "chineseName": "璐璐",
     "imageLink": "/champions/Lulu.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Lulu_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Lulu_0.jpg",
     "occupation": "Support",
     "altOccupation": "",
     "aliases": [
@@ -1378,7 +1378,7 @@ const heroes: Hero[] = [
     "englishName": "Draven",
     "chineseName": "德莱文",
     "imageLink": "/champions/Draven.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Draven_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Draven_0.jpg",
     "occupation": "Bot Lane",
     "altOccupation": "",
     "aliases": [
@@ -1392,7 +1392,7 @@ const heroes: Hero[] = [
     "englishName": "Hecarim",
     "chineseName": "赫卡里姆",
     "imageLink": "/champions/Hecarim.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Hecarim_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Hecarim_0.jpg",
     "occupation": "Jungle",
     "altOccupation": "",
     "aliases": [
@@ -1406,7 +1406,7 @@ const heroes: Hero[] = [
     "englishName": "Kha'Zix",
     "chineseName": "卡兹克",
     "imageLink": "/champions/Khazix.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Khazix_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Khazix_0.jpg",
     "occupation": "Jungle",
     "altOccupation": "",
     "aliases": [
@@ -1420,7 +1420,7 @@ const heroes: Hero[] = [
     "englishName": "Darius",
     "chineseName": "德莱厄斯",
     "imageLink": "/champions/Darius.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Darius_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Darius_0.jpg",
     "occupation": "Top Lane",
     "altOccupation": "",
     "aliases": [
@@ -1434,7 +1434,7 @@ const heroes: Hero[] = [
     "englishName": "Jayce",
     "chineseName": "杰斯",
     "imageLink": "/champions/Jayce.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Jayce_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Jayce_0.jpg",
     "occupation": "Top Lane",
     "altOccupation": "",
     "aliases": [
@@ -1448,7 +1448,7 @@ const heroes: Hero[] = [
     "englishName": "Lissandra",
     "chineseName": "丽桑卓",
     "imageLink": "/champions/Lissandra.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Lissandra_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Lissandra_0.jpg",
     "occupation": "Mid Lane",
     "altOccupation": "",
     "aliases": [
@@ -1462,7 +1462,7 @@ const heroes: Hero[] = [
     "englishName": "Diana",
     "chineseName": "黛安娜",
     "imageLink": "/champions/Diana.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Diana_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Diana_0.jpg",
     "occupation": "Jungle",
     "altOccupation": "",
     "aliases": [
@@ -1476,7 +1476,7 @@ const heroes: Hero[] = [
     "englishName": "Quinn",
     "chineseName": "奎因",
     "imageLink": "/champions/Quinn.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Quinn_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Quinn_0.jpg",
     "occupation": "Top Lane",
     "altOccupation": "",
     "aliases": [
@@ -1490,7 +1490,7 @@ const heroes: Hero[] = [
     "englishName": "Syndra",
     "chineseName": "辛德拉",
     "imageLink": "/champions/Syndra.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Syndra_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Syndra_0.jpg",
     "occupation": "Mid Lane",
     "altOccupation": "",
     "aliases": [
@@ -1504,7 +1504,7 @@ const heroes: Hero[] = [
     "englishName": "Aurelion Sol",
     "chineseName": "奥瑞利安·索尔",
     "imageLink": "/champions/AurelionSol.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/AurelionSol_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/AurelionSol_0.jpg",
     "occupation": "Mid Lane",
     "altOccupation": "",
     "aliases": [
@@ -1518,7 +1518,7 @@ const heroes: Hero[] = [
     "englishName": "Kayn",
     "chineseName": "凯隐",
     "imageLink": "/champions/Kayn.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Kayn_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Kayn_0.jpg",
     "occupation": "Jungle",
     "altOccupation": "",
     "aliases": [
@@ -1532,7 +1532,7 @@ const heroes: Hero[] = [
     "englishName": "Zoe",
     "chineseName": "佐伊",
     "imageLink": "/champions/Zoe.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Zoe_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Zoe_0.jpg",
     "occupation": "Mid Lane",
     "altOccupation": "",
     "aliases": [
@@ -1546,7 +1546,7 @@ const heroes: Hero[] = [
     "englishName": "Zyra",
     "chineseName": "婕拉",
     "imageLink": "/champions/Zyra.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Zyra_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Zyra_0.jpg",
     "occupation": "Support",
     "altOccupation": "",
     "aliases": [
@@ -1560,7 +1560,7 @@ const heroes: Hero[] = [
     "englishName": "Kai'Sa",
     "chineseName": "卡莎",
     "imageLink": "/champions/Kaisa.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Kaisa_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Kaisa_0.jpg",
     "occupation": "Bot Lane",
     "altOccupation": "",
     "aliases": [
@@ -1574,7 +1574,7 @@ const heroes: Hero[] = [
     "englishName": "Seraphine",
     "chineseName": "萨勒芬妮",
     "imageLink": "/champions/Seraphine.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Seraphine_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Seraphine_0.jpg",
     "occupation": "Support",
     "altOccupation": "",
     "aliases": [
@@ -1588,7 +1588,7 @@ const heroes: Hero[] = [
     "englishName": "Gnar",
     "chineseName": "纳尔",
     "imageLink": "/champions/Gnar.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Gnar_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Gnar_0.jpg",
     "occupation": "Top Lane",
     "altOccupation": "",
     "aliases": [
@@ -1602,7 +1602,7 @@ const heroes: Hero[] = [
     "englishName": "Zac",
     "chineseName": "扎克",
     "imageLink": "/champions/Zac.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Zac_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Zac_0.jpg",
     "occupation": "Jungle",
     "altOccupation": "",
     "aliases": [
@@ -1616,7 +1616,7 @@ const heroes: Hero[] = [
     "englishName": "Yasuo",
     "chineseName": "亚索",
     "imageLink": "/champions/Yasuo.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Yasuo_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Yasuo_0.jpg",
     "occupation": "Mid Lane",
     "altOccupation": "",
     "aliases": [
@@ -1630,7 +1630,7 @@ const heroes: Hero[] = [
     "englishName": "Vel'Koz",
     "chineseName": "维克兹",
     "imageLink": "/champions/Velkoz.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Velkoz_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Velkoz_0.jpg",
     "occupation": "Support",
     "altOccupation": "",
     "aliases": [
@@ -1644,7 +1644,7 @@ const heroes: Hero[] = [
     "englishName": "Taliyah",
     "chineseName": "塔莉垭",
     "imageLink": "/champions/Taliyah.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Taliyah_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Taliyah_0.jpg",
     "occupation": "Mid Lane",
     "altOccupation": "",
     "aliases": [
@@ -1658,7 +1658,7 @@ const heroes: Hero[] = [
     "englishName": "Camille",
     "chineseName": "卡蜜尔",
     "imageLink": "/champions/Camille.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Camille_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Camille_0.jpg",
     "occupation": "Top Lane",
     "altOccupation": "",
     "aliases": [
@@ -1672,7 +1672,7 @@ const heroes: Hero[] = [
     "englishName": "Akshan",
     "chineseName": "阿克尚",
     "imageLink": "/champions/Akshan.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Akshan_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Akshan_0.jpg",
     "occupation": "Mid Lane",
     "altOccupation": "",
     "aliases": [
@@ -1686,7 +1686,7 @@ const heroes: Hero[] = [
     "englishName": "Bel'Veth",
     "chineseName": "卑尔维斯",
     "imageLink": "/champions/Belveth.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Belveth_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Belveth_0.jpg",
     "occupation": "Jungle",
     "altOccupation": "",
     "aliases": [
@@ -1700,7 +1700,7 @@ const heroes: Hero[] = [
     "englishName": "Braum",
     "chineseName": "布隆",
     "imageLink": "/champions/Braum.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Braum_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Braum_0.jpg",
     "occupation": "Support",
     "altOccupation": "",
     "aliases": [
@@ -1714,7 +1714,7 @@ const heroes: Hero[] = [
     "englishName": "Jhin",
     "chineseName": "烬",
     "imageLink": "/champions/Jhin.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Jhin_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Jhin_0.jpg",
     "occupation": "Bot Lane",
     "altOccupation": "",
     "aliases": [
@@ -1728,7 +1728,7 @@ const heroes: Hero[] = [
     "englishName": "Kindred",
     "chineseName": "千珏",
     "imageLink": "/champions/Kindred.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Kindred_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Kindred_0.jpg",
     "occupation": "Jungle",
     "altOccupation": "",
     "aliases": [
@@ -1742,7 +1742,7 @@ const heroes: Hero[] = [
     "englishName": "Zeri",
     "chineseName": "泽丽",
     "imageLink": "/champions/Zeri.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Zeri_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Zeri_0.jpg",
     "occupation": "Bot Lane",
     "altOccupation": "",
     "aliases": [
@@ -1756,7 +1756,7 @@ const heroes: Hero[] = [
     "englishName": "Jinx",
     "chineseName": "金克丝",
     "imageLink": "/champions/Jinx.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Jinx_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Jinx_0.jpg",
     "occupation": "Bot Lane",
     "altOccupation": "",
     "aliases": [
@@ -1770,7 +1770,7 @@ const heroes: Hero[] = [
     "englishName": "Tahm Kench",
     "chineseName": "塔姆",
     "imageLink": "/champions/TahmKench.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/TahmKench_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/TahmKench_0.jpg",
     "occupation": "Support",
     "altOccupation": "",
     "aliases": [
@@ -1784,7 +1784,7 @@ const heroes: Hero[] = [
     "englishName": "Briar",
     "chineseName": "贝蕾亚",
     "imageLink": "/champions/Briar.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Briar_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Briar_0.jpg",
     "occupation": "Jungle",
     "altOccupation": "",
     "aliases": [
@@ -1798,7 +1798,7 @@ const heroes: Hero[] = [
     "englishName": "Viego",
     "chineseName": "佛耶戈",
     "imageLink": "/champions/Viego.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Viego_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Viego_0.jpg",
     "occupation": "Jungle",
     "altOccupation": "",
     "aliases": [
@@ -1812,7 +1812,7 @@ const heroes: Hero[] = [
     "englishName": "Senna",
     "chineseName": "赛娜",
     "imageLink": "/champions/Senna.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Senna_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Senna_0.jpg",
     "occupation": "Bot Lane",
     "altOccupation": "",
     "aliases": [
@@ -1826,7 +1826,7 @@ const heroes: Hero[] = [
     "englishName": "Lucian",
     "chineseName": "卢锡安",
     "imageLink": "/champions/Lucian.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Lucian_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Lucian_0.jpg",
     "occupation": "Bot Lane",
     "altOccupation": "",
     "aliases": [
@@ -1840,7 +1840,7 @@ const heroes: Hero[] = [
     "englishName": "Zed",
     "chineseName": "劫",
     "imageLink": "/champions/Zed.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Zed_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Zed_0.jpg",
     "occupation": "Mid Lane",
     "altOccupation": "",
     "aliases": [
@@ -1854,7 +1854,7 @@ const heroes: Hero[] = [
     "englishName": "Kled",
     "chineseName": "克烈",
     "imageLink": "/champions/Kled.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Kled_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Kled_0.jpg",
     "occupation": "Top Lane",
     "altOccupation": "",
     "aliases": [
@@ -1868,7 +1868,7 @@ const heroes: Hero[] = [
     "englishName": "Ekko",
     "chineseName": "艾克",
     "imageLink": "/champions/Ekko.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Ekko_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ekko_0.jpg",
     "occupation": "Jungle",
     "altOccupation": "",
     "aliases": [
@@ -1882,7 +1882,7 @@ const heroes: Hero[] = [
     "englishName": "Qiyana",
     "chineseName": "奇亚娜",
     "imageLink": "/champions/Qiyana.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Qiyana_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Qiyana_0.jpg",
     "occupation": "Mid Lane",
     "altOccupation": "",
     "aliases": [
@@ -1896,7 +1896,7 @@ const heroes: Hero[] = [
     "englishName": "Vi",
     "chineseName": "蔚",
     "imageLink": "/champions/Vi.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Vi_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Vi_0.jpg",
     "occupation": "Jungle",
     "altOccupation": "",
     "aliases": [
@@ -1910,7 +1910,7 @@ const heroes: Hero[] = [
     "englishName": "Aatrox",
     "chineseName": "亚托克斯",
     "imageLink": "/champions/Aatrox.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Aatrox_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Aatrox_0.jpg",
     "occupation": "Top Lane",
     "altOccupation": "",
     "aliases": [
@@ -1924,7 +1924,7 @@ const heroes: Hero[] = [
     "englishName": "Nami",
     "chineseName": "娜美",
     "imageLink": "/champions/Nami.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Nami_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Nami_0.jpg",
     "occupation": "Support",
     "altOccupation": "",
     "aliases": [
@@ -1938,7 +1938,7 @@ const heroes: Hero[] = [
     "englishName": "Azir",
     "chineseName": "阿兹尔",
     "imageLink": "/champions/Azir.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Azir_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Azir_0.jpg",
     "occupation": "Mid Lane",
     "altOccupation": "",
     "aliases": [
@@ -1952,7 +1952,7 @@ const heroes: Hero[] = [
     "englishName": "Yuumi",
     "chineseName": "悠米",
     "imageLink": "/champions/Yuumi.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Yuumi_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Yuumi_0.jpg",
     "occupation": "Support",
     "altOccupation": "",
     "aliases": [
@@ -1966,7 +1966,7 @@ const heroes: Hero[] = [
     "englishName": "Samira",
     "chineseName": "莎弥拉",
     "imageLink": "/champions/Samira.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Samira_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Samira_0.jpg",
     "occupation": "Bot Lane",
     "altOccupation": "",
     "aliases": [
@@ -1980,7 +1980,7 @@ const heroes: Hero[] = [
     "englishName": "Thresh",
     "chineseName": "锤石",
     "imageLink": "/champions/Thresh.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Thresh_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Thresh_0.jpg",
     "occupation": "Support",
     "altOccupation": "",
     "aliases": [
@@ -1994,7 +1994,7 @@ const heroes: Hero[] = [
     "englishName": "Illaoi",
     "chineseName": "俄洛伊",
     "imageLink": "/champions/Illaoi.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Illaoi_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Illaoi_0.jpg",
     "occupation": "Top Lane",
     "altOccupation": "",
     "aliases": [
@@ -2008,7 +2008,7 @@ const heroes: Hero[] = [
     "englishName": "Rek'Sai",
     "chineseName": "雷克塞",
     "imageLink": "/champions/RekSai.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/RekSai_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/RekSai_0.jpg",
     "occupation": "Jungle",
     "altOccupation": "",
     "aliases": [
@@ -2022,7 +2022,7 @@ const heroes: Hero[] = [
     "englishName": "Ivern",
     "chineseName": "艾翁",
     "imageLink": "/champions/Ivern.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Ivern_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ivern_0.jpg",
     "occupation": "Jungle",
     "altOccupation": "",
     "aliases": [
@@ -2036,7 +2036,7 @@ const heroes: Hero[] = [
     "englishName": "Kalista",
     "chineseName": "卡莉丝塔",
     "imageLink": "/champions/Kalista.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Kalista_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Kalista_0.jpg",
     "occupation": "Bot Lane",
     "altOccupation": "",
     "aliases": [
@@ -2050,7 +2050,7 @@ const heroes: Hero[] = [
     "englishName": "Bard",
     "chineseName": "巴德",
     "imageLink": "/champions/Bard.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Bard_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Bard_0.jpg",
     "occupation": "Support",
     "altOccupation": "",
     "aliases": [
@@ -2064,7 +2064,7 @@ const heroes: Hero[] = [
     "englishName": "Rakan",
     "chineseName": "洛",
     "imageLink": "/champions/Rakan.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Rakan_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Rakan_0.jpg",
     "occupation": "Support",
     "altOccupation": "",
     "aliases": [
@@ -2078,7 +2078,7 @@ const heroes: Hero[] = [
     "englishName": "Xayah",
     "chineseName": "霞",
     "imageLink": "/champions/Xayah.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Xayah_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Xayah_0.jpg",
     "occupation": "Bot Lane",
     "altOccupation": "",
     "aliases": [
@@ -2092,7 +2092,7 @@ const heroes: Hero[] = [
     "englishName": "Ornn",
     "chineseName": "奥恩",
     "imageLink": "/champions/Ornn.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Ornn_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ornn_0.jpg",
     "occupation": "Top Lane",
     "altOccupation": "",
     "aliases": [
@@ -2106,7 +2106,7 @@ const heroes: Hero[] = [
     "englishName": "Sylas",
     "chineseName": "塞拉斯",
     "imageLink": "/champions/Sylas.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Sylas_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Sylas_0.jpg",
     "occupation": "Jungle",
     "altOccupation": "",
     "aliases": [
@@ -2120,7 +2120,7 @@ const heroes: Hero[] = [
     "englishName": "Neeko",
     "chineseName": "妮蔻",
     "imageLink": "/champions/Neeko.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Neeko_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Neeko_0.jpg",
     "occupation": "Support",
     "altOccupation": "",
     "aliases": [
@@ -2134,7 +2134,7 @@ const heroes: Hero[] = [
     "englishName": "Aphelios",
     "chineseName": "厄斐琉斯",
     "imageLink": "/champions/Aphelios.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Aphelios_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Aphelios_0.jpg",
     "occupation": "Bot Lane",
     "altOccupation": "",
     "aliases": [
@@ -2148,7 +2148,7 @@ const heroes: Hero[] = [
     "englishName": "Rell",
     "chineseName": "芮尔",
     "imageLink": "/champions/Rell.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Rell_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Rell_0.jpg",
     "occupation": "Support",
     "altOccupation": "",
     "aliases": [
@@ -2162,7 +2162,7 @@ const heroes: Hero[] = [
     "englishName": "Pyke",
     "chineseName": "派克",
     "imageLink": "/champions/Pyke.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Pyke_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Pyke_0.jpg",
     "occupation": "Support",
     "altOccupation": "",
     "aliases": [
@@ -2176,7 +2176,7 @@ const heroes: Hero[] = [
     "englishName": "Vex",
     "chineseName": "薇古丝",
     "imageLink": "/champions/Vex.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Vex_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Vex_0.jpg",
     "occupation": "Mid Lane",
     "altOccupation": "",
     "aliases": [
@@ -2190,7 +2190,7 @@ const heroes: Hero[] = [
     "englishName": "Yone",
     "chineseName": "永恩",
     "imageLink": "/champions/Yone.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Yone_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Yone_0.jpg",
     "occupation": "Mid Lane",
     "altOccupation": "",
     "aliases": [
@@ -2204,7 +2204,7 @@ const heroes: Hero[] = [
     "englishName": "Ambessa",
     "chineseName": "安蓓萨",
     "imageLink": "/champions/Ambessa.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Ambessa_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ambessa_0.jpg",
     "occupation": "Top Lane",
     "altOccupation": "",
     "aliases": [
@@ -2218,7 +2218,7 @@ const heroes: Hero[] = [
     "englishName": "Mel",
     "chineseName": "梅尔",
     "imageLink": "/champions/Mel.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Mel_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Mel_0.jpg",
     "occupation": "Mid Lane",
     "altOccupation": "",
     "aliases": [
@@ -2232,7 +2232,7 @@ const heroes: Hero[] = [
     "englishName": "Yunara",
     "chineseName": "芸阿娜",
     "imageLink": "/champions/Yunara.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Yunara_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Yunara_0.jpg",
     "occupation": "Bot Lane",
     "altOccupation": "",
     "aliases": [
@@ -2246,7 +2246,7 @@ const heroes: Hero[] = [
     "englishName": "Locke",
     "chineseName": "洛克",
     "imageLink": "/champions/Locke.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Locke_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Locke_0.jpg",
     "occupation": "Mid Lane",
     "altOccupation": "",
     "aliases": [
@@ -2260,7 +2260,7 @@ const heroes: Hero[] = [
     "englishName": "Sett",
     "chineseName": "瑟提",
     "imageLink": "/champions/Sett.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Sett_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Sett_0.jpg",
     "occupation": "Top Lane",
     "altOccupation": "",
     "aliases": [
@@ -2274,7 +2274,7 @@ const heroes: Hero[] = [
     "englishName": "Lillia",
     "chineseName": "莉莉娅",
     "imageLink": "/champions/Lillia.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Lillia_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Lillia_0.jpg",
     "occupation": "Jungle",
     "altOccupation": "",
     "aliases": [
@@ -2288,7 +2288,7 @@ const heroes: Hero[] = [
     "englishName": "Gwen",
     "chineseName": "格温",
     "imageLink": "/champions/Gwen.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Gwen_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Gwen_0.jpg",
     "occupation": "Top Lane",
     "altOccupation": "",
     "aliases": [
@@ -2302,7 +2302,7 @@ const heroes: Hero[] = [
     "englishName": "Renata Glasc",
     "chineseName": "烈娜塔 · 戈拉斯克",
     "imageLink": "/champions/Renata.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Renata_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Renata_0.jpg",
     "occupation": "Support",
     "altOccupation": "",
     "aliases": [
@@ -2316,7 +2316,7 @@ const heroes: Hero[] = [
     "englishName": "Aurora",
     "chineseName": "阿萝拉",
     "imageLink": "/champions/Aurora.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Aurora_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Aurora_0.jpg",
     "occupation": "Top Lane",
     "altOccupation": "",
     "aliases": [
@@ -2330,7 +2330,7 @@ const heroes: Hero[] = [
     "englishName": "Nilah",
     "chineseName": "尼菈",
     "imageLink": "/champions/Nilah.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Nilah_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Nilah_0.jpg",
     "occupation": "Bot Lane",
     "altOccupation": "",
     "aliases": [
@@ -2344,7 +2344,7 @@ const heroes: Hero[] = [
     "englishName": "K'Sante",
     "chineseName": "奎桑提",
     "imageLink": "/champions/KSante.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/KSante_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/KSante_0.jpg",
     "occupation": "Top Lane",
     "altOccupation": "",
     "aliases": [
@@ -2358,7 +2358,7 @@ const heroes: Hero[] = [
     "englishName": "Smolder",
     "chineseName": "斯莫德",
     "imageLink": "/champions/Smolder.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Smolder_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Smolder_0.jpg",
     "occupation": "Bot Lane",
     "altOccupation": "",
     "aliases": [
@@ -2372,7 +2372,7 @@ const heroes: Hero[] = [
     "englishName": "Milio",
     "chineseName": "米利欧",
     "imageLink": "/champions/Milio.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Milio_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Milio_0.jpg",
     "occupation": "Support",
     "altOccupation": "",
     "aliases": [
@@ -2386,7 +2386,7 @@ const heroes: Hero[] = [
     "englishName": "Zaahen",
     "chineseName": "亚恒",
     "imageLink": "/champions/Zaahen.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Zaahen_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Zaahen_0.jpg",
     "occupation": "Top Lane",
     "altOccupation": "",
     "aliases": [
@@ -2400,7 +2400,7 @@ const heroes: Hero[] = [
     "englishName": "Hwei",
     "chineseName": "彗",
     "imageLink": "/champions/Hwei.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Hwei_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Hwei_0.jpg",
     "occupation": "Mid Lane",
     "altOccupation": "",
     "aliases": [
@@ -2414,7 +2414,7 @@ const heroes: Hero[] = [
     "englishName": "Naafiri",
     "chineseName": "纳亚菲利",
     "imageLink": "/champions/Naafiri.png",
-    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Naafiri_0.jpg",
+    "artLink": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Naafiri_0.jpg",
     "occupation": "Jungle",
     "altOccupation": "",
     "aliases": [
