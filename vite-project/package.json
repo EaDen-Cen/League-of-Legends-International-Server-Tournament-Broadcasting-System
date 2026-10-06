@@ -1,5 +1,5 @@
 {
-  "name": "vite-project",
+  "name": "lol-broadcast",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -7,16 +7,14 @@
     "dev": "vite",
     "build": "tsc -b && tsc -p tsconfig.server.json && vite build",
     "server": "tsx --env-file-if-exists=.env server/server.ts",
-    "test": "tsx --test server/*.test.ts scripts/hero-sync/*.test.ts",
+    "test": "tsx --test server/*.test.ts",
     "test:e2e": "playwright test",
     "lint": "eslint .",
     "preview": "vite preview",
-    "hero:check": "tsx scripts/hero-sync/sync.ts --check",
-    "hero:art-audit": "tsx scripts/hero-sync/auditArt.ts",
-    "hero:sync": "tsx scripts/hero-sync/sync.ts --update",
-    "hero:validate": "tsx scripts/hero-sync/validate.ts"
+    "hero:sync": "node scripts/lol-sync.mjs"
   },
   "dependencies": {
+    "pinyin-pro": "^3.29.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^7.18.4",

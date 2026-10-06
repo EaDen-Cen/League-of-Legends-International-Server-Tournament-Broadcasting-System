@@ -59,7 +59,7 @@ for (const layout of ['panel', 'side'] as const) {
           events.push({ type: 'state', hero: target.getAttribute('data-showing-hero'), sequence: target.getAttribute('data-reveal-sequence'), cover: cover ? getComputedStyle(cover).opacity : null, image: !!target.querySelector('.hero-art') });
         }).observe(target, { attributes: true, childList: true, subtree: true });
       });
-      for (let i = 0; i < 4; i++) await h.send({ type: 'draft_action', ...phases('match', 'red')[i], heroId: heroes[90+i].id });
+      for (let i = 0; i < 6; i++) await h.send({ type: 'draft_action', ...phases('match', 'red')[i], heroId: heroes[90+i].id });
       const pick = { type: 'draft_action' as const, team: 'red' as const, action: 'pick' as const, heroId: heroes[0].id };
       await h.send(pick);
       const reveal = page.locator('.pick-team.display-left .hero-reveal').first();
@@ -81,7 +81,7 @@ for (const layout of ['panel', 'side'] as const) {
       await expect(reveal).toHaveClass('hero-reveal');
       await h.send({ type: 'settings', settings: { ...h.state(), language: 'zh' } });
       await h.send({ type: 'score', team: 'blue', delta: 1 });
-      await expect(page.locator('.broadcast-brand')).toHaveText('王者荣耀国际服');
+      await expect(page.locator('.broadcast-brand')).toHaveText('英雄联盟');
       await expect(reveal).toHaveAttribute('data-reveal-sequence', '2');
       await expect(page.locator('.hero-reveal[data-reveal-sequence="0"]')).toHaveCount(9);
       await h.send({ type: 'draft_action', ...phases('match', 'red')[5], heroId: heroes[1].id });
@@ -127,11 +127,11 @@ test('V2.2 settings, portrait fallback, mobile, reduced motion and delayed first
     for (let i=0;i<5;i++) await h.send({type:'draft_action',...phases('match','red')[i],heroId:heroes[70+i].id});
     await expect(control.getByLabel('Draft starting side',{exact:true})).toBeDisabled();
     await control.getByRole('textbox', { name: 'Player 1', exact: true }).first().fill('Live Substitute');
-    await control.getByRole('combobox', { name: 'Lane', exact: true }).first().selectOption('roam');
+    await control.getByRole('combobox', { name: 'Lane', exact: true }).first().selectOption('support');
     await control.getByLabel('Player portrait URL', {exact:true}).first().fill(heroes[31].imageLink);
     await control.getByRole('button', {name:'Save settings',exact:true}).click();
     await expect(overlay.locator('.pick-team.blue .card-caption').first()).toContainText('Live Substitute');
-    await expect(overlay.locator('.pick-team.blue .position-icon').first()).toHaveAttribute('aria-label','Roaming');
+    await expect(overlay.locator('.pick-team.blue .position-icon').first()).toHaveAttribute('aria-label','Support');
     await expect(overlay.locator('.pick-team.blue .player-portrait').first()).toHaveAttribute('src',heroes[31].imageLink);
     expect(h.state().currentPhase).toBe(5);
 
@@ -155,7 +155,7 @@ test('hidden hero names promote and auto-fit player IDs while hiding ban names',
   const context = await browser.newContext({ viewport: { width: 1920, height: 1080 } });
   try {
     await h.send({ type: 'reset_match' });
-    const longBlue = ['ExtremelyLongTopLanePlayerID', 'VeryLongJunglePlayerIdentifier', 'MidPlayerWithALongTournamentTag', 'FarmLaneSuperLongPlayerName', 'RoamingPlayerIdentifierLong'];
+    const longBlue = ['ExtremelyLongTopLanePlayerID', 'VeryLongJunglePlayerIdentifier', 'MidPlayerWithALongTournamentTag', 'FarmLaneSuperLongPlayerName', 'SupportPlayerIdentifierLong'];
     const longRed = ['OpponentTopPlayerVeryLongID', 'OpponentJungleLongIdentifier', 'OpponentMidPlayerLongName', 'OpponentFarmPlayerLongName', 'OpponentRoamPlayerLongName'];
     await h.send({
       type: 'settings',

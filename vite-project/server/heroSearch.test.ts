@@ -10,22 +10,22 @@ const hero=(name:string)=>{
 };
 
 test('Chinese hero search supports pinyin initials',()=>{
-  assert.equal(heroMatchesSearch(hero('拉普拉普'),'lplp','zh'),true);
-  assert.equal(heroMatchesSearch(hero('诸葛亮'),'zgl','zh'),true);
-  assert.equal(heroMatchesSearch(hero('公孙离'),'gsl','zh'),true);
-  assert.equal(heroMatchesSearch(hero('百里玄策'),'blxc','zh'),true);
-  assert.equal(heroMatchesSearch(hero('拉普拉普'),'LPLP','zh'),true);
+  assert.equal(heroMatchesSearch(hero('阿狸'),'al','zh'),true);
+  assert.equal(heroMatchesSearch(hero('盖伦'),'gl','zh'),true);
+  assert.equal(heroMatchesSearch(hero('安妮'),'an','zh'),true);
+  assert.equal(heroMatchesSearch(hero('艾希'),'ax','zh'),true);
+  assert.equal(heroMatchesSearch(hero('阿狸'),'AL','zh'),true);
 });
 
 test('initial-only matching is limited to Chinese mode while normal text search still works',()=>{
-  assert.equal(heroMatchesSearch(hero('诸葛亮'),'zgl','eng'),false);
-  assert.equal(heroMatchesSearch(hero('诸葛亮'),'Kongming','eng'),true);
-  assert.equal(heroMatchesSearch(hero('拉普拉普'),'Lapulapu','eng'),true);
+  assert.equal(heroMatchesSearch(hero('盖伦'),'gl','eng'),false);
+  assert.equal(heroMatchesSearch(hero('盖伦'),'Garen','eng'),true);
+  assert.equal(heroMatchesSearch(hero('阿狸'),'Ahri','eng'),true);
 });
 
 test('Enter target is the first eligible filtered hero only when a query exists',()=>{
   const eligible=[{id:105},{id:54}];
-  assert.equal(enterTarget(eligible,'lplp')?.id,105);
+  assert.equal(enterTarget(eligible,'al')?.id,105);
   assert.equal(enterTarget(eligible,'   '),undefined);
-  assert.equal(enterTarget([],'lplp'),undefined);
+  assert.equal(enterTarget([],'al'),undefined);
 });

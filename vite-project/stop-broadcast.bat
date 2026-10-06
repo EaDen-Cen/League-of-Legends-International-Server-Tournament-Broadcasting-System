@@ -1,10 +1,10 @@
 @echo off
 setlocal EnableExtensions
 cd /d "%~dp0"
-title HOK Broadcast Stop
+title LoL Broadcast Stop
 
 echo ==========================================
-echo   HOK Broadcast - Stopping...
+echo   LoL Broadcast - Stopping...
 echo ==========================================
 echo.
 
@@ -19,6 +19,6 @@ taskkill /IM cloudflared.exe /F >nul 2>&1
 if exist "artifacts\current-public-url.txt" del /q "artifacts\current-public-url.txt" >nul 2>&1
 
 echo.
-echo HOK Broadcast stopped.
+echo LoL Broadcast stopped.
 timeout /t 2 /nobreak >nul
 endlocal

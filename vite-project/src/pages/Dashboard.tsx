@@ -58,7 +58,7 @@ const Dashboard: React.FC = () => {
     <div>
       <div>
         <div className='flex justify-between items-center p-4 bg-blue-800 text-white flex-row'>
-          <h3>Honor of Kings Ban/Pick Simulator</h3>
+          <h3>League of Legends Ban/Pick Simulator</h3>
           <div className='gap-4 flex flex-row'>
             <button
               className={`cursor:pointer bg-slate-200 text-black ${phases.length === normalPhases.length ? 'underline' : ''}`}
@@ -73,7 +73,7 @@ const Dashboard: React.FC = () => {
 				Match (4 bans)
             </button>
           </div>
-          <img src='/github-mark-white.png' className='w-8 h-8 cursor-pointer' onClick={()=>window.open('https://github.com/qiqi47/HOK_Ban_Pick')}/>
+          <img src='/github-mark-white.png' className='w-8 h-8 cursor-pointer' onClick={()=>window.open('https://github.com/EaDen-Cen/League-of-Legends-International-Server-Tournament-Broadcasting-System')}/>
         </div>
       </div>
       <div key={key}>

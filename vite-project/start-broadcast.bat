@@ -1,10 +1,10 @@
 @echo off
 setlocal EnableExtensions EnableDelayedExpansion
 cd /d "%~dp0"
-title HOK Broadcast Launcher
+title LoL Broadcast Launcher
 
 echo ==========================================
-echo   HOK Broadcast - Starting...
+echo   LoL Broadcast - Starting...
 echo ==========================================
 echo.
 
@@ -27,13 +27,13 @@ if not exist "artifacts" mkdir "artifacts"
 del /q "artifacts\cloudflared.log" >nul 2>&1
 del /q "artifacts\current-public-url.txt" >nul 2>&1
 
-echo [1/6] Stopping old HOK server on port 3001...
+echo [1/6] Stopping old LoL server on port 3001...
 for /f "tokens=5" %%P in ('netstat -ano ^| findstr ":3001" ^| findstr "LISTENING"') do taskkill /PID %%P /F >nul 2>&1
 echo [2/6] Stopping old Cloudflare tunnel...
 taskkill /IM cloudflared.exe /F >nul 2>&1
 timeout /t 1 /nobreak >nul
 
-echo [3/6] Starting HOK server...
+echo [3/6] Starting LoL server...
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0run-server.ps1" -Background
 echo       Waiting for local server...
 set /a SERVER_TRIES=0
@@ -56,7 +56,7 @@ exit /b 1
 :server_ready
 echo       Server is ready.
 echo [4/6] Starting Cloudflare Quick Tunnel...
-start "HOK Cloudflare Tunnel" /min powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0run-cloudflare.ps1"
+start "LoL Cloudflare Tunnel" /min powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0run-cloudflare.ps1"
 
 echo [5/6] Waiting for public URL...
 set /a TUNNEL_TRIES=0
@@ -79,7 +79,7 @@ if exist "artifacts\cloudflared.log" (
   type "artifacts\cloudflared.log"
 ) else (
   echo [ERROR] cloudflared.log was not created.
-  echo         Check the "HOK Cloudflare Tunnel" window.
+  echo         Check the "LoL Cloudflare Tunnel" window.
 )
 pause
 exit /b 1
@@ -94,7 +94,7 @@ echo [6/6] Opening local Control...
 start "" "http://127.0.0.1:3001/control"
 echo.
 echo ==========================================
-echo   HOK Broadcast is READY
+echo   LoL Broadcast is READY
 echo ==========================================
 echo Local Control:
 echo   http://127.0.0.1:3001/control

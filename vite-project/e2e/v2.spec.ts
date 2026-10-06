@@ -30,7 +30,7 @@ for (const mode of ['normal', 'player', 'global'] as const) {
       await expect(overlay.locator('.broadcast-card img')).toHaveCount(10);
       await expect(overlay.locator('.position-icon')).toHaveCount(10);
       await expect(overlay.locator('.card-caption').first()).toContainText('Orion');
-      await expect(overlay.locator('.broadcast-meta')).toContainText(`${mode.toUpperCase()} BP`);
+      await expect(overlay.locator('.broadcast-meta')).toContainText(mode === 'global' ? 'Team Fearless (custom)' : `${mode.toUpperCase()} BP`);
       await control.getByRole('button', { name: 'Commit game', exact: true }).click();
       await expect(overlay.locator('.history-game')).toHaveCount(1);
       await expect(caster.locator('.history-game')).toHaveCount(0);
@@ -55,7 +55,7 @@ for (const mode of ['normal', 'player', 'global'] as const) {
         await expect(control.getByTitle(priorEnemy.englishName, {exact:true})).toContainText('No ban needed.');
       } else await expect(control.getByTitle(priorEnemy.englishName, {exact:true})).toBeEnabled();
       await expect(control.getByTitle(priorOwn.englishName, {exact:true})).toBeEnabled();
-      for (let i = 0; i < 4; i++) await h.send({ type: 'draft_action', ...phases('match')[i], heroId: heroes[85 + i].id });
+      for (let i = 0; i < 6; i++) await h.send({ type: 'draft_action', ...phases('match')[i], heroId: heroes[85 + i].id });
       const firstHero = heroes.find(hero => hero.id === first.bluePicks[0])!;
       const teammateHero = heroes.find(hero => hero.id === first.bluePicks[1])!;
       const enemyHero = heroes.find(hero => hero.id === first.redPicks[0])!;

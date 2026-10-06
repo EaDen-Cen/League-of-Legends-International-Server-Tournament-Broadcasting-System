@@ -1,4 +1,3 @@
-import heroes from '../components/HeroList.js';
 import { initialState, type GameDraftRecord, type MatchState, type Side, type Team } from './types.js';
 
 export const playerIdentity = (name: string) => name.normalize('NFKC').trim().toLocaleLowerCase('en-US');
@@ -8,9 +7,7 @@ export const ruleLocked = (state: MatchState) => state.currentPhase > 0 || state
 export const currentGame = (state: MatchState) => state.draftGameNumber ?? state.gameNumber;
 export const displaySides = (state: MatchState): [Side, Side] => [state.displayLeftSide, state.displayLeftSide === 'blue' ? 'red' : 'blue'];
 
-export function draftHeroGroupKey(state: Pick<MatchState, 'flowbornFormsIndependent'>, heroId: number) {
-  const hero = heroes.find(item => item.id === heroId);
-  if (!state.flowbornFormsIndependent && hero?.variantGroup === 'flowborn') return 'variant:flowborn';
+export function draftHeroGroupKey(_state: Pick<MatchState, 'flowbornFormsIndependent'>, heroId: number) {
   return `hero:${heroId}`;
 }
 

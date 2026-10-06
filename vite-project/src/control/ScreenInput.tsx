@@ -43,8 +43,8 @@ type RecognitionResponse = {
 const freshEmptyStability = (): EmptyBanStability => ({ phaseKey:'', fingerprint:'', count:0 });
 const freshHeroStability = (): HeroRecognitionStability => ({ phaseKey:'', heroId:null, count:0 });
 const nativeDefault = {x:0,y:0,width:100,height:100};
-const SLOTS_STORAGE='hok-window-capture-slots-v3';
-const LEGACY_ZONES_STORAGE='hok-window-capture-zones-v2';
+const SLOTS_STORAGE='lol-window-capture-slots-v3';
+const LEGACY_ZONES_STORAGE='lol-window-capture-zones-v2';
 
 function readCaptureSlots() {
   try {
@@ -83,14 +83,14 @@ export function ScreenInput({ state, revision, token, disabled, send }: { state:
   const zh=state.language==='zh';
   const t=translator(state.language);
   const [captureMode,setCaptureMode]=useState<CaptureMode>(()=>{
-    const saved=localStorage.getItem('hok-capture-mode');
+    const saved=localStorage.getItem('lol-capture-mode');
     return saved==='native'?'native':'window';
   });
   const [nativeRegion,setNativeRegion]=useState(()=>{
-    try { return JSON.parse(localStorage.getItem('hok-capture-region')||'null')||nativeDefault; } catch { return nativeDefault; }
+    try { return JSON.parse(localStorage.getItem('lol-capture-region')||'null')||nativeDefault; } catch { return nativeDefault; }
   });
   const [slots,setSlots]=useState<CaptureSlots>(readCaptureSlots);
-  const [autoWatch,setAutoWatch]=useState(()=>localStorage.getItem('hok-capture-auto-watch')==='1');
+  const [autoWatch,setAutoWatch]=useState(()=>localStorage.getItem('lol-capture-auto-watch')==='1');
   const [busy,setBusy]=useState(false);
   const [message,setMessage]=useState('');
   const [candidateStatus,setCandidateStatus]=useState('');
@@ -254,7 +254,7 @@ export function ScreenInput({ state, revision, token, disabled, send }: { state:
         data=await response.json();
         if(!response.ok) throw new Error(t('windowCaptureRecognitionFailed'));
       }else{
-        localStorage.setItem('hok-capture-region',JSON.stringify(nativeRegion));
+        localStorage.setItem('lol-capture-region',JSON.stringify(nativeRegion));
         const response=await fetch('/api/capture',{
           method:'POST',
           headers:{Authorization:`Bearer ${token}`,'Content-Type':'application/json'},
@@ -336,7 +336,7 @@ export function ScreenInput({ state, revision, token, disabled, send }: { state:
 
   const setMode=(mode:CaptureMode)=>{
     setCaptureMode(mode);
-    localStorage.setItem('hok-capture-mode',mode);
+    localStorage.setItem('lol-capture-mode',mode);
     emptyStability.current=freshEmptyStability();
     heroStability.current=freshHeroStability();
     setResult(undefined);
@@ -394,7 +394,7 @@ export function ScreenInput({ state, revision, token, disabled, send }: { state:
     : t('draftComplete');
 
   const renderSlotButtons=(side:'blue'|'red',action:'ban'|'pick')=>{
-    const count=action==='ban'?4:5;
+    const count=5;
     return <div className={`explicit-slot-group ${side} ${action}`}>
       <strong>{t(side==='blue'?'blueSide':'redSide')} · {t(action==='ban'?'banAction':'pickAction')}</strong>
       <div className="explicit-slot-buttons">{Array.from({length:count},(_,index)=>{
@@ -496,7 +496,7 @@ export function ScreenInput({ state, revision, token, disabled, send }: { state:
       {phase?.action==='ban'&&<button className="empty-ban-button" disabled={disabled||!!state.committedGameId} onClick={()=>send({type:'skip_ban',team:phase.team})}>{t('emptyBanButton')}</button>}
       <label className="auto-watch-toggle"><input type="checkbox" checked={autoWatch} onChange={event=>{
         setAutoWatch(event.target.checked);
-        localStorage.setItem('hok-capture-auto-watch',event.target.checked?'1':'0');
+        localStorage.setItem('lol-capture-auto-watch',event.target.checked?'1':'0');
       }}/>{t('autoCaptureWatch')}</label>
     </div>
     <small>{captureMode==='window'?t('captureExplicitAutoHint'):t('autoCaptureWatchHint')}</small>

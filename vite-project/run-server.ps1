@@ -9,7 +9,7 @@ if ($PrepareOnly) {
         throw 'Node.js 22.12 or newer is required. Install Node.js 24 LTS and retry.'
     }
     $hash = (Get-FileHash -LiteralPath 'package-lock.json' -Algorithm SHA256).Hash
-    $stamp = Join-Path $PSScriptRoot 'node_modules/.hok-lock-hash'
+    $stamp = Join-Path $PSScriptRoot 'node_modules/.lol-lock-hash'
     $previous = if (Test-Path -LiteralPath $stamp) { (Get-Content -LiteralPath $stamp -Raw).Trim() } else { '' }
     if ($previous -ne $hash -or -not (Test-Path -LiteralPath 'node_modules/.bin/tsx.cmd') -or -not (Test-Path -LiteralPath 'node_modules/sharp/package.json')) {
         Write-Host 'Installing project dependencies...'

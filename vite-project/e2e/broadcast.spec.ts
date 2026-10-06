@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { randomUUID } from 'node:crypto';
 import { WebSocket } from 'ws';
 import type { MatchSettings, Snapshot } from '../src/shared/types';
-import additionalHeroes from '../src/data/additionalHeroes';
+const additionalHeroes = heroes;
 import heroes from '../src/components/HeroList';
 
 async function renameTestTeams(baseURL: string | undefined, blueName: string, redName: string) {
@@ -67,15 +67,15 @@ test('updated roster portraits, aliases and new heroes work across all three pag
     await expect(portrait).toHaveAttribute('src', entry.imageLink);
     await expect.poll(() => portrait.evaluate(image => (image as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
   }
-  await control.getByLabel('搜索英雄').fill('Loong');
+  await control.getByLabel('搜索英雄').fill('Aphelios');
   await expect(control.locator('.hero-grid button')).toHaveCount(1);
-  await expect(control.locator('.hero-grid button')).toHaveAttribute('title', "敖隐");
+  await expect(control.locator('.hero-grid button')).toHaveAttribute('title', "厄斐琉斯");
   await control.getByLabel('搜索英雄').fill('');
   await control.getByRole('button', { name: '打野', exact: true }).click();
-  await expect(control.getByTitle('暃', { exact: true })).toBeVisible();
-  await expect(control.getByTitle('海月', { exact: true })).toHaveCount(0);
+  await expect(control.getByTitle('佛耶戈', { exact: true })).toBeVisible();
+  await expect(control.getByTitle('阿狸', { exact: true })).toHaveCount(0);
   await control.getByRole('button', { name: '全部', exact: true }).click();
-  for (const [index, id] of [97, 103, 108, 117, 113].entries()) {
+  for (const [index, id] of [1, 2, 3, 4, 5].entries()) {
     const entry = additionalHeroes.find(h => h.id === id)!;
     await control.getByTitle(entry.chineseName, { exact: true }).click();
     await expect(overlay.locator('.hero-slot img')).toHaveCount(index + 1);
@@ -131,7 +131,7 @@ test('operator, caster and OBS keep separate timelines and recover', async ({ br
   await expect(redAnalysisTitle).toContainText('红方队伍');
   await expect(caster.locator('body')).not.toContainText('青龙测试队');
   await expect(caster.locator('body')).not.toContainText('朱雀测试队');
-  await control.getByTitle('澜', { exact: true }).click();
+  await control.getByTitle('李青', { exact: true }).click();
   await expect(control.locator('.blue .bans img')).toHaveCount(1);
   await expect(overlay.locator('.blue .bans img')).toHaveCount(1);
   await expect(caster.locator('.blue .bans img')).toHaveCount(0);
@@ -151,7 +151,7 @@ test('operator, caster and OBS keep separate timelines and recover', async ({ br
   await control.getByRole('button', { name: '撤销上次操作' }).click();
   await expect(overlay.locator('.blue .bans img')).toHaveCount(0);
   await expect(caster.locator('.blue .bans img')).toHaveCount(0);
-  for (let i = 0; i < 18; i++) {
+  for (let i = 0; i < 20; i++) {
     await control.locator('.hero-grid button:not(:disabled)').first().click();
     await expect(control.getByRole('button', { name: '重置整场比赛', exact: true })).toBeEnabled();
   }

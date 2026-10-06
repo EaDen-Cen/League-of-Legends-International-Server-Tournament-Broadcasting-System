@@ -33,7 +33,7 @@ test('team library: create, edit, load, copy isolation, explicit update, delete 
     await expect(manager).toHaveCount(0);
     const settings=page.locator('.settings-inline');
     const quick=settings.locator('.quick-substitution').first();
-    await quick.getByLabel('Choose saved player',{exact:true}).selectOption({label:'Temporary Sub · Roaming · Substitute'});
+    await quick.getByLabel('Choose saved player',{exact:true}).selectOption({label:'Temporary Sub · Support · Substitute'});
     await quick.getByRole('button',{name:'Fill player details',exact:true}).click();
     await expect(settings.getByLabel('Player 1',{exact:true}).first()).toHaveValue('Temporary Sub');
     await settings.getByRole('button',{name:'Save settings',exact:true}).click();
@@ -54,7 +54,7 @@ test('team library: create, edit, load, copy isolation, explicit update, delete 
     await expect.poll(()=>h.state().redTeam.id).toBe(beta.id);
     await page.reload();await page.getByRole('button',{name:'Match settings',exact:true}).click();
     await expect(page.getByLabel('Player 1',{exact:true}).first()).toHaveValue('Temporary Sub');
-    await h.send({type:'draft_action',team:'blue',action:'ban',heroId:46});
+    await h.send({type:'draft_action',team:'blue',action:'ban',heroId:64});
     await request.put('/api/team-presets/'+id,{headers,data:{...teams[0],substitutes:[{...teams[0].substitutes[0],name:'Late Sub',role:'mid'}]}});
     await settings.getByRole('button',{name:'Refresh library',exact:true}).click();
     await expect(quick.getByLabel('Choose saved player',{exact:true})).toContainText('Late Sub');
@@ -87,7 +87,7 @@ test('manual active match recalls a reserve without replacing team identity or o
     await h.send({type:'reset_match'});await h.send({type:'settings',settings:{...h.state(),language:'eng'}});
     const id=h.state().blueTeam.id;
     const saved=await (await request.post('/api/team-presets',{headers,data:{...initialState().blueTeam,name:'Reserve Source',substitutes:[{id:crypto.randomUUID(),name:'Relief',role:'mid',portrait:'/bench.png'}]}})).json();
-    await h.send({type:'draft_action',team:'blue',action:'ban',heroId:46});
+    await h.send({type:'draft_action',team:'blue',action:'ban',heroId:64});
     page.on('dialog',dialog=>dialog.accept());
     await page.goto('/control#token=e2e-control');await page.getByRole('button',{name:'Match settings',exact:true}).click();
     const quick=page.locator('.quick-substitution').first();

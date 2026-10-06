@@ -5,12 +5,7 @@ const defaults: Record<HeroArtLayout, HeroArtCrop> = {
   side: { x: 50, y: 29, scale: 1.22 },
 };
 
-const overrides: Record<number, Partial<Record<HeroArtLayout, HeroArtCrop>>> = {
-  19: {
-    panel: { x: 80, y: 34, scale: 1.16 },
-    side: { x: 83, y: 33, scale: 1.28 },
-  },
-};
+const overrides: Record<number, Partial<Record<HeroArtLayout, HeroArtCrop>>> = {};
 
 function normalizeCrop(crop: HeroArtCrop): HeroArtCrop {
   return {

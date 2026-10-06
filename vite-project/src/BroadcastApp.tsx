@@ -42,7 +42,7 @@ function Board({ state, lang, compact = false }: { state: MatchState; lang: Lang
   const t = translator(lang);
   const phase = phases(state.draftMode, state.firstPickSide)[state.currentPhase];
   return <section className={`board ${compact ? 'compact-board' : ''}`}><div className="match-strip"><span>{t('gameTitle')}</span><span>{stageName(state.stage, lang)} · {t('gameNumber', { number: currentGame(state) })} · {seriesName(state.seriesFormat, lang)} · {draftRuleName(state, lang)}</span></div>
-    <div className="team-grid">{displaySides(state).map(side => <section key={side} className={`team ${side} ${phase?.team === side ? 'active' : ''}`}><header>{state[`${side}Team`].logo && <img className="logo" src={state[`${side}Team`].logo} alt="" />}<h2>{teamName(state, side)}</h2><Score state={state} side={side} /></header><div className="picks">{Array.from({ length: 5 }, (_, i) => <HeroSlot key={i} state={state} id={state[`${side}Picks`][i]} lang={lang} />)}</div><div className="bans"><small>{t('ban')}</small>{Array.from({ length: state.draftMode === 'match' ? 4 : 2 }, (_, i) => <HeroSlot key={i} state={state} id={state[`${side}Bans`][i]} ban lang={lang} />)}</div></section>)}</div>
+    <div className="team-grid">{displaySides(state).map(side => <section key={side} className={`team ${side} ${phase?.team === side ? 'active' : ''}`}><header>{state[`${side}Team`].logo && <img className="logo" src={state[`${side}Team`].logo} alt="" />}<h2>{teamName(state, side)}</h2><Score state={state} side={side} /></header><div className="picks">{Array.from({ length: 5 }, (_, i) => <HeroSlot key={i} state={state} id={state[`${side}Picks`][i]} lang={lang} />)}</div><div className="bans"><small>{t('ban')}</small>{Array.from({ length: state.draftMode === 'match' ? 5 : 2 }, (_, i) => <HeroSlot key={i} state={state} id={state[`${side}Bans`][i]} ban lang={lang} />)}</div></section>)}</div>
     <footer className={`phase ${phase?.team || ''}`} key={state.currentPhase}>{phase ? `${phaseName(state, lang)} · ${t('phaseStep', { step: state.currentPhase + 1, total: phases(state.draftMode, state.firstPickSide).length })}` : t('draftComplete')}</footer></section>;
 }
 function TeamAnalysis({
@@ -136,10 +136,6 @@ function MatchSettingsPanel({ state, send, disabled }: { state: MatchState; send
         <label>{t('draftRules')}<select aria-label={t('draftRules')} disabled={ruleLocked(state)} value={form.draftRuleMode} onChange={e => setForm({ ...form, draftRuleMode: e.target.value as MatchSettings['draftRuleMode'] })}>
           <option value="normal">{t('ruleNormal')}</option><option value="player">{t('rulePlayer')}</option><option value="global">{t('ruleGlobal')}</option>
         </select></label>
-        <label>{t('flowbornRule')}<select aria-label={t('flowbornRule')} disabled={ruleLocked(state)} value={form.flowbornFormsIndependent ? 'independent' : 'shared'} onChange={e => setForm({ ...form, flowbornFormsIndependent: e.target.value === 'independent' })}>
-          <option value="independent">{t('flowbornIndependent')}</option>
-          <option value="shared">{t('flowbornShared')}</option>
-        </select><small>{t('flowbornRuleHint')}</small></label>
         {ruleLocked(state) && <p className="muted">{t('rulesLocked')}</p>}
       </section>
       <section><h3>{t('matchSettings')}</h3>
@@ -196,7 +192,7 @@ function TeamSettingsPanel({ state, send, disabled, token }: { state: MatchState
           {form[teamKey].players.map((player, index) => <div className="player-setting-row" key={index}>
             <label>{t('playerNumber', { number: index + 1 })}<input maxLength={40} disabled={disabled} value={player} onChange={e => updateTeam({ players: form[teamKey].players.map((p, i) => i === index ? e.target.value : p) })} /></label>
             <label>{t('lane')}<select disabled={disabled} value={form[teamKey].playerRoles[index]} onChange={e => updateTeam({ playerRoles: form[teamKey].playerRoles.map((r, i) => i === index ? e.target.value as typeof r : r) })}>
-              {(['clash', 'jungle', 'mid', 'farm', 'roam'] as const).map(role => <option key={role} value={role}>{t(role)}</option>)}
+              {(['top', 'jungle', 'mid', 'bot', 'support'] as const).map(role => <option key={role} value={role}>{t(role)}</option>)}
             </select></label>
             <PortraitField value={form[teamKey].playerPortraits[index]} token={token} lang={state.language} disabled={disabled}
               onChange={url => setForm(previous => ({...previous,[teamKey]:{...previous[teamKey],playerPortraits:previous[teamKey].playerPortraits.map((p,i) => i === index ? url : p)}}))}
@@ -210,8 +206,8 @@ function TeamSettingsPanel({ state, send, disabled, token }: { state: MatchState
 }
 function initialToken(role: Role) {
   const fragment = new URLSearchParams(location.hash.slice(1)).get('token');
-  if (fragment) { sessionStorage.setItem(`hok-${role}`, fragment); history.replaceState(null, '', location.pathname); }
-  return fragment || sessionStorage.getItem(`hok-${role}`) || (import.meta.env.DEV ? `local-${role}` : '');
+  if (fragment) { sessionStorage.setItem(`lol-${role}`, fragment); history.replaceState(null, '', location.pathname); }
+  return fragment || sessionStorage.getItem(`lol-${role}`) || (import.meta.env.DEV ? `local-${role}` : '');
 }
 export default function BroadcastApp() {
   const role: Role = location.pathname === '/caster' ? 'caster' : location.pathname === '/overlay/draft' ? 'overlay' : 'control';
@@ -221,7 +217,7 @@ export default function BroadcastApp() {
   const [showTeamSettings, setShowTeamSettings] = useState(false);
   const [showHeroArtEditor, setShowHeroArtEditor] = useState(false);
   const [delayInput, setDelayInput] = useState(180);
-  const [lastLanguage, setLastLanguage] = useState<Language>(() => sessionStorage.getItem(`hok-language-${role}`) === 'eng' ? 'eng' : 'zh');
+  const [lastLanguage, setLastLanguage] = useState<Language>(() => sessionStorage.getItem(`lol-language-${role}`) === 'eng' ? 'eng' : 'zh');
   const { snapshot, status, error, pending, send, acknowledged } = useMatch(role, token);
   const connected = status === 'Connected';
   const compatible = !!snapshot?.state && Array.isArray(snapshot.state.draftHistory) && !!snapshot.state.draftRuleMode && !!snapshot.state.firstPickSide && !!snapshot.state.sideSwapMode && !!snapshot.state.displayLeftSide && typeof snapshot.state.showHeroName === 'boolean' && !!snapshot.state.artSourceMode && !!snapshot.state.heroArtOverrides && typeof snapshot.state.flowbornFormsIndependent === 'boolean';
@@ -232,7 +228,7 @@ export default function BroadcastApp() {
   useEffect(() => {
     document.documentElement.lang = lang === 'eng' ? 'en' : 'zh-CN';
     document.title = translator(lang)('appName');
-    sessionStorage.setItem(`hok-language-${role}`, lang);
+    sessionStorage.setItem(`lol-language-${role}`, lang);
     setLastLanguage(lang);
   }, [lang, role]);
   if (role === 'overlay') {
@@ -241,7 +237,7 @@ export default function BroadcastApp() {
   if (!token || status === 'Invalid token' || status === 'Access rejected') {
     return <main className="login panel">
       <p>{t('appName')}</p><h1>{t(role === 'caster' ? 'casterLogin' : 'controlLogin')}</h1>
-      <form onSubmit={e => { e.preventDefault(); sessionStorage.setItem(`hok-${role}`, tokenInput); setToken(tokenInput); }}>
+      <form onSubmit={e => { e.preventDefault(); sessionStorage.setItem(`lol-${role}`, tokenInput); setToken(tokenInput); }}>
         <label>{t('accessToken')}<input type="password" required value={tokenInput} onChange={e => setTokenInput(e.target.value)} /></label>
         <button className="primary">{t('connect')}</button>
       </form><p>{connectionLabel(status, lang)}</p>
@@ -253,7 +249,7 @@ export default function BroadcastApp() {
       <div className="toolbar">
         <b className={connected ? 'status live' : 'status'}>{connectionLabel(status, lang)}</b>
         <span>{role === 'caster' ? t('delayedFeed', { seconds: snapshot?.casterDelaySeconds ?? '—' }) : t('controlRealtime')}</span>
-        <button onClick={() => { sessionStorage.removeItem(`hok-${role}`); setToken(''); }}>{t('logout')}</button>
+        <button onClick={() => { sessionStorage.removeItem(`lol-${role}`); setToken(''); }}>{t('logout')}</button>
       </div>
     </header>
     {!connected && <p className="notice">{t('disconnectedNotice')}</p>}

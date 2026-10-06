@@ -19,7 +19,7 @@ const tokens: Record<Role, string> = {
 if (Object.values(tokens).some(t => !t || (production && t.length < 24)) || new Set(Object.values(tokens)).size !== 3) throw new Error('Set three distinct tokens of at least 24 characters in production');
 const roleFor = (token: unknown): Role | undefined => (Object.keys(tokens) as Role[]).find(role => tokens[role] === token);
 const project = fileURLToPath(new URL('../', import.meta.url));
-const dataFile = resolve(process.env.DATA_FILE || resolve(project, 'data/match.json'));
+const dataFile = resolve(process.env.DATA_FILE || resolve(project, 'data/lol/match.json'));
 const presets = new TeamPresetStore(resolve(dirname(dataFile), 'team-presets.json'));
 const store = new Store(dataFile, Date.now, presets);
 const uploadDirectory = resolve(process.env.UPLOAD_DIR || resolve(dirname(dataFile), 'uploads/player-portraits'));
@@ -62,7 +62,7 @@ const server = createServer(async (req, res) => {
     if (url.pathname === '/api/capture') {
       if (req.method !== 'POST') { json(405, {error:'POST required'}); return; }
       if (roleFor(req.headers.authorization?.replace(/^Bearer /, '')) !== 'control' || !localCaptureRequest(req)) { json(403,{error:'Local control only'}); req.resume(); return; }
-      if (process.platform !== 'win32' || process.env.HOK_CAPTURE_ENABLED !== '1' || store.data.state.bpInputMode !== 'screen') { json(503,{error:'Windows capture is not enabled'}); req.resume(); return; }
+      if (process.platform !== 'win32' || process.env.LOL_CAPTURE_ENABLED !== '1' || store.data.state.bpInputMode !== 'screen') { json(503,{error:'Windows capture is not enabled'}); req.resume(); return; }
       try {
         let body = ''; req.setTimeout(5000, () => req.destroy());
         for await (const chunk of req) { body += chunk; if (body.length > 2048) { json(413,{error:'Request too large'}); return; } }
@@ -77,7 +77,7 @@ const server = createServer(async (req, res) => {
     if (url.pathname === '/api/capture-lineup') {
       if (req.method !== 'POST') { json(405, {error:'POST required'}); return; }
       if (roleFor(req.headers.authorization?.replace(/^Bearer /, '')) !== 'control' || !localCaptureRequest(req)) { json(403,{error:'Local control only'}); req.resume(); return; }
-      if (process.platform !== 'win32' || process.env.HOK_CAPTURE_ENABLED !== '1' || store.data.state.bpInputMode !== 'screen') { json(503,{error:'Windows capture is not enabled'}); req.resume(); return; }
+      if (process.platform !== 'win32' || process.env.LOL_CAPTURE_ENABLED !== '1' || store.data.state.bpInputMode !== 'screen') { json(503,{error:'Windows capture is not enabled'}); req.resume(); return; }
       if (!store.data.state.draftComplete || store.data.state.committedGameId) { json(409,{error:'Lineup sync requires a completed uncommitted draft'}); req.resume(); return; }
       try {
         const chunks: Buffer[] = []; let size = 0; req.setTimeout(5000, () => req.destroy());
@@ -201,7 +201,7 @@ wss.on('connection', (ws, req) => {
 });
 const tick = setInterval(() => { for (const ws of clients.keys()) update(ws); }, 200);
 const heartbeat = setInterval(() => { for (const [ws, c] of clients) { if (!c.alive) ws.terminate(); else { c.alive = false; ws.ping(); } } }, 15000);
-server.listen(Number(process.env.PORT || 3001), process.env.HOST || (production ? '0.0.0.0' : '127.0.0.1'), () => console.log('HOK Broadcast server ready on port ' + (process.env.PORT || 3001)));
+server.listen(Number(process.env.PORT || 3001), process.env.HOST || (production ? '0.0.0.0' : '127.0.0.1'), () => console.log('LoL Broadcast server ready on port ' + (process.env.PORT || 3001)));
 for (const signal of ['SIGINT', 'SIGTERM'] as const) process.on(signal, () => {
   clearInterval(tick); clearInterval(heartbeat); for (const ws of clients.keys()) ws.close(1001, '服务器正在停止');
   server.close(() => process.exit(0)); setTimeout(() => process.exit(0), 2000).unref();

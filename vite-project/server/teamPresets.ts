@@ -13,7 +13,7 @@ function fields(input: unknown): Omit<Team, 'id'> {
   const t = input as Team;
   if (typeof t.name !== 'string' || !t.name.trim() || t.name.length > 60 || !asset(t.logo) ||
     !Array.isArray(t.players) || t.players.length !== 5 || t.players.some(p => typeof p !== 'string' || p.length > 40) ||
-    !Array.isArray(t.playerRoles) || t.playerRoles.length !== 5 || t.playerRoles.some(r => !['clash','jungle','mid','farm','roam'].includes(r)) ||
+    !Array.isArray(t.playerRoles) || t.playerRoles.length !== 5 || t.playerRoles.some(r => !['top','jungle','mid','bot','support'].includes(r)) ||
     !Array.isArray(t.playerPortraits) || t.playerPortraits.length !== 5 || t.playerPortraits.some(p => !asset(p))) throw new Error('presetInvalid');
   return structuredClone({name:t.name.trim(),logo:t.logo,players:t.players,playerRoles:t.playerRoles,playerPortraits:t.playerPortraits});
 }
@@ -21,7 +21,7 @@ function substitutes(value: unknown): ReservePlayer[] {
   if (value === undefined) return [];
   if (!Array.isArray(value) || value.length > 20) throw new Error('substitutesInvalid');
   const result = value.map(p => {
-    if (!p || typeof p.id !== 'string' || !/^[0-9a-f-]{36}$/.test(p.id) || typeof p.name !== 'string' || !p.name.trim() || p.name.length > 40 || !['clash','jungle','mid','farm','roam'].includes(p.role) || !asset(p.portrait)) throw new Error('substitutesInvalid');
+    if (!p || typeof p.id !== 'string' || !/^[0-9a-f-]{36}$/.test(p.id) || typeof p.name !== 'string' || !p.name.trim() || p.name.length > 40 || !['top','jungle','mid','bot','support'].includes(p.role) || !asset(p.portrait)) throw new Error('substitutesInvalid');
     return {id:p.id,name:p.name.trim(),role:p.role,portrait:p.portrait};
   });
   if (new Set(result.map(p => p.id)).size !== result.length || new Set(result.map(p => p.name.trim().toLocaleLowerCase())).size !== result.length) throw new Error('substitutesInvalid');

@@ -27,6 +27,12 @@ test('empty history, inline settings and BO win boxes follow authoritative side 
     expect(below).toBe(true);
     await h.fill();
     await expect(page.locator('.hero-art')).toHaveCount(10);
+    await expect(page.locator('.ban.hero-slot')).toHaveCount(10);
+    const footer = (await page.locator('.broadcast-bottom > .phase').boundingBox())!;
+    const leftBan = (await page.locator('.ban-team.display-left .hero-slot').last().boundingBox())!;
+    const rightBan = (await page.locator('.ban-team.display-right .hero-slot').first().boundingBox())!;
+    expect(leftBan.x + leftBan.width).toBeLessThan(footer.x);
+    expect(rightBan.x).toBeGreaterThan(footer.x + footer.width);
     await expect(page.locator('.hero-reveal:not([class="hero-reveal"])')).toHaveCount(0);
     await page.screenshot({path:'artifacts/side-full-art.png',omitBackground:true});
   } finally {await h.send({type:'reset_match'});h.close();await context.close();}
@@ -39,18 +45,26 @@ test('recognition requires review; rejection and stale results cannot submit; ma
     const page=await context.newPage();let fail=false;
     await page.route('**/api/capture',route=>route.fulfill({status:fail?503:200,contentType:'application/json',body:JSON.stringify(fail?{error:'disabled'}:{candidates:[{heroId:heroes[0].id,confidence:.96}],preview:'data:image/png;base64,iVBORw0KGgo='})}));
     await page.goto('/control#token=e2e-control');
-    await page.getByRole('button',{name:'Read region',exact:true}).click();
+    await page.getByRole('button',{name:'Legacy capture',exact:true}).click();
+    const readStable = async () => {
+      const read = page.getByRole('button',{name:'Recognize now',exact:true});
+      await read.click();
+      await expect(read).toBeEnabled();
+      if (!await page.getByRole('dialog').count()) await read.click();
+    };
+    await readStable();
     await expect(page.getByRole('dialog',{name:'Review recognition'})).toBeVisible();
     expect(h.state().currentPhase).toBe(0);
-    await page.getByRole('button',{name:'Reject / select manually'}).click();expect(h.state().currentPhase).toBe(0);
-    await page.getByRole('button',{name:'Read region',exact:true}).click();
+    await page.getByRole('button',{name:'Reject / keep watching'}).click();expect(h.state().currentPhase).toBe(0);
+    await readStable();
     await expect(page.getByRole('dialog')).toBeVisible();
-    await h.send({type:'delay',seconds:0});await expect(page.getByRole('dialog')).toHaveCount(0);
-    await page.getByRole('button',{name:'Read region',exact:true}).click();
+    await h.send({type:'skip_ban',team:'blue'});await expect(page.getByRole('dialog')).toHaveCount(0);
+    await h.send({type:'undo'});
+    await readStable();
     await page.getByRole('button',{name:'Confirm and submit'}).click();
     await expect.poll(()=>h.state().currentPhase).toBe(1);
     expect(h.state().blueBans).toEqual([heroes[0].id]);
-    fail=true;await page.getByRole('button',{name:'Read region',exact:true}).click();
+    fail=true;await page.getByRole('button',{name:'Recognize now',exact:true}).click();
     await expect(page.locator('.screen-input [role="status"]')).toContainText('Capture unavailable');
     await page.getByLabel('Search heroes',{exact:true}).fill(heroes[1].englishName);
     await page.locator('.hero-grid button:not(:disabled)').first().click();

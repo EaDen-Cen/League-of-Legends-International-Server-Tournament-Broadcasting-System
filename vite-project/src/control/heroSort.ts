@@ -8,11 +8,11 @@ const zhCollator = new Intl.Collator('zh-Hans-CN', { numeric: true, sensitivity:
 const enCollator = new Intl.Collator('en', { numeric: true, sensitivity: 'base' });
 
 const laneOrder: Record<string, number> = {
-  'Clash Lane': 0,
-  'Mid Lane': 1,
-  'Farm Lane': 2,
-  Jungling: 3,
-  Roaming: 4,
+  'Top Lane': 0,
+  'Mid Lane': 2,
+  'Bot Lane': 3,
+  Jungle: 1,
+  Support: 4,
 };
 
 function releaseTime(hero: Hero) {

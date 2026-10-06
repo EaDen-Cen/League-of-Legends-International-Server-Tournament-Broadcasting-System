@@ -25,7 +25,7 @@ test('both formats mirror every phase for red first, complete, and record the st
     assert.throws(() => act(s, { type: 'draft_action', team: 'blue', action: 'ban', heroId: 1 }));
     fill(s);
     assert.equal(s.data.state.bluePicks.length, 5); assert.equal(s.data.state.redPicks.length, 5);
-    assert.equal(s.data.state.blueBans.length, draftMode === 'match' ? 4 : 2);
+    assert.equal(s.data.state.blueBans.length, draftMode === 'match' ? 5 : 2);
     act(s, { type: 'commit_game' }); assert.equal(s.data.state.draftHistory[0].firstPickSide, 'red');
     act(s, { type: 'score', team: 'red', delta: 1 }); act(s, { type: 'next_game' });
     act(s, { type: 'settings', settings: { ...s.data.state, firstPickSide: 'blue' } }); fill(s);
@@ -67,7 +67,7 @@ test('global and personal histories survive colors-only swaps and are enforced f
     fill(s); const forbidden = s.data.state.bluePicks[0];
     act(s, { type: 'commit_game' }); act(s, { type: 'score', team: 'blue', delta: 1 }); act(s, { type: 'next_game' });
     act(s, { type: 'swap_sides' }); act(s, { type: 'settings', settings: { ...s.data.state, firstPickSide: 'red' } });
-    for (let i = 0; i < 4; i++) act(s, { type: 'draft_action', ...phases('match', 'red')[i], heroId: heroes[80 + i].id });
+    for (let i = 0; i < 6; i++) act(s, { type: 'draft_action', ...phases('match', 'red')[i], heroId: heroes[80 + i].id });
     if (draftRuleMode === 'global') {
       assert.throws(() => act(s, { type: 'draft_action', team: 'red', action: 'pick', heroId: forbidden }), /usedByTeam/);
     } else {
@@ -102,7 +102,7 @@ test('V2 migration normalizes new fields in state, undo, delayed events and nest
     delete state.blueTeam.playerPortraits; delete state.redTeam.playerPortraits;
     for (const game of state.draftHistory) { delete game.firstPickSide; delete game.blueTeam.playerPortraits; delete game.redTeam.playerPortraits; }
   }
-  const file = join(mkdtempSync(join(tmpdir(), 'hok-v22-')), 'match.json'); writeFileSync(file, JSON.stringify(legacy));
+  const file = join(mkdtempSync(join(tmpdir(), 'lol-v22-')), 'match.json'); writeFileSync(file, JSON.stringify(legacy));
   const restored = new Store(file, () => Date.now() + 999999);
   for (const state of [restored.data.state, ...restored.data.history, restored.snapshot('caster').state]) {
     assert.equal(state.displayLeftSide, 'blue'); assert.equal(state.firstPickSide, 'blue'); assert.equal(state.sideSwapMode, 'moveTeams');

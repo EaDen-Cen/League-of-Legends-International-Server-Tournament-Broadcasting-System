@@ -15,15 +15,15 @@ test('both draft modes complete with exactly five picks and the expected bans', 
     const s = new Store(); apply(s, { type: 'settings', settings: { ...initialState(), draftMode: mode } });
     phases(mode).forEach((_, i) => pick(s, heroes[i].id));
     assert.equal(s.data.state.bluePicks.length, 5); assert.equal(s.data.state.redPicks.length, 5);
-    assert.equal(s.data.state.blueBans.length, mode === 'match' ? 4 : 2); assert.equal(s.data.state.draftComplete, true);
+    assert.equal(s.data.state.blueBans.length, mode === 'match' ? 5 : 2); assert.equal(s.data.state.draftComplete, true);
     assert.throws(() => pick(s, 80));
   }
 });
 test('caster sees picks only at the exact delay boundary, and no realtime revision', () => {
-  let now = 1000000; const s = new Store(undefined, () => now); pick(s, 46);
-  assert.equal(s.snapshot('overlay').state.blueBans[0], 46);
+  let now = 1000000; const s = new Store(undefined, () => now); pick(s, 64);
+  assert.equal(s.snapshot('overlay').state.blueBans[0], 64);
   now += 179999; assert.equal(s.snapshot('caster').state.blueBans.length, 0); assert.equal(s.snapshot('caster').revision, 0);
-  now++; assert.deepEqual(s.snapshot('caster').state.blueBans, [46]);
+  now++; assert.deepEqual(s.snapshot('caster').state.blueBans, [64]);
 });
 test('all metadata and next-game resets follow the same delayed timeline', () => {
   let now = 1000000; const s = new Store(undefined, () => now);
@@ -47,26 +47,26 @@ test('all metadata and next-game resets follow the same delayed timeline', () =>
   now += 180000; assert.equal(s.snapshot('caster').state.blueScore, 0);
 });
 test('undo is a new delayed event, preserving the earlier timeline', () => {
-  let now = 1000000; const s = new Store(undefined, () => now); pick(s, 46);
+  let now = 1000000; const s = new Store(undefined, () => now); pick(s, 64);
   now += 10000; apply(s, { type: 'undo' }); assert.deepEqual(s.data.state.blueBans, []);
-  now = 1180000; assert.deepEqual(s.snapshot('caster').state.blueBans, [46]);
+  now = 1180000; assert.deepEqual(s.snapshot('caster').state.blueBans, [64]);
   now += 10000; assert.deepEqual(s.snapshot('caster').state.blueBans, []);
 });
 test('delay calibration recalculates historical state in both directions', () => {
-  let now = 1000000; const s = new Store(undefined, () => now); pick(s, 46); now += 10000;
-  apply(s, { type: 'delay', seconds: 5 }); assert.deepEqual(s.snapshot('caster').state.blueBans, [46]);
+  let now = 1000000; const s = new Store(undefined, () => now); pick(s, 64); now += 10000;
+  apply(s, { type: 'delay', seconds: 5 }); assert.deepEqual(s.snapshot('caster').state.blueBans, [64]);
   apply(s, { type: 'delay', seconds: 20 }); assert.deepEqual(s.snapshot('caster').state.blueBans, []);
-  now += 10000; assert.deepEqual(s.snapshot('caster').state.blueBans, [46]);
+  now += 10000; assert.deepEqual(s.snapshot('caster').state.blueBans, [64]);
 });
 test('reset draft preserves match metadata and undo restores draft', () => {
   const s = new Store(); apply(s, { type: 'settings', settings: { ...initialState(), blueScore: 1, stage: 'Final' } });
-  pick(s, 46); apply(s, { type: 'reset_draft' }); assert.equal(s.data.state.stage, 'Final'); assert.equal(s.data.state.blueScore, 1);
-  assert.equal(s.data.state.currentPhase, 0); apply(s, { type: 'undo' }); assert.deepEqual(s.data.state.blueBans, [46]);
+  pick(s, 64); apply(s, { type: 'reset_draft' }); assert.equal(s.data.state.stage, 'Final'); assert.equal(s.data.state.blueScore, 1);
+  assert.equal(s.data.state.currentPhase, 0); apply(s, { type: 'undo' }); assert.deepEqual(s.data.state.blueBans, [64]);
 });
 test('reject duplicate hero, invalid hero, wrong turn, stale revision, malformed settings', () => {
   const s = new Store();
-  assert.throws(() => apply(s, { type: 'draft_action', team: 'red', action: 'pick', heroId: 46 }));
-  assert.throws(() => pick(s, 9999)); pick(s, 46); assert.throws(() => pick(s, 46));
+  assert.throws(() => apply(s, { type: 'draft_action', team: 'red', action: 'pick', heroId: 64 }));
+  assert.throws(() => pick(s, 9999)); pick(s, 64); assert.throws(() => pick(s, 64));
   assert.throws(() => s.apply(randomUUID(), 0, { type: 'reset_match' }));
   assert.throws(() => apply(s, { type: 'delay', seconds: -1 }));
   assert.throws(() => apply(s, { type: 'settings', settings: { ...initialState(), blueScore: 3 } }));
@@ -74,25 +74,25 @@ test('reject duplicate hero, invalid hero, wrong turn, stale revision, malformed
 });
 test('duplicate request ID is idempotent even after revision changes', () => {
   const s = new Store(); const id = randomUUID();
-  s.apply(id, 0, { type: 'draft_action', team: 'blue', action: 'ban', heroId: 46 });
-  s.apply(id, 0, { type: 'draft_action', team: 'blue', action: 'ban', heroId: 46 });
+  s.apply(id, 0, { type: 'draft_action', team: 'blue', action: 'ban', heroId: 64 });
+  s.apply(id, 0, { type: 'draft_action', team: 'blue', action: 'ban', heroId: 64 });
   assert.equal(s.data.revision, 1); assert.equal(s.data.events.length, 1);
 });
 test('restart recovers realtime state, event queue, delay, deduplication and undo history', () => {
-  const file = join(mkdtempSync(join(tmpdir(), 'hok-store-')), 'match.json');
-  let now = 1000000; const s = new Store(file, () => now); pick(s, 46); apply(s, { type: 'delay', seconds: 90 });
+  const file = join(mkdtempSync(join(tmpdir(), 'lol-store-')), 'match.json');
+  let now = 1000000; const s = new Store(file, () => now); pick(s, 64); apply(s, { type: 'delay', seconds: 90 });
   const restored = new Store(file, () => now); assert.deepEqual(restored.data, s.data);
-  now += 90000; assert.deepEqual(restored.snapshot('caster').state.blueBans, [46]);
+  now += 90000; assert.deepEqual(restored.snapshot('caster').state.blueBans, [64]);
   apply(restored, { type: 'undo' }); assert.equal(restored.data.state.currentPhase, 0);
   assert.equal(JSON.parse(readFileSync(file, 'utf8')).revision, 3);
 });
 test('disk failure never advances authoritative state', () => {
-  const folder = mkdtempSync(join(tmpdir(), 'hok-failure-'));
+  const folder = mkdtempSync(join(tmpdir(), 'lol-failure-'));
   const s = new Store(join(folder, 'missing', 'state.json'));
   // A file in place of the intended parent directory makes persistence fail.
   const original = structuredClone(s.data);
   Object.defineProperty(s, 'file', { value: join(folder, 'unavailable\0', 'state.json') });
-  assert.throws(() => pick(s, 46)); assert.deepEqual(s.data, original);
+  assert.throws(() => pick(s, 64)); assert.deepEqual(s.data, original);
 });
 
 
@@ -129,7 +129,7 @@ test('director hero data overrides persist, reset, and survive match reset', () 
       chineseName: '测试英雄',
       englishName: 'Test Hero',
       occupation: 'Mid Lane',
-      altOccupation: 'Roaming',
+      altOccupation: 'Support',
       aliases: ['test', 'th'],
     },
   });
@@ -137,7 +137,7 @@ test('director hero data overrides persist, reset, and survive match reset', () 
     chineseName: '测试英雄',
     englishName: 'Test Hero',
     occupation: 'Mid Lane',
-    altOccupation: 'Roaming',
+    altOccupation: 'Support',
     aliases: ['test', 'th'],
   });
 

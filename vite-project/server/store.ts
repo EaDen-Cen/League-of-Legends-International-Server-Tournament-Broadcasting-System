@@ -133,12 +133,7 @@ export class Store {
       const phase = phases(state.draftMode, state.firstPickSide)[state.currentPhase];
       if (!phase || phase.team !== action.team || phase.action !== action.action) throw new Error('当前选禁阶段不支持此操作，请确认轮次和队伍');
       if (!heroes.some(h => h.id === action.heroId)) throw new Error('找不到该英雄');
-      if (draftHeroUsed(state, action.heroId)) {
-        const selected = [...state.blueBans, ...state.redBans, ...state.bluePicks, ...state.redPicks]
-          .find(id => id !== null && draftHeroGroupKey(state, id) === draftHeroGroupKey(state, action.heroId));
-        const groupedFlowborn = !state.flowbornFormsIndependent && selected !== undefined && selected !== action.heroId;
-        throw new Error(groupedFlowborn ? 'flowbornAlreadyUsed' : '该英雄已被选择或禁用');
-      }
+      if (draftHeroUsed(state, action.heroId)) throw new Error('该英雄已被选择或禁用');
       const reason = draftRestriction(state, phase.team, phase.action, action.heroId);
       if (reason) throw new Error(reason);
       next.history.push(copy(state));
@@ -295,7 +290,7 @@ export class Store {
           team.playerPortraits.forEach(portraitURL);
         }
 
-        const validRoles = ['clash', 'jungle', 'mid', 'farm', 'roam'];
+        const validRoles = ['top', 'jungle', 'mid', 'bot', 'support'];
 
         for (const role of team.playerRoles) {
           if (!validRoles.includes(role)) {
@@ -392,7 +387,7 @@ export class Store {
       if (!override || typeof override !== 'object') throw new Error('heroDataOverrideInvalid');
       if (override.englishName !== undefined) { shortText(override.englishName, 60); if (!override.englishName.trim()) throw new Error('heroDataOverrideInvalid'); }
       if (override.chineseName !== undefined) { shortText(override.chineseName, 60); if (!override.chineseName.trim()) throw new Error('heroDataOverrideInvalid'); }
-      const validLanes = ['', 'Clash Lane', 'Jungling', 'Mid Lane', 'Farm Lane', 'Roaming'];
+      const validLanes = ['', 'Top Lane', 'Jungle', 'Mid Lane', 'Bot Lane', 'Support'];
       if (override.occupation !== undefined && !validLanes.includes(override.occupation)) throw new Error('heroDataOverrideInvalid');
       if (override.altOccupation !== undefined && !validLanes.includes(override.altOccupation)) throw new Error('heroDataOverrideInvalid');
       if (override.aliases !== undefined) {
