@@ -2,7 +2,7 @@ import { existsSync, mkdirSync, readFileSync, renameSync, openSync, writeSync, f
 import type { TeamPresetStore } from './teamPresets.js';
 import { dirname } from 'node:path';
 import heroes from '../src/components/HeroList.js';
-import { initialState, phases, type Action, type MatchState, type Role, type Snapshot } from '../src/shared/types.js';
+import { initialState, phases, type Action, type HeroDataOverride, type MatchState, type Role, type Snapshot } from '../src/shared/types.js';
 import { currentGame, draftHeroGroupKey, draftHeroUsed, draftRestriction, normalizeState, pickRestriction, playerIdentity, ruleLocked, seriesFinished } from '../src/shared/draftRules.js';
 
 interface Event { id: string; timestamp: number; type: string; resultingState: MatchState; revision: number }
