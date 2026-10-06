@@ -4,7 +4,7 @@ import { draftHeroUsed, draftRestriction } from '../shared/draftRules';
 import { lanes, laneName, phaseName } from '../shared/display';
 import { translator } from '../shared/i18n';
 import { phases, type Action, type MatchState } from '../shared/types';
-import { heroSortCoverage, heroSortModes, sortHeroes, type HeroSortMode } from './heroSort';
+import { heroSortModes, sortHeroes, type HeroSortMode } from './heroSort';
 import { enterTarget, heroMatchesSearch } from './heroSearch';
 
 export function ControlHeroPicker({ state, disabled, active, send, acknowledged }: {
@@ -28,8 +28,6 @@ export function ControlHeroPicker({ state, disabled, active, send, acknowledged 
   const visible = sortHeroes(filtered, sortMode, unavailable);
   const eligible = visible.filter(h => !unavailable(h.id));
   const enterHero = enterTarget(eligible, search);
-  const sortCoverage = heroSortCoverage(filtered, sortMode);
-  const metadataSort = sortMode === 'release' || sortMode === 'pick-rate';
   useEffect(() => {
     if (!acknowledged || !['draft_action','skip_ban'].includes(acknowledged.action.type)) { setRecorded(undefined); return; }
     setSearch(''); setRecorded(acknowledged.action);
@@ -88,13 +86,10 @@ export function ControlHeroPicker({ state, disabled, active, send, acknowledged 
           }}>
             <option value="name-zh">{t('heroSortChinese')}</option>
             <option value="name-en">{t('heroSortEnglish')}</option>
-            <option value="release">{t('heroSortRelease')}</option>
-            <option value="pick-rate">{t('heroSortPickRate')}</option>
             <option value="lane">{t('heroSortLane')}</option>
           </select>
         </label>
       </div>
-      {metadataSort && sortCoverage < filtered.length && <p className="sort-data-note">{t('heroSortDataCoverage',{known:sortCoverage,total:filtered.length})}</p>}
     </div>
     <div className="hero-grid-scroll"><div className="hero-grid">{visible.map(h => {
       const reason = phase && draftRestriction(state,phase.team,phase.action,h.id);
