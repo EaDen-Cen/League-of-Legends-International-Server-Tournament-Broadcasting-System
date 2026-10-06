@@ -1,78 +1,89 @@
-> [文档索引](../README.md) · 除特别注明外，文件路径以仓库根目录为基准，npm 命令在 `vite-project/` 中执行。
+# LoL 导播操作指南
 
-# 比赛操作指南
+[返回文档索引](../README.md)
 
-## 比赛流程与规则
+## Control 工作区
 
-1. 载入两支队伍，设置 BO、BP 形式（每队 4 Ban 或 2 Ban）、规则及先手方。选手 BP 需要十个非空且唯一的选手 ID。
-2. 普通 BP 不限制跨局选人；选手 BP 根据选手 ID 追踪已用英雄；全局 BP 根据稳定队伍 ID 追踪已用英雄，并禁止 Ban 对手此前有效局已使用的英雄。
-3. 按当前阶段录入英雄，结束后用“英雄归属校对”核对位置。
-4. 裁判确认比赛有效后，点“确认本局有效”保存历史，再更新比分，最后“开始下一局”。确认有效不会自动加分或清空画面。
-5. 换边须在本局 BP 开始前执行，可选择交换队伍显示位置，或位置不变仅交换蓝红方。BP 先手独立设置，换边不自动改变先手。
-6. 无效且未提交的 BP 可重置选禁；已有有效历史继续保留。重置整场清比赛和历史，不删除队伍库；Undo 可撤回比赛操作，解说端仍按延迟显示。
+Control 是唯一可写端。Caster 与 Overlay 只读取服务端 authoritative state。
 
-规则在首次选禁后锁定；已有有效历史后不能直接更换规则。现场仍可修改选手 ID、分路和照片，但必须通过当前 BP 资格验证。底部横排与左右竖排 Overlay 均按 1920×1080 接入 OBS。
+桌面布局分为：
+- 左侧：比赛监视、比分、生命周期、队伍与阵容状态；
+- 右侧：当前 Draft Phase、搜索、分路过滤、Champion Grid。
 
-## 导播录入
+快捷键：
+- `/`：聚焦英雄搜索；
+- `Ctrl+K` / `Cmd+K`：聚焦搜索；
+- `Esc`：清空搜索；
+- 输入能唯一命中可用英雄时，`Enter` 提交当前 Ban / Pick。
 
-- 桌面控制端采用左右布局：左侧比赛监视与操作，右侧当前阶段、搜索和独立滚动英雄池。
-- `/` 或 `Ctrl+K` 聚焦搜索，`Esc` 清空；搜索结果只有一个合法英雄时，`Enter` 提交。
-- 收到服务器确认后才清空搜索并重新聚焦。保留 revision、单条 pending、防重复、输入法组合输入保护。
-- 比赛设置使用弹窗；平板固定比赛监视面板，手机固定阶段与搜索。
+## 标准 LoL BP
 
-## 选手照片
+Match 模式使用每方 5 Ban + 5 Pick 的两阶段 BP。界面始终由服务端 currentPhase 决定当前阵营和 Ban / Pick 类型。
 
-比赛设置与队伍资料编辑中均可直接上传 PNG、JPEG、WebP，单张不超过 5 MB。
-预览显示加载状态与实际地址。比赛设置内上传后需要保存设置；资料库内上传后需要保存队伍。
-比赛中仍可更改选手 ID、分路与照片。未选英雄时显示照片，选中英雄后使用既有英雄揭示动画，撤销后恢复照片。
+如果比赛客户端出现空 Ban，使用 **Empty Ban / Skip Ban**，不要拿占位 Champion 代替。
 
-上传仅允许 Control 身份。服务器检查格式、文件内容、尺寸字节上限并生成随机文件名。
-照片运行时提供，不需要重新构建网站。清空引用不会删除实体文件。
+## 比赛生命周期
 
-## 队伍资料库
+一局正常流程：
 
-入口：比赛设置 → 队伍资料库 → 管理队伍资料。
+```text
+Draft
+→ Final Lineup Assignment
+→ Commit Game
+→ Score
+→ Swap / Next Game
+```
 
-1. 新建队伍，录入队名、队标地址、五名选手、分路与照片，然后保存。
-2. 新比赛中分别选择蓝红方队伍并载入，再设置 BO、BP 规则和先手等。
-3. 载入会替换阵容并刷新设置表单，因此会要求确认丢弃未保存的比赛设置。
-4. 载入的是独立副本。现场替补或阵容调整并保存比赛设置，不会覆盖资料库。
-5. 需要长期保留修改时，明确选择“更新已保存队伍”；“另存为新队伍”创建独立身份，随后可载入。
+`bluePicks` / `redPicks` 记录原始 BP 顺序；最终选手英雄归属由 Assignments 单独维护，因此 help-pick 和赛后换位不会破坏 Draft History。
 
-资料库支持搜索、新建、编辑、删除和分别载入蓝红方。
-服务器拒绝同一队伍占据双方；当前 BP 已开始、存在有效历史或已经提交本局时，禁止载入其他队伍。
-已载入队伍使用永久 UUID 身份。普通设置忽略客户端传来的身份更改，换边后全局 BP 限制继续跟随队伍。
-删除资料库条目不影响当前比赛、有效历史或图片文件。重置整场比赛不删除资料库。
+## Match Settings
 
-## 替补与快速换人
+可配置：
+- BO1 / BO3 / BO5；
+- Stage；
+- 标准 / 自定义 Draft；
+- Normal / Player / Global 跨局限制；
+- Blue / Red First Pick；
+- Move Teams / Colors Only；
+- 中文 / English；
+- Panel / Side Overlay；
+- 数字 / Box Series Score；
+- Manual / Screen Recognition；
+- 是否在卡片显示 Champion Name；
+- Splash Art 优先 / 本地 Portrait fallback。
 
-- 在“管理队伍资料”中，找到“替补名单”，可保存最多 20 名替补的 ID、分路和照片；上传方式与首发一致。
-- 比赛设置 → 对应队伍 → 快速换人：选择选手资料来源、已保存选手和目标位置，点击“填入选手资料”，再保存比赛设置。
-- 已从资料库载入的队伍默认使用自己的资料；手动创建的比赛也可选择本队资料来源，不需要重置比赛或替换队伍身份。
-- 可选项包括资料库中的首发与替补，方便将原首发换回。
-- 换人只修改目标位置的 ID、分路、照片。其余比赛设置保持表单原值，由原有服务器校验统一提交；解说端继续遵循延迟时间线。
-- 全局 BP 历史跟随队伍；选手 BP 仍按选手 ID 检查历史。若新选手使用当前英雄违反个人限制，保存会被拒绝并保持原状态。
-- 临时换人不覆盖资料库。明确更新已保存队伍时，未提交替补名单的旧式请求会保留原名单；旧资料库没有替补字段时自动按空名单读取。
+## Team Settings / Team Library
 
-## 存储与接口
+每支队伍可保存 Stable Team ID、Team Name / Logo、5 名首发、Top / Jungle / Mid / Bot / Support、Player Portrait 和 substitutes。
 
-默认都在 `vite-project/data/` 下：
+载入资料库后，当前比赛拿到独立副本。临时换人不会自动覆盖长期 Team Preset。
 
-- `match.json`：比赛、撤销、延迟时间线。
-- `team-presets.json`：版本 1 独立资料库；原子临时文件写入、同步与重命名。
-- `uploads/player-portraits/`：运行时图片。
+## Champion Studio
 
-指定 `DATA_FILE` 时，资料库和默认上传目录跟随该文件的父目录；可通过 `UPLOAD_DIR` 单独指定图片目录。
-迁移、备份时保存整个数据目录。上传图片和资料库均不进入 Git。
+Champion Studio 是 LoL 版本的 Champion 数据和视觉素材入口。
 
-仅 Control 可使用 `GET/POST /api/team-presets`、`PUT/DELETE /api/team-presets/:id` 和 `POST /api/uploads/player-portrait`。
-队伍载入经现有 WebSocket `load_team_preset {side,presetId}` 操作，走原有验证、持久化、实时广播与延迟时间线。
-图片 GET 不要求口令，以支持 OBS、解说页面及浏览器图片标签。
+### 搜索
 
-## 验证边界
+支持中文名、英文名、Data Dragon title alias、自定义 alias 和中文拼音首字母。
 
-新增服务器测试覆盖资料库持久化、身份稳定、复制隔离、落盘失败、载入锁定、防重复、删除保留历史与换边后的限制。
-新增浏览器测试覆盖真实上传、蓝红先手各完整 18 步键盘录入、确认前保持搜索、桌面/平板/手机布局和队伍资料实际操作。
+### 赛事资料 Override
 
-真实 OBS 内置浏览器、跨设备 Cloudflare 链路和十张实际选手照片仍需赛前彩排；浏览器自动测试不能替代这些实机验收。
-一键启动与 Cloudflare 脚本保持原接口。更新服务器代码后需要重启服务；更新页面后刷新浏览器和 OBS Browser Source。
+可以覆盖 Chinese Name、English Name、Primary Lane、Secondary Lane、Search Aliases。这些值会立即影响搜索、显示和当前比赛，不改写生成基线。
+
+### Artwork Override
+
+默认使用 Data Dragon Splash Art。每位 Champion 可单独调整 Panel 与 Side 的 X / Y / Scale，也可强制 Local Portrait fallback。
+
+右侧参考区显示完整原图和两个布局的实际取景范围。
+
+## Overlay
+
+**Panel** 适合 BP 专用画面：顶部赛事条 + 中央透明区 + 底部双方 Champion Card。
+
+**Side** 适合保留中央游戏 / 客户端画面：双方 Champion Card 固定在左右边缘。
+
+LoL 主题采用深墨蓝、金色赛事线框和阵营蓝 / 红，不与 HOK 版本共享视觉主题。
+
+## Caster Delay
+
+Caster 可设置独立延迟。Control 与 Overlay 保持实时，Caster 按服务器时间线读取过去状态。不要用 OBS 人工延迟代替状态延迟来解决 BP 信息提前泄漏。
