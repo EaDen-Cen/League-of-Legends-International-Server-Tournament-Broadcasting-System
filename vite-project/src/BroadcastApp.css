@@ -1165,3 +1165,310 @@
   font-size:13px;
   line-height:1.1;
 }
+
+
+/* LoL visual system: intentionally separate from the inherited HOK broadcast language. */
+.broadcast-overlay {
+  --lol-ink:#010a13;
+  --lol-panel:#071522;
+  --lol-panel-2:#0b1c2a;
+  --lol-gold:#c8aa6e;
+  --lol-gold-soft:#8d7447;
+  --lol-cream:#f0e6d2;
+  --lol-cyan:#0ac8b9;
+  --lol-blue:#39a7ff;
+  --lol-red:#e84057;
+  font-family:Inter, "Segoe UI", Arial, sans-serif;
+}
+.broadcast-top { top:18px; left:30px; right:30px; }
+.broadcast-header {
+  grid-template-columns:minmax(0,1fr) 210px minmax(0,1fr);
+  grid-template-rows:34px 78px;
+  padding:0 20px;
+  background:linear-gradient(180deg,#06111df7,#020a12f5);
+  border:1px solid #c8aa6e66;
+  border-top:2px solid var(--lol-gold);
+  box-shadow:0 14px 40px #0008, inset 0 -1px #ffffff0d;
+}
+.broadcast-brand {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  color:var(--lol-cream);
+  letter-spacing:2.8px;
+  font-size:12px;
+}
+.broadcast-brand > span {
+  padding:3px 6px;
+  border:1px solid var(--lol-gold);
+  color:var(--lol-gold);
+  font-size:9px;
+  letter-spacing:1.8px;
+}
+.broadcast-draft-label {
+  grid-column:2;
+  grid-row:1;
+  align-self:center;
+  justify-self:center;
+  padding:4px 14px;
+  color:var(--lol-gold);
+  border-left:1px solid #c8aa6e66;
+  border-right:1px solid #c8aa6e66;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:1.7px;
+  text-transform:uppercase;
+}
+.broadcast-meta {
+  grid-column:3;
+  grid-row:1;
+  color:#8fa9bf;
+  font-size:11px;
+  letter-spacing:.9px;
+}
+.broadcast-team {
+  border-top:1px solid #c8aa6e2b;
+  border-bottom-width:3px;
+  background:linear-gradient(90deg,#0a1a2a88,transparent);
+}
+.broadcast-team.display-right { background:linear-gradient(270deg,#0a1a2a88,transparent); }
+.broadcast-team.blue { border-bottom-color:var(--lol-blue); }
+.broadcast-team.red { border-bottom-color:var(--lol-red); }
+.broadcast-team h2 {
+  color:#f7f4ea;
+  font-size:29px;
+  font-weight:800;
+  letter-spacing:.6px;
+  text-transform:uppercase;
+}
+.broadcast-team .color-label { color:#74c9ff; letter-spacing:1px; }
+.broadcast-team.red .color-label { color:#ff8190; }
+.broadcast-score {
+  position:relative;
+  margin:7px 0;
+  background:linear-gradient(180deg,#12283a,#07131f);
+  color:var(--lol-cream);
+  border-left:1px solid var(--lol-gold);
+  border-right:1px solid var(--lol-gold);
+  clip-path:polygon(10% 0,90% 0,100% 50%,90% 100%,10% 100%,0 50%);
+}
+.broadcast-score::before {
+  content:"SERIES";
+  position:absolute;
+  top:5px;
+  left:0;
+  right:0;
+  text-align:center;
+  color:#8f7a51;
+  font-size:8px;
+  letter-spacing:2px;
+}
+.broadcast-score strong { margin-top:7px; }
+.broadcast-bottom { left:30px; right:30px; bottom:20px; gap:8px; }
+.broadcast-bans .ban-team {
+  min-height:66px;
+  padding:7px 14px;
+  background:linear-gradient(180deg,#081521ef,#020a12ef);
+  border:1px solid #c8aa6e29;
+}
+.broadcast-bans .ban-team > span {
+  color:#9fb0bd;
+  font-size:10px;
+  letter-spacing:1.4px;
+}
+.broadcast-overlay .bans .hero-slot {
+  border:1px solid #c8aa6e33;
+  background:#020a13;
+  filter:saturate(.78);
+}
+.broadcast-overlay .ban-mark { color:#e9d8b6dd; text-shadow:0 0 8px #000; }
+.broadcast-card {
+  border-top:1px solid #c8aa6e7a;
+  border-bottom:1px solid #000;
+  background:#03101a;
+  box-shadow:inset 0 0 0 1px #ffffff0a;
+}
+.broadcast-card.filled::after {
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:4;
+  pointer-events:none;
+  box-shadow:inset 0 0 0 1px #c8aa6e22, inset 0 -30px 40px #01070dcc;
+}
+.broadcast-overlay .pick-team.blue { --card-accent:var(--lol-blue); }
+.broadcast-overlay .pick-team.red { --card-accent:var(--lol-red); }
+.broadcast-overlay .acting .broadcast-card {
+  border-top:3px solid var(--card-accent);
+  box-shadow:0 0 16px color-mix(in srgb,var(--card-accent) 35%,transparent), inset 0 0 0 1px #ffffff12;
+}
+.position-bar {
+  background:linear-gradient(180deg,#d1b779,#a98d54);
+  color:#06101a;
+  border-top:1px solid #f0e6d255;
+}
+.card-caption {
+  background:linear-gradient(180deg,transparent 0%,#01070d66 30%,#01070df2 100%);
+}
+.card-caption strong {
+  color:var(--lol-cream) !important;
+  letter-spacing:.3px;
+  text-transform:uppercase;
+}
+.card-caption .player-id { color:#d3dde5 !important; }
+.broadcast-bottom > .phase {
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:14px;
+  min-height:34px;
+  color:var(--lol-gold);
+  background:linear-gradient(90deg,transparent,#06121ee8 18%,#06121ef7 50%,#06121ee8 82%,transparent);
+  border:0;
+  border-top:1px solid #c8aa6e63;
+  letter-spacing:1.5px;
+  text-transform:uppercase;
+}
+.broadcast-bottom > .phase small {
+  color:#7f94a5;
+  font-size:9px;
+  letter-spacing:1px;
+}
+.draft-action-pick .broadcast-draft-label { color:#8fdcff; }
+.draft-action-ban .broadcast-draft-label { color:#e5c98b; }
+
+/* Champion Studio */
+.hero-art-editor-dialog {
+  border-color:#8e7548;
+  background:#06101a;
+}
+.hero-art-editor-header {
+  background:linear-gradient(90deg,#0b1a28,#07111c);
+  border-bottom:1px solid #c8aa6e55;
+}
+.hero-art-editor-header strong { color:var(--lol-cream,#f0e6d2); letter-spacing:.8px; }
+.hero-art-editor-body { grid-template-columns:420px minmax(0,1fr); }
+.hero-art-editor-controls {
+  background:#081522;
+  border-right:1px solid #c8aa6e35;
+}
+.champion-studio-selector {
+  margin-bottom:14px;
+  padding:12px;
+  border:1px solid #c8aa6e38;
+  background:#030b13;
+}
+.champion-studio-search { margin:0 0 9px; }
+.champion-studio-search input {
+  border-color:#6f603f;
+  background:#081624;
+}
+.champion-studio-grid {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:6px;
+  max-height:250px;
+  overflow:auto;
+  padding-right:3px;
+  scrollbar-width:thin;
+}
+.champion-studio-grid button {
+  min-width:0;
+  padding:5px;
+  display:grid;
+  grid-template-columns:34px minmax(0,1fr);
+  grid-template-rows:auto auto;
+  gap:1px 6px;
+  align-items:center;
+  text-align:left;
+  background:#0a1825;
+  border:1px solid #24384b;
+  border-radius:3px;
+}
+.champion-studio-grid button:hover { border-color:#8c764e; background:#102235; }
+.champion-studio-grid button.selected {
+  border-color:var(--lol-gold,#c8aa6e);
+  box-shadow:inset 0 0 0 1px #c8aa6e55;
+  background:#172433;
+}
+.champion-studio-grid img {
+  grid-row:1 / 3;
+  width:34px;
+  height:34px;
+  object-fit:cover;
+}
+.champion-studio-grid span {
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  color:#eef2f4;
+  font-size:10px;
+  font-weight:700;
+}
+.champion-studio-grid small {
+  color:#8097a9;
+  font-size:8px;
+}
+.champion-studio-result-count {
+  display:block;
+  margin-top:7px;
+  color:#758da1;
+  text-align:right;
+}
+.hero-data-editor {
+  border:1px solid #c8aa6e38;
+  background:#07131f;
+}
+.hero-data-editor legend { color:#d7c28e; padding:0 6px; }
+.champion-studio-summary {
+  display:flex;
+  justify-content:space-between;
+  gap:18px;
+  align-items:flex-start;
+  margin-bottom:16px;
+  padding:14px 16px;
+  border:1px solid #c8aa6e45;
+  background:linear-gradient(90deg,#0d1d2b,#07111b);
+}
+.champion-studio-summary h2 {
+  margin:3px 0 2px;
+  color:#f0e6d2;
+  font-size:28px;
+  text-transform:uppercase;
+}
+.champion-studio-summary p { color:#8ea2b3; font-size:11px; }
+.champion-studio-badges {
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+  gap:6px;
+  max-width:420px;
+}
+.champion-studio-badges span {
+  padding:5px 8px;
+  border:1px solid #31475b;
+  color:#879daf;
+  background:#07131f;
+  font-size:9px;
+  letter-spacing:.5px;
+  text-transform:uppercase;
+}
+.champion-studio-badges span.active {
+  border-color:#c8aa6e;
+  color:#e6d3a6;
+  background:#2a2113;
+}
+.art-reference-frame { border-color:#c8aa6e; }
+.art-reference-frame span { background:#c8aa6e; color:#07101c; }
+.art-editor-preview { border-color:#8d7447; }
+
+@media(max-width:900px) {
+  .hero-art-editor-body { grid-template-columns:1fr; }
+  .champion-studio-grid { grid-template-columns:repeat(4,minmax(0,1fr)); max-height:220px; }
+  .champion-studio-summary { flex-direction:column; }
+  .champion-studio-badges { justify-content:flex-start; }
+}
+@media(max-width:560px) {
+  .champion-studio-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
