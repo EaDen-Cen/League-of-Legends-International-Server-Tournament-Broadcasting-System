@@ -13,6 +13,7 @@ const messages = {
   heroSecondaryLane: {zh:'副分路',eng:'Secondary lane'},
   heroAliases: {zh:'搜索别名',eng:'Search aliases'},
   heroAliasesHint: {zh:'使用逗号分隔，可用于搜索。',eng:'Comma-separated aliases used by search.'},
+  championAdvancedData: {zh:'高级资料与素材',eng:'Advanced data & assets'},
   championPortraitUrl: {zh:'Portrait / 识别头像来源',eng:'Portrait / recognition source'},
   championPortraitUrlHint: {zh:'用于选择器、Ban、历史记录和识别模板显示。支持 HTTPS 或站内绝对路径。',eng:'Used by picker, bans and history. Accepts HTTPS or an absolute local path.'},
   championSplashUrl: {zh:'Splash Art / 转播主图来源',eng:'Splash art / broadcast source'},
