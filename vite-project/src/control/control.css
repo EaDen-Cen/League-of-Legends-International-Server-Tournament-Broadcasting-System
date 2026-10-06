@@ -640,3 +640,204 @@
   color:#f0e6d2;
   background:#2c2418;
 }
+
+
+/* Minimal operator pass: neutral surfaces, one accent, less chrome. */
+.control-workspace {
+  --control-accent:#b89b62;
+}
+.control-workspace .topbar {
+  padding:10px 12px 12px;
+  border:0;
+  border-bottom:1px solid #ffffff0d;
+  background:#091117;
+}
+.control-workspace .topbar .eyebrow {
+  color:#6f7d87;
+  letter-spacing:1.1px;
+}
+.control-workspace .topbar h1 {
+  color:#edf1f4;
+  font-weight:700;
+}
+.control-workspace .panel {
+  border:0;
+  border-radius:6px;
+  background:#0b131a;
+  box-shadow:none;
+}
+.control-draft-workspace { gap:14px; }
+.control-monitor .panel { padding:12px; }
+.control-workspace button {
+  border:1px solid #26343d;
+  border-radius:5px;
+  background:#101920;
+  color:#cbd3d8;
+  box-shadow:none;
+}
+.control-workspace button:hover:not(:disabled) {
+  border-color:#3b4b55;
+  background:#141f27;
+}
+.control-workspace button.primary {
+  border-color:#9a814f;
+  background:#9a814f;
+  color:#081015;
+}
+.control-workspace button.primary:hover:not(:disabled) {
+  border-color:#ae955d;
+  background:#ae955d;
+}
+.control-workspace button.danger {
+  border-color:#493239;
+  background:#1a1316;
+  color:#d7a5ac;
+}
+
+.control-hero-picker.panel {
+  padding:12px;
+  background:#0b131a;
+}
+.control-hero-picker .picker-heading {
+  padding:8px 0 10px;
+  border:0;
+  border-bottom:1px solid #ffffff0d;
+  background:#0b131a;
+}
+.control-hero-picker .current-phase {
+  margin-bottom:10px;
+  padding:0 0 8px;
+  border:0;
+  border-bottom:1px solid #ffffff0a;
+  color:#d6dde2;
+}
+.control-hero-picker .picker-heading.side-blue .current-phase,
+.control-hero-picker .picker-heading.side-red .current-phase {
+  color:#d6dde2;
+  border-color:#ffffff0a;
+}
+.control-hero-picker .current-phase h2 {
+  color:#edf1f4;
+  font-size:20px;
+  font-weight:700;
+  letter-spacing:.1px;
+  text-transform:none;
+}
+.control-hero-picker .current-phase > span,
+.control-hero-picker .current-phase small {
+  color:#73828c;
+}
+.control-hero-picker .picker-heading > input {
+  border:1px solid #26343d;
+  border-radius:5px;
+  background:#0d171e;
+  color:#edf1f4;
+}
+.quick-input-hint,
+.sort-data-note,
+.picker-note { color:#64727c; }
+.record-feedback { color:#7f9e91; }
+
+.control-hero-picker .filters {
+  gap:4px;
+}
+.control-hero-picker .filters button {
+  padding:6px 9px;
+  border-color:transparent;
+  background:#0f181f;
+  color:#82909a;
+}
+.control-hero-picker .filters button.selected,
+.control-hero-picker .filters button[aria-pressed="true"] {
+  border-color:#53616b;
+  background:#151f26;
+  color:#d9e0e4;
+}
+.hero-sort-control select,
+.control-workspace select,
+.control-workspace input,
+.control-workspace textarea {
+  border:1px solid #26343d;
+  border-radius:5px;
+  background:#0d171e;
+  color:#dbe1e5;
+}
+
+.control-hero-picker .hero-grid {
+  gap:5px;
+}
+.control-hero-picker .hero-grid button {
+  border:1px solid transparent;
+  border-radius:4px;
+  background:#0e171e;
+}
+.control-hero-picker .hero-grid button:hover:not(:disabled) {
+  border-color:#344550;
+  background:#131e26;
+}
+.control-hero-picker .hero-grid button.enter-target {
+  border-color:#667680;
+  background:#17222a;
+  box-shadow:none;
+}
+.control-hero-picker .hero-grid button:disabled {
+  opacity:.28;
+  filter:grayscale(.55);
+}
+.control-hero-picker .hero-grid span {
+  color:#c7d0d6;
+}
+
+.lifecycle-score,
+.lifecycle-score .score-setting,
+.lineup-team,
+.lineup-regions,
+.native-capture-settings,
+.window-capture-preview {
+  border-color:#ffffff10;
+  background:#0a1218;
+  box-shadow:none;
+}
+.lineup-team {
+  border-top:1px solid #ffffff10;
+}
+.lineup-team.red {
+  border-top-color:#ffffff10;
+}
+.lineup-player-row,
+.lineup-auto,
+.quick-substitution,
+.substitute-editor,
+.reserve-row {
+  border-color:#ffffff0d;
+}
+.empty-ban-control {
+  border:1px solid #3d382d;
+  border-radius:5px;
+  background:#17150f;
+}
+.empty-ban-button {
+  border-color:#4f4939 !important;
+  background:#1c1912 !important;
+  color:#cbbd98 !important;
+}
+.capture-mode-switch button.selected,
+.window-capture-calibration button.selected {
+  border-color:#4b6268;
+  background:#172429;
+}
+
+.settings-dialog,
+.team-settings-dialog,
+.library-dialog {
+  border:1px solid #26343d;
+  border-radius:8px;
+  background:#0b131a;
+  box-shadow:0 24px 70px #0008;
+}
+.settings-dialog > header,
+.team-settings-dialog-header,
+.library-dialog > header {
+  border-bottom:1px solid #ffffff0d;
+  background:#0d161d;
+}
