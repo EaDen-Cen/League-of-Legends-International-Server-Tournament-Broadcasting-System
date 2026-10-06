@@ -4,6 +4,7 @@ import heroes from '../components/HeroList';
 import { heroesForState } from '../shared/heroData';
 import { defaultHeroArtCrop, heroArtCrop } from '../data/heroArtFocus';
 import { translator } from '../shared/i18n';
+import { heroMatchesSearch } from './heroSearch';
 import type { Action, HeroArtCrop, HeroArtLayout, HeroArtOverride, HeroDataOverride, MatchState } from '../shared/types';
 
 const targetAspect: Record<HeroArtLayout, number> = {
@@ -142,6 +143,7 @@ export function HeroArtEditorDialog({
   const effectiveHeroes = useMemo(() => heroesForState(state), [state.heroDataOverrides]);
   const initialId = currentPicks[0] ?? heroes[0]?.id ?? 1;
   const [heroId, setHeroId] = useState(initialId);
+  const [heroQuery, setHeroQuery] = useState('');
 
   const makeDraft = (id: number): HeroArtOverride => {
     const runtime = state.heroArtOverrides?.[String(id)];
@@ -165,6 +167,11 @@ export function HeroArtEditorDialog({
     };
   };
   const [dataDraft, setDataDraft] = useState<HeroDataOverride>(() => makeDataDraft(initialId));
+  const selectHero = (nextId: number) => {
+    setHeroId(nextId);
+    setDraft(makeDraft(nextId));
+    setDataDraft(makeDataDraft(nextId));
+  };
   const [sourceSize, setSourceSize] = useState<SourceSize>({ width: 16, height: 9 });
   useEffect(() => {
     const element = dialog.current;
@@ -174,6 +181,13 @@ export function HeroArtEditorDialog({
   }, []);
 
   const hero = useMemo(() => effectiveHeroes.find(item => item.id === heroId) ?? effectiveHeroes[0], [effectiveHeroes, heroId]);
+  const filteredHeroes = useMemo(
+    () => effectiveHeroes.filter(item => heroMatchesSearch(item, heroQuery, state.language)).slice(0, 48),
+    [effectiveHeroes, heroQuery, state.language],
+  );
+  const baseHero = heroes.find(item => item.id === heroId);
+  const hasDataOverride = Boolean(state.heroDataOverrides?.[String(heroId)]);
+  const hasArtOverride = Boolean(state.heroArtOverrides?.[String(heroId)]);
   if (!hero) return null;
 
   const panel = draft.panel ?? defaultHeroArtCrop('panel');
@@ -201,14 +215,38 @@ export function HeroArtEditorDialog({
 
       <div className="hero-art-editor-body">
         <aside className="hero-art-editor-controls">
+          <section className="champion-studio-selector">
+            <label className="champion-studio-search">{t('championSearch')}
+              <input
+                value={heroQuery}
+                placeholder={t('championSearchHint')}
+                onChange={event => setHeroQuery(event.target.value)}
+              />
+            </label>
+            <div className="champion-studio-grid" role="list" aria-label={t('championSearchResults')}>
+              {filteredHeroes.map(item => {
+                const selected = item.id === hero.id;
+                const name = state.language === 'zh' ? item.chineseName : item.englishName;
+                return <button
+                  type="button"
+                  role="listitem"
+                  key={item.id}
+                  className={selected ? 'selected' : ''}
+                  onClick={() => selectHero(item.id)}
+                  title={item.englishName}
+                >
+                  <img src={item.imageLink} alt="" />
+                  <span>{name}</span>
+                  <small>{item.occupation}</small>
+                </button>;
+              })}
+            </div>
+            <small className="champion-studio-result-count">{t('championResultCount', { shown: filteredHeroes.length, total: effectiveHeroes.length })}</small>
+          </section>
+
           <label>{t('chooseHeroToEdit')}
-            <select value={hero.id} onChange={event => {
-              const nextId = Number(event.target.value);
-              setHeroId(nextId);
-              setDraft(makeDraft(nextId));
-              setDataDraft(makeDataDraft(nextId));
-            }}>
-              {effectiveHeroes.map(item => <option key={item.id} value={item.id}>{state.language === 'zh' ? item.chineseName : item.englishName}</option>)}
+            <select value={hero.id} onChange={event => selectHero(Number(event.target.value))}>
+              {effectiveHeroes.map(item => <option key={item.id} value={item.id}>{state.language === 'zh' ? item.chineseName : item.englishName} · {item.englishName}</option>)}
             </select>
           </label>
 
@@ -266,6 +304,18 @@ export function HeroArtEditorDialog({
         </aside>
 
         <section className="hero-art-editor-stage">
+          <div className="champion-studio-summary">
+            <div>
+              <span className="eyebrow">{t('championProfile')}</span>
+              <h2>{heroName}</h2>
+              <p>{hero.englishName} · Riot ID {hero.id} · {hero.occupation}{hero.altOccupation ? ` / ${hero.altOccupation}` : ''}</p>
+            </div>
+            <div className="champion-studio-badges">
+              <span className={hasDataOverride ? 'active' : ''}>{hasDataOverride ? t('dataOverrideActive') : t('baseChampionData')}</span>
+              <span className={hasArtOverride ? 'active' : ''}>{hasArtOverride ? t('artOverrideActive') : t('baseChampionArt')}</span>
+              {baseHero && <span>{t('sourceDataDragon')}</span>}
+            </div>
+          </div>
           <div>
             <h3>{t('artReference')}</h3>
             <p className="muted">{t('artReferenceHint')}</p>
