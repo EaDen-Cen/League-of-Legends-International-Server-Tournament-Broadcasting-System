@@ -144,6 +144,7 @@ export function HeroArtEditorDialog({
   const initialId = currentPicks[0] ?? heroes[0]?.id ?? 1;
   const [heroId, setHeroId] = useState(initialId);
   const [heroQuery, setHeroQuery] = useState('');
+  const [visibleHeroCount, setVisibleHeroCount] = useState(48);
 
   const makeDraft = (id: number): HeroArtOverride => {
     const runtime = state.heroArtOverrides?.[String(id)];
@@ -187,6 +188,8 @@ export function HeroArtEditorDialog({
     () => effectiveHeroes.filter(item => heroMatchesSearch(item, heroQuery, state.language)),
     [effectiveHeroes, heroQuery, state.language],
   );
+  const visibleHeroes = filteredHeroes.slice(0, visibleHeroCount);
+  const hasMoreHeroes = visibleHeroCount < filteredHeroes.length;
   const hasDataOverride = Boolean(state.heroDataOverrides?.[String(heroId)]);
   const hasArtOverride = Boolean(state.heroArtOverrides?.[String(heroId)]);
   if (!hero) return null;
@@ -223,11 +226,14 @@ export function HeroArtEditorDialog({
               <input
                 value={heroQuery}
                 placeholder={t('championSearchHint')}
-                onChange={event => setHeroQuery(event.target.value)}
+                onChange={event => {
+                  setHeroQuery(event.target.value);
+                  setVisibleHeroCount(48);
+                }}
               />
             </label>
             <div className="champion-studio-grid" role="list" aria-label={t('championSearchResults')}>
-              {filteredHeroes.map(item => {
+              {visibleHeroes.map(item => {
                 const selected = item.id === hero.id;
                 const name = state.language === 'zh' ? item.chineseName : item.englishName;
                 return <button
@@ -244,7 +250,13 @@ export function HeroArtEditorDialog({
                 </button>;
               })}
             </div>
-            <small className="champion-studio-result-count">{t('championResultCount', { shown: filteredHeroes.length, total: effectiveHeroes.length })}</small>
+            <div className="champion-studio-list-footer">
+              <small className="champion-studio-result-count">{t('championResultCount', { shown: visibleHeroes.length, total: filteredHeroes.length })}</small>
+              {hasMoreHeroes && <div className="champion-studio-list-actions">
+                <button type="button" onClick={() => setVisibleHeroCount(count => Math.min(count + 48, filteredHeroes.length))}>{t('championLoadMore')}</button>
+                <button type="button" onClick={() => setVisibleHeroCount(filteredHeroes.length)}>{t('championShowAll')}</button>
+              </div>}
+            </div>
           </section>
 
           <fieldset className="hero-data-editor">
