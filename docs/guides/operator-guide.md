@@ -72,7 +72,9 @@ Champion Studio 是 LoL 版本的 Champion 数据和视觉素材入口。
 
 ### Artwork Override
 
-默认使用 Data Dragon Splash Art。每位 Champion 可单独调整 Panel 与 Side 的 X / Y / Scale，也可强制 Local Portrait fallback。
+默认使用 Data Dragon Splash Art。每位 Champion 可直接替换 Portrait / Splash Art 来源，也可单独调整 Panel 与 Side 的 X / Y / Scale，或强制 Local Portrait fallback。
+
+素材来源只接受 HTTPS 或站内绝对路径；未修改的字段不会被写成粘性 override，因此后续 Data Dragon 更新仍会跟随新基线。
 
 右侧参考区显示完整原图和两个布局的实际取景范围。
 
