@@ -12,7 +12,7 @@ import type { Snapshot } from '../src/shared/types.js';
 test('HTTP/WS auth, realtime broadcast, delayed REST/WS, read-only roles and reconnect', { timeout: 20000 }, async () => {
   const port = 19000 + Math.floor(Math.random() * 1000);
   const proc = spawn(process.execPath, ['--import', 'tsx', 'server/server.ts'], {
-    env: { ...process.env, NODE_ENV: 'development', HOST: '127.0.0.1', PORT: String(port), DATA_FILE: join(mkdtempSync(join(tmpdir(), 'hok-api-')), 'match.json'), CONTROL_TOKEN: 'test-control', CASTER_TOKEN: 'test-caster', OVERLAY_TOKEN: 'test-overlay' },
+    env: { ...process.env, NODE_ENV: 'development', HOST: '127.0.0.1', PORT: String(port), DATA_FILE: join(mkdtempSync(join(tmpdir(), 'lol-api-')), 'match.json'), CONTROL_TOKEN: 'test-control', CASTER_TOKEN: 'test-caster', OVERLAY_TOKEN: 'test-overlay' },
     stdio: ['ignore', 'pipe', 'pipe'],
   });
   const sockets: WebSocket[] = [];
@@ -60,7 +60,7 @@ test('HTTP/WS auth, realtime broadcast, delayed REST/WS, read-only roles and rec
 
     const control = await connect('test-control'), overlay = await connect('test-overlay'), caster = await connect('test-caster');
     const id = randomUUID();
-    control.ws.send(JSON.stringify({ type: 'action', id, revision: 0, action: { type: 'draft_action', team: 'blue', action: 'ban', heroId: 46 } }));
+    control.ws.send(JSON.stringify({ type: 'action', id, revision: 0, action: { type: 'draft_action', team: 'blue', action: 'ban', heroId: 64 } }));
     await wait(() => overlay.messages.some(m => m.revision === 1));
     assert.equal(caster.messages.length, 1);
     const delayed = await (await fetch(base + '/api/match?role=control', { headers: { Authorization: 'Bearer test-caster' } })).json() as Snapshot;
@@ -73,6 +73,6 @@ test('HTTP/WS auth, realtime broadcast, delayed REST/WS, read-only roles and rec
     control.ws.send(JSON.stringify({ type: 'action', id: randomUUID(), revision: 1, action: { type: 'delay', seconds: 0 } }));
     await wait(() => caster.messages.some(m => m.revision === 1));
     const latest = await (await fetch(base + '/api/match', { headers: { Authorization: 'Bearer test-caster' } })).json() as Snapshot;
-    assert.deepEqual(latest.state.blueBans, [46]);
+    assert.deepEqual(latest.state.blueBans, [64]);
   } finally { for (const ws of sockets) ws.terminate(); proc.kill(); }
 });

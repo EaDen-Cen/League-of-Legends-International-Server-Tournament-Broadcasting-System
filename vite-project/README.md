@@ -1,6 +1,6 @@
 # 应用目录
 
-这是 HOK Broadcast 的前端、后端和测试执行目录。项目概览见 [根 README](../README.md)，全部说明见 [文档索引](../docs/README.md)。
+这是 LoL Broadcast 的前端、后端和测试执行目录。项目概览见 [根 README](../README.md)，全部说明见 [文档索引](../docs/README.md)。
 
 使用 Node.js 24，以下命令在本目录执行：
 

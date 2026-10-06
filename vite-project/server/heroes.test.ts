@@ -4,11 +4,6 @@ import { readFileSync } from 'node:fs';
 import { inflateSync } from 'node:zlib';
 import heroes from '../src/components/HeroList.js';
 
-const addedNames = [
-  'Yango', 'Flowborn (Tank)', 'Garuda', 'Arke', 'Bai Qi', 'Fatih', 'Umbrosa',
-  'Flowborn (Marksman)', 'Lapulapu', 'Chano', 'Xuance', 'Annette', 'Yixing',
-  'Sakeer', 'Haya', 'Devara', 'Feyd', 'Chicha', 'Florentino', 'Lorion', 'Flowborn (Mage)',
-];
 const pngSignature = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
 
 function pngDimensions(bytes: Buffer, label: string) {
@@ -64,7 +59,7 @@ function legacyImageDimensions(bytes: Buffer, label: string) {
   assert.fail(`${label}: unsupported or invalid image encoding`);
 }
 
-test('hero IDs and names are valid and unique; all previous valid IDs remain stable', () => {
+test('hero IDs and names are valid and unique; Riot champion IDs remain stable', () => {
   const ids = new Set<number>();
   const names = new Set<string>();
   for (const hero of heroes) {
@@ -76,19 +71,11 @@ test('hero IDs and names are valid and unique; all previous valid IDs remain sta
     assert.ok(!names.has(normalizedName), `Duplicate English name: ${hero.englishName}`);
     ids.add(hero.id); names.add(normalizedName);
   }
-  assert.ok(!ids.has(29), 'The blank ID 29 placeholder must not be selectable');
-  for (let id = 1; id <= 96; id++) {
-    if (id !== 29) assert.ok(ids.has(id), `Existing hero ID ${id} was removed`);
-  }
+  assert.equal(heroes.length, 173);
+  assert.equal(heroes.find(h=>h.id===29)?.englishName, 'Twitch');
+  assert.equal(heroes.find(h=>h.id===103)?.chineseName, '阿狸');
 });
 
-test('all 21 audited additions exist under new IDs, including distinct Flowborn forms', () => {
-  for (const name of addedNames) {
-    const hero = heroes.find(candidate => candidate.englishName === name);
-    assert.ok(hero, `Missing audited hero: ${name}`);
-    assert.ok(hero.id >= 97, `${name} must not reuse an existing or placeholder ID`);
-  }
-});
 
 test('hero relationships reference existing heroes and contain no self references or misspelled counter field', () => {
   const ids = new Set(heroes.map(hero => hero.id));
@@ -105,7 +92,7 @@ test('hero relationships reference existing heroes and contain no self reference
 
 test('every hero has a valid local portrait at its declared image path', () => {
   for (const hero of heroes) {
-    assert.match(hero.imageLink, /^\/heroesImg\/\d+\.(png|jpe?g|webp)$/);
+    assert.match(hero.imageLink, /^\/champions\/[A-Za-z0-9]+\.png$/);
     const label = `${hero.englishName} (${hero.imageLink})`;
     const bytes = readFileSync(new URL(`../public${hero.imageLink}`, import.meta.url));
     assert.ok(bytes.length >= 32, `${label}: missing image data`);

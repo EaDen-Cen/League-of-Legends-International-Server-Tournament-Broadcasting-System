@@ -610,10 +610,14 @@
   font-size:60px;
 }
 .broadcast-side .broadcast-bans {
-  grid-template-columns:420px 420px;
+  grid-template-columns:480px 480px;
 }
 .broadcast-side .broadcast-bans .ban-team {
   min-height:92px;
+}
+.broadcast-side .broadcast-bottom > .phase {
+  left:500px;
+  right:500px;
 }
 
 /* No empty history placeholder is rendered; when history exists it stays secondary. */

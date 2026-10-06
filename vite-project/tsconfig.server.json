@@ -16,7 +16,6 @@
   },
   "include": [
     "server/**/*.ts",
-    "scripts/hero-sync/**/*.ts",
     "src/shared/types.ts",
     "src/components/HeroList.tsx",
     "src/data/**/*.ts"

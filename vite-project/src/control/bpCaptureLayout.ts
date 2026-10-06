@@ -2,8 +2,8 @@ import { phases, type MatchState, type Side } from '../shared/types.js';
 import { normalizeCaptureRegion, type NormalizedCaptureRegion } from './windowCaptureGeometry.js';
 
 export type CaptureSlotKey =
-  | 'blueBan1' | 'blueBan2' | 'blueBan3' | 'blueBan4'
-  | 'redBan1' | 'redBan2' | 'redBan3' | 'redBan4'
+  | 'blueBan1' | 'blueBan2' | 'blueBan3' | 'blueBan4' | 'blueBan5'
+  | 'redBan1' | 'redBan2' | 'redBan3' | 'redBan4' | 'redBan5'
   | 'bluePick1' | 'bluePick2' | 'bluePick3' | 'bluePick4' | 'bluePick5'
   | 'redPick1' | 'redPick2' | 'redPick3' | 'redPick4' | 'redPick5';
 
@@ -26,8 +26,8 @@ export interface CaptureTarget {
 }
 
 export const captureSlotKeys: CaptureSlotKey[] = [
-  'blueBan1','blueBan2','blueBan3','blueBan4',
-  'redBan1','redBan2','redBan3','redBan4',
+  'blueBan1','blueBan2','blueBan3','blueBan4','blueBan5',
+  'redBan1','redBan2','redBan3','redBan4','redBan5',
   'bluePick1','bluePick2','bluePick3','bluePick4','bluePick5',
   'redPick1','redPick2','redPick3','redPick4','redPick5',
 ];
@@ -80,8 +80,8 @@ function splitLegacyZone(
 export function slotsFromLegacyZones(zones:LegacyCaptureZones):CaptureSlots {
   const result={} as CaptureSlots;
   for(const side of ['blue','red'] as const) {
-    for(let i=0;i<4;i++) {
-      result[`${side}Ban${i+1}` as CaptureSlotKey]=splitLegacyZone(zones[`${side}Ban`], 'ban', i, 4);
+    for(let i=0;i<5;i++) {
+      result[`${side}Ban${i+1}` as CaptureSlotKey]=splitLegacyZone(zones[`${side}Ban`], 'ban', i, 5);
     }
     for(let i=0;i<5;i++) {
       result[`${side}Pick${i+1}` as CaptureSlotKey]=splitLegacyZone(zones[`${side}Pick`], 'pick', i, 5);
@@ -121,7 +121,7 @@ function previousSlotIndex(
 }
 
 export function slotCountFor(state:Pick<MatchState,'draftMode'>, action:'ban'|'pick') {
-  return action==='pick' ? 5 : (state.draftMode==='match' ? 4 : 2);
+  return action==='pick' ? 5 : (state.draftMode==='match' ? 5 : 2);
 }
 
 export function captureTargetForState(

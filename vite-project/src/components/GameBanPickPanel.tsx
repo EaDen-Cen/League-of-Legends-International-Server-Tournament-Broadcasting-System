@@ -51,11 +51,11 @@ const GameBanPickPanel = ({ phases }: { phases: Phase[] }) => {
   const [resetCounter, setResetCounter] = useState(0);
 
   const roles: Role[] = [
-    { id: 'Jungling', name: '打野', englishName: 'Jungling' },
-    { id: 'Clash Lane', name: '对抗路', englishName: 'Clash Lane' },
+    { id: 'Jungle', name: '打野', englishName: 'Jungle' },
+    { id: 'Top Lane', name: '上路', englishName: 'Top Lane' },
     { id: 'Mid Lane', name: '中路', englishName: 'Mid Lane' },
-    { id: 'Roaming', name: '游走', englishName: 'Roaming' },
-    { id: 'Farm Lane', name: '发育路', englishName: 'Farm Lane' },
+    { id: 'Support', name: '辅助', englishName: 'Support' },
+    { id: 'Bot Lane', name: '下路', englishName: 'Bot Lane' },
   ];
 
   const handleLanguage = ()=>{

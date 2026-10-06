@@ -44,7 +44,7 @@ test('language switches every interface, persists on refresh, and follows the ca
   await overlay.goto('/overlay/draft#token=e2e-overlay');
   await expect(caster.locator('.status')).toHaveText('已连接');
 
-  await control.getByTitle('澜', { exact: true }).click();
+  await control.getByTitle('李青', { exact: true }).click();
   await expect(overlay.locator('.blue .bans img')).toHaveCount(1);
   await control.getByRole('button', { name: '比赛设置', exact: true }).click();
   await control.getByLabel('界面语言', { exact: true }).selectOption('eng');
@@ -72,7 +72,7 @@ test('language switches every interface, persists on refresh, and follows the ca
     await expect(page.locator('.analysis[data-side="red"] h2')).toHaveText('红方队伍');
   }
   for (const page of [control, caster, overlay]) {
-    await expect(page.locator('.blue .bans img')).toHaveAttribute('alt', 'Lam');
+    await expect(page.locator('.blue .bans img')).toHaveAttribute('alt', 'Lee Sin');
     await expectEnglishInterface(page);
   }
   await control.getByRole('button', { name: 'Match settings', exact: true }).click();
@@ -86,14 +86,14 @@ test('language switches every interface, persists on refresh, and follows the ca
   await control.locator('.score-control').first().getByRole('button', { name: 'Decrease series score', exact: true }).click();
   await expect(overlay.locator('.blue-score')).toHaveText('0');
   await control.getByRole('button', { name: 'Hide match settings', exact: true }).click();
-  await control.getByLabel('Search heroes', { exact: true }).fill('澜');
+  await control.getByLabel('Search heroes', { exact: true }).fill('李青');
   await expect(control.locator('.hero-grid button')).toHaveCount(1);
-  await expect(control.locator('.hero-grid button')).toHaveAttribute('title', 'Lam');
-  await expect(control.locator('.hero-grid button')).toHaveText('Lam');
+  await expect(control.locator('.hero-grid button')).toHaveAttribute('title', 'Lee Sin');
+  await expect(control.locator('.hero-grid button')).toHaveText('Lee Sin');
   await control.getByLabel('Search heroes', { exact: true }).fill('');
-  await control.getByRole('button', { name: 'Jungling', exact: true }).click();
-  await expect(control.getByTitle('Feyd', { exact: true })).toBeVisible();
-  await expect(control.getByTitle('Haya', { exact: true })).toHaveCount(0);
+  await control.getByRole('button', { name: 'Jungle', exact: true }).click();
+  await expect(control.getByTitle('Viego', { exact: true })).toBeVisible();
+  await expect(control.getByTitle('Ahri', { exact: true })).toHaveCount(0);
   await control.getByRole('button', { name: 'All', exact: true }).click();
   await expect(control.locator('.hero-grid button')).toHaveCount(heroes.length);
 
@@ -130,7 +130,7 @@ test('language switches every interface, persists on refresh, and follows the ca
   await control.getByRole('button', { name: 'Save settings', exact: true }).click();
   for (const page of [control, caster, overlay]) {
     await expect(page.locator('html')).toHaveAttribute('lang', 'zh-CN');
-    await expect(page.locator('.blue .bans img')).toHaveAttribute('alt', '澜');
+    await expect(page.locator('.blue .bans img')).toHaveAttribute('alt', '李青');
     await expect(page.locator('.blue h2')).toHaveText('蓝方队伍');
     await expect(page.locator('.red h2')).toHaveText('红方队伍');
   }
@@ -138,7 +138,7 @@ test('language switches every interface, persists on refresh, and follows the ca
   await expect(control.getByRole('button', { name: '设置延迟', exact: true })).toBeVisible();
   await expect(control.getByLabel('搜索英雄', { exact: true })).toBeVisible();
   await expect(control.getByRole('button', { name: '打野', exact: true })).toBeVisible();
-  await expect(control.getByTitle('暃', { exact: true })).toBeVisible();
+  await expect(control.getByTitle('佛耶戈', { exact: true })).toBeVisible();
   await expect(caster.locator('.analysis-side')).toHaveText(['蓝方阵容分析', '红方阵容分析']);
   expect(pageErrors).toEqual([]);
   await context.close();

@@ -10,10 +10,10 @@ import { initialState, phases, type Action } from '../src/shared/types.js';
 import heroes from '../src/components/HeroList.js';
 import { pickRestriction } from '../src/shared/draftRules.js';
 const apply = (s:Store,a:Action) => s.apply(randomUUID(),s.data.revision,a);
-const library = () => new TeamPresetStore(join(mkdtempSync(join(tmpdir(),'hok-library-')),'team-presets.json'));
+const library = () => new TeamPresetStore(join(mkdtempSync(join(tmpdir(),'lol-library-')),'team-presets.json'));
 
 test('library CRUD persists independent copies, immutable IDs and only roster fields', () => {
-  const file = join(mkdtempSync(join(tmpdir(),'hok-library-')),'team-presets.json');
+  const file = join(mkdtempSync(join(tmpdir(),'lol-library-')),'team-presets.json');
   const lib = new TeamPresetStore(file);
   const input = {...initialState().blueTeam,name:'Alpha',scores:3};
   const team = lib.create(input); input.players[0]='Changed';
@@ -28,7 +28,7 @@ test('library CRUD persists independent copies, immutable IDs and only roster fi
   reloaded.delete(team.id);assert.deepEqual(new TeamPresetStore(file).list(),[]);
 });
 test('library failed persistence never changes acknowledged in-memory teams', () => {
-  const file = join(mkdtempSync(join(tmpdir(),'hok-library-')),'team-presets.json');
+  const file = join(mkdtempSync(join(tmpdir(),'lol-library-')),'team-presets.json');
   const lib = new TeamPresetStore(file);mkdirSync(file+'.tmp');
   assert.throws(()=>lib.create(initialState().blueTeam));assert.deepEqual(lib.list(),[]);
 });
@@ -62,9 +62,9 @@ test('preset identities follow global history across swaps; deleting a preset re
 });
 
 test('substitutes survive restart and legacy roster updates; old libraries migrate without reserves', () => {
-  const file=join(mkdtempSync(join(tmpdir(),'hok-bench-')),'team-presets.json');
+  const file=join(mkdtempSync(join(tmpdir(),'lol-bench-')),'team-presets.json');
   const lib=new TeamPresetStore(file);
-  const reserve={id:randomUUID(),name:'Bench Player',role:'roam',portrait:'/bench.png'};
+  const reserve={id:randomUUID(),name:'Bench Player',role:'support',portrait:'/bench.png'};
   const team=lib.create({...initialState().blueTeam,substitutes:[reserve]});
   assert.deepEqual(new TeamPresetStore(file).get(team.id)?.substitutes,[reserve]);
   lib.update(team.id,{...initialState().blueTeam,name:'Renamed'});
@@ -75,7 +75,7 @@ test('substitutes survive restart and legacy roster updates; old libraries migra
   assert.deepEqual(new TeamPresetStore(file).get(team.id)?.substitutes,[]);
 });
 test('live reserve substitution preserves draft, team identity and library, remains delayed and supports undo', () => {
-  const lib=library(); const reserve={id:randomUUID(),name:'Bench Player',role:'roam' as const,portrait:'/bench.png'};
+  const lib=library(); const reserve={id:randomUUID(),name:'Bench Player',role:'support' as const,portrait:'/bench.png'};
   const team=lib.create({...initialState().blueTeam,players:['Starter','B','C','D','E'],substitutes:[reserve]});
   let now=1000000; const s=new Store(undefined,()=>now,lib);
   apply(s,{type:'load_team_preset',side:'blue',presetId:team.id});now+=180000;

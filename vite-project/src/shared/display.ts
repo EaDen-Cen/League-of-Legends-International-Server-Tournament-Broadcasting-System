@@ -23,8 +23,8 @@ export const phaseName = (state: MatchState, lang = state.language) => {
 };
 
 const laneKeys: Record<string, MessageKey> = {
-  all: 'all', 'Clash Lane': 'clash', Jungling: 'jungle',
-  'Mid Lane': 'mid', 'Farm Lane': 'farm', Roaming: 'roam',
+  all: 'all', 'Top Lane': 'top', Jungle: 'jungle',
+  'Mid Lane': 'mid', 'Bot Lane': 'bot', Support: 'support',
 };
 export const lanes = Object.keys(laneKeys);
 export const laneName = (lane: string, lang: Language) => translate(lang, laneKeys[lane]);

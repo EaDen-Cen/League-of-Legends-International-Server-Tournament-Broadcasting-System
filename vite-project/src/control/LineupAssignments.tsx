@@ -61,11 +61,11 @@ export function LineupAssignments({
   const zh=state.language==='zh';
   const [regions,setRegions]=useState<Region[]>(()=>{
     try {
-      const stored=JSON.parse(localStorage.getItem('hok-lineup-regions')||'null');
+      const stored=JSON.parse(localStorage.getItem('lol-lineup-regions')||'null');
       return Array.isArray(stored)&&stored.length===10 ? stored : emptyRegions();
     } catch { return emptyRegions(); }
   });
-  const [auto,setAuto]=useState(()=>localStorage.getItem('hok-lineup-auto')==='1');
+  const [auto,setAuto]=useState(()=>localStorage.getItem('lol-lineup-auto')==='1');
   const [busy,setBusy]=useState(false);
   const [message,setMessage]=useState('');
   const [results,setResults]=useState<SlotResult[]>([]);
@@ -92,7 +92,7 @@ export function LineupAssignments({
     busyRef.current=true;
     setBusy(true);
     try {
-      localStorage.setItem('hok-lineup-regions',JSON.stringify(regions));
+      localStorage.setItem('lol-lineup-regions',JSON.stringify(regions));
       const response=await fetch('/api/capture-lineup',{
         method:'POST',
         headers:{Authorization:`Bearer ${token}`,'Content-Type':'application/json'},
@@ -183,7 +183,7 @@ export function LineupAssignments({
 
     {state.bpInputMode==='screen'&&<div className="lineup-auto">
       <div className="lineup-auto-toolbar">
-        <label><input type="checkbox" checked={auto} onChange={event=>{setAuto(event.target.checked);localStorage.setItem('hok-lineup-auto',event.target.checked?'1':'0');}} /> {zh?'BP 完成后自动同步最终阵容':'Auto-sync final lineup after draft'}</label>
+        <label><input type="checkbox" checked={auto} onChange={event=>{setAuto(event.target.checked);localStorage.setItem('lol-lineup-auto',event.target.checked?'1':'0');}} /> {zh?'BP 完成后自动同步最终阵容':'Auto-sync final lineup after draft'}</label>
         <button disabled={disabled||busy||!regionsReady} onClick={()=>void scan()}>{busy?(zh?'正在扫描…':'Scanning…'):(zh?'立即扫描 10 个槽位':'Scan all 10 slots')}</button>
         {blueSolved&&redSolved&&<button disabled={disabled} onClick={()=>applyLineups(blueSolved.heroes,redSolved.heroes)}>{zh?'应用本次识别':'Apply this scan'}</button>}
       </div>

@@ -12,11 +12,11 @@ import { phases, type MatchState, type PlayerRole, type Side } from '../shared/t
 import { heroArtCrop } from '../data/heroArtFocus';
 
 const rolePaths: Record<PlayerRole, string> = {
-  clash: 'M7 4 20 17l-3 3L4 7V4h3Zm13 0h-3L4 17l3 3L20 7V4ZM3 21l4-4m10 0 4 4',
+  top: 'M7 4 20 17l-3 3L4 7V4h3Zm13 0h-3L4 17l3 3L20 7V4ZM3 21l4-4m10 0 4 4',
   jungle: 'M12 22C4 16 3 10 4 4l6 6L12 2l2 8 6-6c1 6 0 12-8 18ZM12 11v9',
   mid: 'm3 17 14-14 4 4L7 21l-4-4Zm0-9V3h5m8 18h5v-5',
-  farm: 'M5 3c15 1 15 17 0 18l8-9L5 3Zm0 0v18M3 12h18m-3-3 3 3-3 3',
-  roam: 'M12 2 3 6v6c0 5 9 10 9 10s9-5 9-10V6l-9-4Zm0 4v11m-4-7h8',
+  bot: 'M5 3c15 1 15 17 0 18l8-9L5 3Zm0 0v18M3 12h18m-3-3 3 3-3 3',
+  support: 'M12 2 3 6v6c0 5 9 10 9 10s9-5 9-10V6l-9-4Zm0 4v11m-4-7h8',
 };
 export function PositionIcon({ role, label }: { role: PlayerRole; label: string }) {
   return <svg className="position-icon" viewBox="0 0 24 24" role="img" aria-label={label}><title>{label}</title><path d={rolePaths[role]} fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>;
@@ -126,7 +126,7 @@ export function DraftOverlay({ state }: { state: MatchState }) {
     <div className="broadcast-bottom">
       {state.draftHistory.length > 0 && <DraftHistory state={state} compact />}
       <div className="broadcast-bans">{sides.map((side, position) => <div className={`ban-team ${side} display-${position === 0 ? 'left' : 'right'}`} key={state[`${side}Team`].id}><span>{t(side === 'blue' ? 'blueSide' : 'redSide')} · {t('ban')}</span><div className="bans">
-        {Array.from({ length: state.draftMode === 'match' ? 4 : 2 }, (_, index) => {
+        {Array.from({ length: state.draftMode === 'match' ? 5 : 2 }, (_, index) => {
           const value = state[`${side}Bans`][index];
           const skipped = value === null;
           const hero = typeof value === 'number' ? heroForState(state, value) : undefined;

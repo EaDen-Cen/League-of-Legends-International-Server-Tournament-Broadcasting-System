@@ -1,7 +1,7 @@
 import type { Language } from './types';
 import { translate, type MessageKey } from './i18n';
 
-const ruleErrors = new Set<MessageKey>(['emptyBanOnlyDuringBan', 'flowbornAlreadyUsed', 'lineupInvalid', 'lineupIncomplete', 'heroArtCropInvalid', 'heroArtOverrideInvalid', 'heroDataOverrideInvalid', 'substitutesInvalid', 'presetLocked', 'presetDuplicate', 'presetMissing', 'presetInvalid', 'presetSaveFailed', 'opponentAlreadyUsed', 'portraitInvalid', 'portraitsInvalid', 'firstPickLocked', 'playerMissing', 'usedByPlayer', 'usedByTeam', 'gameAlreadyCommitted', 'completeDraftFirst', 'commitBeforeNext', 'updateScoreBeforeNext', 'seriesHasEnded', 'swapOnlyBetweenGames', 'committedDraftReset', 'rulesLocked', 'duplicatePlayerIds', 'rosterLocked']);
+const ruleErrors = new Set<MessageKey>(['emptyBanOnlyDuringBan', 'lineupInvalid', 'lineupIncomplete', 'heroArtCropInvalid', 'heroArtOverrideInvalid', 'heroDataOverrideInvalid', 'substitutesInvalid', 'presetLocked', 'presetDuplicate', 'presetMissing', 'presetInvalid', 'presetSaveFailed', 'opponentAlreadyUsed', 'portraitInvalid', 'portraitsInvalid', 'firstPickLocked', 'playerMissing', 'usedByPlayer', 'usedByTeam', 'gameAlreadyCommitted', 'completeDraftFirst', 'commitBeforeNext', 'updateScoreBeforeNext', 'seriesHasEnded', 'swapOnlyBetweenGames', 'committedDraftReset', 'rulesLocked', 'duplicatePlayerIds', 'rosterLocked']);
 
 const englishMessages = new Map<string, string>([
   ['暂时无法连接服务器', 'Unable to connect to the server. Please try again shortly.'],

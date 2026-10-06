@@ -14,7 +14,7 @@ export function ControlHeroPicker({ state, disabled, active, send, acknowledged 
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('all');
   const [sortMode, setSortMode] = useState<HeroSortMode>(() => {
-    const saved = globalThis.localStorage?.getItem('hok-hero-sort-mode') as HeroSortMode | null;
+    const saved = globalThis.localStorage?.getItem('lol-hero-sort-mode') as HeroSortMode | null;
     return saved && heroSortModes.includes(saved) ? saved : (state.language === 'zh' ? 'name-zh' : 'name-en');
   });
   const [recorded, setRecorded] = useState<Action>();
@@ -56,7 +56,7 @@ export function ControlHeroPicker({ state, disabled, active, send, acknowledged 
     <div className={`picker-heading side-${phase?.team || 'none'}`}>
       <div className="current-phase" aria-live="polite">
         <h2>{phaseName(state, state.language)}</h2>
-        {phase && <span>{phase.action === 'ban' ? t('banCount', {number:state[`${phase.team}Bans`].length + 1,total:state.draftMode === 'match' ? 4 : 2}) : t('pickingFor', {player:state[`${phase.team}Team`].players[state[`${phase.team}Picks`].length] || t('playerNumber',{number:state[`${phase.team}Picks`].length + 1}),slot:state[`${phase.team}Picks`].length + 1})}</span>}
+        {phase && <span>{phase.action === 'ban' ? t('banCount', {number:state[`${phase.team}Bans`].length + 1,total:state.draftMode === 'match' ? 5 : 2}) : t('pickingFor', {player:state[`${phase.team}Team`].players[state[`${phase.team}Picks`].length] || t('playerNumber',{number:state[`${phase.team}Picks`].length + 1}),slot:state[`${phase.team}Picks`].length + 1})}</span>}
         {phase && <small>{t('phaseStep',{step:state.currentPhase+1,total:phases(state.draftMode,state.firstPickSide).length})}</small>}
       </div>
       <input ref={searchInput} aria-label={t('searchHeroes')} placeholder={t('searchHeroes')} value={search} onChange={e => setSearch(e.target.value)} onKeyDown={e => {
@@ -84,7 +84,7 @@ export function ControlHeroPicker({ state, disabled, active, send, acknowledged 
           <select value={sortMode} onChange={event => {
             const next = event.target.value as HeroSortMode;
             setSortMode(next);
-            globalThis.localStorage?.setItem('hok-hero-sort-mode', next);
+            globalThis.localStorage?.setItem('lol-hero-sort-mode', next);
           }}>
             <option value="name-zh">{t('heroSortChinese')}</option>
             <option value="name-en">{t('heroSortEnglish')}</option>

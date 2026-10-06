@@ -2,6 +2,8 @@
 
 [返回项目首页](../README.md)
 
+> 此索引包含继承的 HOK 历史指南；当前 LoL 英雄、BP、存储路径和启动说明以根 README 为准。HOK 自动同步已停用。
+
 | 类别 | 入口 | 用途 |
 | --- | --- | --- |
 | 当前操作 | [运行指南](guides/getting-started.md)、[操作指南](guides/operator-guide.md)、[Windows 启动器](guides/windows-launcher.md) | 安装部署与现场操作 |

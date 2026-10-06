@@ -6,7 +6,7 @@ const messages = {
   heroSortEnglish: {zh:'英文名称',eng:'English name'},
   heroSortRelease: {zh:'上线时间（新→旧）',eng:'Release date (newest)'},
   heroSortPickRate: {zh:'官方选取率（高→低）',eng:'Official pick rate (highest)'},
-  heroSortLane: {zh:'分路（对抗→中路→发育→打野→游走）',eng:'Lane (Clash → Mid → Farm → Jungle → Roam)'},
+  heroSortLane: {zh:'分路（上路→打野→中路→下路→辅助）',eng:'Lane (Top → Jungle → Mid → Bot → Support)'},
   heroSortDataCoverage: {zh:'该排序已有 {known}/{total} 位英雄的数据；缺失数据的英雄会排在已知数据之后。',eng:'This sort has data for {known}/{total} heroes; heroes with missing data are placed after known values.'},
   heroImageSettings: {zh:'英雄数据与图片',eng:'Hero data & artwork'},
   heroDataSettings: {zh:'英雄数据',eng:'Hero data'},
@@ -121,7 +121,7 @@ const messages = {
   windowCaptureDisconnect: { zh:'断开窗口', eng:'Disconnect window' },
   windowCaptureDisconnected: { zh:'未连接游戏窗口', eng:'No game window connected' },
   windowCaptureConnected: { zh:'已连接游戏窗口', eng:'Game window connected' },
-  windowCaptureChooseHint: { zh:'点击“选择游戏窗口”，然后在浏览器弹窗中选择王者荣耀或模拟器窗口。', eng:'Choose the game window, then select Honor of Kings or the emulator in the browser share dialog.' },
+  windowCaptureChooseHint: { zh:'点击“选择游戏窗口”，然后在浏览器弹窗中选择英雄联盟游戏窗口。', eng:'Choose the game window, then select the League of Legends game window in the browser share dialog.' },
   windowCaptureUnsupported: { zh:'当前浏览器不支持窗口采集；请使用 Chrome / Edge 的 HTTPS 或 localhost 页面，或切换兼容模式。', eng:'This browser cannot capture a window. Use Chrome / Edge on HTTPS or localhost, or switch to legacy capture.' },
   windowCaptureCancelled: { zh:'已取消窗口选择。', eng:'Window selection cancelled.' },
   windowCaptureFailed: { zh:'无法连接游戏窗口，请重新选择或切换兼容模式。', eng:'Could not connect to the game window. Try again or use legacy capture.' },
@@ -138,14 +138,14 @@ const messages = {
   nativeCaptureAdvanced: { zh:'高级兼容模式：Windows 桌面坐标', eng:'Advanced legacy mode: Windows desktop coordinates' },
   nativeCaptureHint: { zh:'仅在浏览器窗口采集不可用时使用；该模式仍需要本机 Windows 服务和像素坐标。', eng:'Use only if browser window capture is unavailable. This mode still requires the local Windows service and pixel coordinates.' },
   captureFourZoneHint: { zh:'只需校准蓝/红双方的 Pick 列和 Ban 区共 4 个区域；程序会根据当前 BP 阶段自动截取正在变化的单个槽位，不再把整张 BP 画面拿去匹配英雄。', eng:'Calibrate four regions: blue/red Pick columns and Ban rows. Auto BP then crops only the active slot for the current draft phase instead of matching the whole draft screen.' },
-  captureExplicitSlotsHint: { zh:'改为 18 个独立识别框：蓝/红各 4 个 Ban、各 5 个 Pick。每个框都可以单独拖拽校准，程序不会再根据整列/整行自动均分。', eng:'Uses 18 independent recognition boxes: 4 Ban and 5 Pick slots per side. Every box is calibrated separately; the app no longer auto-splits a row or column.' },
-  captureCalibrateExplicitSlots: { zh:'18 槽位独立校准', eng:'18-slot independent calibration' },
+  captureExplicitSlotsHint: { zh:'改为 20 个独立识别框：蓝/红各 5 个 Ban、各 5 个 Pick。每个框都可以单独拖拽校准，程序不会再根据整列/整行自动均分。', eng:'Uses 20 independent recognition boxes: 5 Ban and 5 Pick slots per side. Every box is calibrated separately; the app no longer auto-splits a row or column.' },
+  captureCalibrateExplicitSlots: { zh:'20 槽位独立校准', eng:'20-slot independent calibration' },
   captureExplicitCalibrationHint: { zh:'先点击一个 B1–B4 或 P1–P5，再到游戏预览中直接框住该英雄头像区域。不同槽位可使用完全不同的大小和位置。', eng:'Choose B1–B4 or P1–P5, then drag directly over that exact hero portrait in the game preview. Every slot can have a different size and position.' },
   captureExplicitSlot: { zh:'{side} {action} {number}', eng:'{side} {action} {number}' },
   captureDragSelectedSlot: { zh:'正在校准：{slot}。请直接在预览画面拖出新的识别框。', eng:'Calibrating {slot}. Drag a new recognition rectangle directly on the preview.' },
   captureExplicitSlotSaved: { zh:'已保存 {slot} 的独立识别框。', eng:'Saved the independent recognition box for {slot}.' },
-  captureExplicitSlotsReset: { zh:'18 个识别框已恢复默认位置；仍可逐个重新校准。', eng:'All 18 boxes were reset to defaults; each can still be recalibrated independently.' },
-  captureResetAllSlots: { zh:'重置全部 18 个框', eng:'Reset all 18 boxes' },
+  captureExplicitSlotsReset: { zh:'20 个识别框已恢复默认位置；仍可逐个重新校准。', eng:'All 20 boxes were reset to defaults; each can still be recalibrated independently.' },
+  captureResetAllSlots: { zh:'重置全部 20 个框', eng:'Reset all 20 boxes' },
   captureExplicitAutoHint: { zh:'自动监视只读取当前 BP 阶段对应的那个独立识别框；不会根据其他框的位置推算。', eng:'Auto-watch reads only the independent box assigned to the current BP phase; no position is inferred from neighboring boxes.' },
   captureZoneBluePick: { zh:'蓝方 Pick 列', eng:'Blue Pick column' },
   captureZoneRedPick: { zh:'红方 Pick 列', eng:'Red Pick column' },
@@ -198,14 +198,9 @@ const messages = {
 
   backendUpgrade: { zh: '当前连接的是旧版服务。请停止旧进程并重新启动服务器，V2 操作将在连接新版服务后启用。', eng: 'Connected to an older server. Stop it and restart the server to enable V2 controls.' },
   draftRules: { zh: 'BP 规则', eng: 'BP rules' },
-  flowbornRule: { zh: '元流之子计算规则', eng: 'Flowborn counting rule' },
-  flowbornIndependent: { zh: '各形态独立计算', eng: 'Count each form separately' },
-  flowbornShared: { zh: '所有形态视为同一英雄', eng: 'Treat all forms as one hero' },
-  flowbornRuleHint: { zh: '关闭独立计算后，任一元流之子被 Ban 或 Pick 后，其他形态在本局也不可再使用；跨局限制遵循当前 BP 规则。', eng: 'When forms are shared, banning or picking any Flowborn blocks every other form in the current game; cross-game restrictions follow the selected BP rule.' },
-  flowbornAlreadyUsed: { zh: '本场规则将所有元流之子视为同一英雄，已有一个形态被选择或禁用', eng: 'This match treats all Flowborn forms as one hero, and one form has already been picked or banned.' },
   ruleNormal: { zh: '普通 BP', eng: 'NORMAL BP' },
   rulePlayer: { zh: '选手 BP', eng: 'PLAYER BP' },
-  ruleGlobal: { zh: '全局 BP', eng: 'GLOBAL BP' },
+  ruleGlobal: { zh: '队内全局 BP（自定义）', eng: 'Team Fearless (custom)' },
   historyTitle: { zh: '有效局历史', eng: 'COMMITTED GAMES' },
   noHistory: { zh: '尚无已确认的有效局', eng: 'No committed games yet' },
   historyNormal: { zh: '仅供回顾，不限制下一局英雄。', eng: 'For reference only. Previous picks remain available.' },
@@ -237,16 +232,16 @@ const messages = {
   rosterLocked: { zh: '选禁开始后选手及分路锁定，请在下一局开始前修改', eng: 'Players and roles lock during the draft. Change them before the next draft.' },
   scoreImmediate: { zh: '比分直接同步；其他设置需保存。', eng: 'Score changes sync immediately. Save other settings separately.' },
   "appName": {
-    "zh": "王者荣耀赛事转播系统",
-    "eng": "HOK Broadcast System"
+    "zh": "英雄联盟赛事转播系统",
+    "eng": "LoL Broadcast System"
   },
   "gameTitle": {
-    "zh": "王者荣耀国际服",
-    "eng": "HONOR OF KINGS"
+    "zh": "英雄联盟",
+    "eng": "LEAGUE OF LEGENDS"
   },
   "brandTitle": {
-    "zh": "王者荣耀",
-    "eng": "HOK"
+    "zh": "英雄联盟",
+    "eng": "LoL"
   },
   "brandSubtitle": {
     "zh": "赛事转播",
@@ -432,25 +427,25 @@ const messages = {
     "zh": "分路",
     "eng": "Lane"
   },
-  "clash": {
-    "zh": "对抗路",
-    "eng": "Clash Lane"
+  "top": {
+    "zh": "上路",
+    "eng": "Top Lane"
   },
   "jungle": {
     "zh": "打野",
-    "eng": "Jungling"
+    "eng": "Jungle"
   },
   "mid": {
     "zh": "中路",
     "eng": "Mid Lane"
   },
-  "farm": {
-    "zh": "发育路",
-    "eng": "Farm Lane"
+  "bot": {
+    "zh": "下路",
+    "eng": "Bot Lane"
   },
-  "roam": {
-    "zh": "游走",
-    "eng": "Roaming"
+  "support": {
+    "zh": "辅助",
+    "eng": "Support"
   },
   "all": {
     "zh": "全部",
@@ -505,12 +500,12 @@ const messages = {
     "eng": "BP format"
   },
   "matchMode": {
-    "zh": "赛事模式 · 每队禁用 4 位",
-    "eng": "Match · 4 bans per team"
+    "zh": "赛事模式 · 每队禁用 5 位",
+    "eng": "Tournament Draft · 5 bans per team"
   },
   "normalMode": {
-    "zh": "普通模式 · 每队禁用 2 位",
-    "eng": "Normal · 2 bans per team"
+    "zh": "自定义简化模式 · 每队禁用 2 位",
+    "eng": "Custom simplified · 2 bans per team"
   },
   "language": {
     "zh": "界面语言",
@@ -597,8 +592,8 @@ const messages = {
     "eng": "Search heroes"
   },
   "availabilityHint": {
-    "zh": "元流之子按形态录入；形态及联动英雄的可用范围，以本场游戏房间为准。",
-    "eng": "Enter Flowborn by form. Form and crossover eligibility follows the current game lobby."
+    "zh": "英雄可用范围以本场赛事版本及游戏房间为准。",
+    "eng": "Champion eligibility follows the tournament patch and game lobby."
   },
   "statusConnecting": {
     "zh": "正在连接",

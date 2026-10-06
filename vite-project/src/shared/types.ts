@@ -21,11 +21,11 @@ export type DraftRuleMode = 'normal' | 'player' | 'global';
 export type SideSwapMode = 'moveTeams' | 'colorsOnly';
 
 export type PlayerRole =
-  | 'clash'
+  | 'top'
   | 'jungle'
   | 'mid'
-  | 'farm'
-  | 'roam';
+  | 'bot'
+  | 'support';
 
 export interface Team {
   id: string;
@@ -91,6 +91,7 @@ export interface MatchState {
   firstPickSide: Side;
   sideSwapMode: SideSwapMode;
   draftRuleMode: DraftRuleMode;
+  /** Deprecated HOK wire field; ignored for LoL champion identity. */
   flowbornFormsIndependent: boolean;
   draftHistory: GameDraftRecord[];
   draftGameNumber: number | null;
@@ -163,7 +164,7 @@ export const initialState = (): MatchState => ({
     name: '蓝方队伍',
     logo: '',
     players: ['', '', '', '', ''],
-    playerRoles: ['clash', 'jungle', 'mid', 'farm', 'roam'],
+    playerRoles: ['top', 'jungle', 'mid', 'bot', 'support'],
     playerPortraits: ['', '', '', '', ''],
   },
 
@@ -172,7 +173,7 @@ export const initialState = (): MatchState => ({
     name: '红方队伍',
     logo: '',
     players: ['', '', '', '', ''],
-    playerRoles: ['clash', 'jungle', 'mid', 'farm', 'roam'],
+    playerRoles: ['top', 'jungle', 'mid', 'bot', 'support'],
     playerPortraits: ['', '', '', '', ''],
   },
 
@@ -215,7 +216,7 @@ export const initialState = (): MatchState => ({
 export function phases(mode: MatchState['draftMode'], firstPickSide: Side = 'blue') {
   const sequence =
     mode === 'match'
-      ? 'bb rb bb rb bp rp rp bp bp rp rb bb rb bb rp bp bp rp'
+      ? 'bb rb bb rb bb rb bp rp rp bp bp rp rb bb rb bb rp bp bp rp'
       : 'bb bb rb rb bp rp rp bp bp rp rp bp bp rp';
 
   return sequence.split(' ').map(s => ({

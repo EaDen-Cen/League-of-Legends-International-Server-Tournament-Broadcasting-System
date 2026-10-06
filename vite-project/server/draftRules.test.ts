@@ -29,98 +29,6 @@ function advance(s: Store) {
 }
 
 
-const flowborn = heroes.filter(hero => hero.variantGroup === 'flowborn');
-assert.ok(flowborn.length >= 5, 'expected all Flowborn forms in the hero roster');
-
-function setFlowbornIndependent(s: Store, independent: boolean) {
-  act(s, { type: 'settings', settings: { ...s.data.state, flowbornFormsIndependent: independent } });
-}
-
-function fillBans(s: Store) {
-  while (phases(s.data.state.draftMode, s.data.state.firstPickSide)[s.data.state.currentPhase]?.action === 'ban') {
-    const state = s.data.state;
-    const phase = phases(state.draftMode, state.firstPickSide)[state.currentPhase];
-    const hero = heroes.find(candidate => candidate.variantGroup !== 'flowborn' && !draftHeroUsed(state, candidate.id) && !draftRestriction(state, phase.team, phase.action, candidate.id))!;
-    act(s, { type: 'draft_action', ...phase, heroId: hero.id });
-  }
-}
-
-test('shared Flowborn mode blocks every other form after a ban or pick in the same game', () => {
-  const s = setup('normal');
-  setFlowbornIndependent(s, false);
-
-  const firstPhase = phases(s.data.state.draftMode)[0];
-  act(s, { type: 'draft_action', ...firstPhase, heroId: flowborn[0].id });
-  const secondPhase = phases(s.data.state.draftMode)[1];
-  assert.throws(
-    () => act(s, { type: 'draft_action', ...secondPhase, heroId: flowborn[1].id }),
-    /flowbornAlreadyUsed/,
-  );
-
-  act(s, { type: 'reset_draft' });
-  fillBans(s);
-  const firstPick = phases(s.data.state.draftMode)[s.data.state.currentPhase];
-  act(s, { type: 'draft_action', ...firstPick, heroId: flowborn[0].id });
-  const nextPick = phases(s.data.state.draftMode)[s.data.state.currentPhase];
-  assert.equal(nextPick.action, 'pick');
-  assert.throws(
-    () => act(s, { type: 'draft_action', ...nextPick, heroId: flowborn[1].id }),
-    /flowbornAlreadyUsed/,
-  );
-});
-
-test('independent Flowborn mode keeps forms selectable as separate heroes', () => {
-  const s = setup('normal');
-  assert.equal(s.data.state.flowbornFormsIndependent, true);
-  const first = phases(s.data.state.draftMode)[0];
-  act(s, { type: 'draft_action', ...first, heroId: flowborn[0].id });
-  const second = phases(s.data.state.draftMode)[1];
-  act(s, { type: 'draft_action', ...second, heroId: flowborn[1].id });
-  assert.deepEqual([s.data.state.blueBans[0], s.data.state.redBans[0]], [flowborn[0].id, flowborn[1].id]);
-});
-
-test('shared Flowborn identity follows Global BP history for picks and opponent bans', () => {
-  const s = setup('global');
-  setFlowbornIndependent(s, false);
-  fillBans(s);
-  const firstPick = phases(s.data.state.draftMode)[s.data.state.currentPhase];
-  assert.equal(firstPick.team, 'blue');
-  act(s, { type: 'draft_action', ...firstPick, heroId: flowborn[0].id });
-  fill(s);
-  advance(s);
-
-  assert.equal(pickRestriction(s.data.state, 'blue', 0, flowborn[1].id), 'usedByTeam');
-  assert.equal(pickRestriction(s.data.state, 'red', 0, flowborn[1].id), undefined);
-  assert.equal(banRestriction(s.data.state, 'red', flowborn[1].id), 'opponentAlreadyUsed');
-});
-
-test('shared Flowborn identity follows Player BP history for the same player', () => {
-  const s = setup('player');
-  setFlowbornIndependent(s, false);
-  fillBans(s);
-  const firstPick = phases(s.data.state.draftMode)[s.data.state.currentPhase];
-  act(s, { type: 'draft_action', ...firstPick, heroId: flowborn[0].id });
-  fill(s);
-  act(s, { type: 'commit_game' });
-  act(s, { type: 'score', team: 'blue', delta: 1 });
-  act(s, { type: 'next_game' });
-
-  assert.equal(pickRestriction(s.data.state, 'blue', 0, flowborn[1].id), 'usedByPlayer');
-  assert.equal(pickRestriction(s.data.state, 'blue', 1, flowborn[1].id), undefined);
-});
-
-test('Flowborn counting rule locks with the rest of the draft rules', () => {
-  const s = setup('normal');
-  setFlowbornIndependent(s, false);
-  const phase = phases(s.data.state.draftMode)[0];
-  const hero = heroes.find(candidate => candidate.variantGroup !== 'flowborn')!;
-  act(s, { type: 'draft_action', ...phase, heroId: hero.id });
-  assert.throws(
-    () => act(s, { type: 'settings', settings: { ...s.data.state, flowbornFormsIndependent: true } }),
-    /rulesLocked/,
-  );
-});
-
 test('Normal BP keeps committed history but all previous picks are reusable', () => {
   const s = setup('normal'); fill(s); const old = [...s.data.state.bluePicks, ...s.data.state.redPicks];
   advance(s);
@@ -159,7 +67,7 @@ test('Player BP follows player identity across slots, substitutes and side chang
 });
 test('Global BP rejects team-history picks, while own history does not forbid bans', () => {
   const s = setup('global'); fill(s); const previous = s.data.state.bluePicks[0]; advance(s);
-  for (let i = 0; i < 4; i++) act(s, { type: 'draft_action', ...phases('match')[i], heroId: heroes[70 + i].id });
+  for (let i = 0; i < 6; i++) act(s, { type: 'draft_action', ...phases('match')[i], heroId: heroes[70 + i].id });
   assert.throws(() => act(s, { type: 'draft_action', team: 'blue', action: 'pick', heroId: previous }), /usedByTeam/);
   act(s, { type: 'reset_draft' });
   act(s, { type: 'draft_action', team: 'blue', action: 'ban', heroId: previous });
@@ -167,7 +75,7 @@ test('Global BP rejects team-history picks, while own history does not forbid ba
 });
 test('Player BP allows help-picks but validates the final owner before commit', () => {
   const s = setup('player'); fill(s); const previous = s.data.state.blueAssignments[0] as number; advance(s);
-  for (let i = 0; i < 4; i++) act(s, { type: 'draft_action', ...phases('match')[i], heroId: heroes[70 + i].id });
+  for (let i = 0; i < 6; i++) act(s, { type: 'draft_action', ...phases('match')[i], heroId: heroes[70 + i].id });
   // A teammate may secure A1's old hero during the draft; draft order is not ownership.
   act(s, { type: 'draft_action', team: 'blue', action: 'pick', heroId: previous });
   fill(s);
@@ -177,7 +85,7 @@ test('Player BP allows help-picks but validates the final owner before commit', 
   assert.equal(s.data.state.draftHistory.at(-1)?.blueAssignments[1], previous);
 });
 test('commit is explicit, durable and idempotent; redo/reset does not create or delete history', () => {
-  const file = join(mkdtempSync(join(tmpdir(), 'hok-v2-')), 'match.json');
+  const file = join(mkdtempSync(join(tmpdir(), 'lol-v2-')), 'match.json');
   const s = setup('global', new Store(file));
   assert.throws(() => act(s, { type: 'commit_game' }), /completeDraftFirst/);
   fill(s); assert.equal(s.data.state.draftHistory.length, 0);
@@ -225,7 +133,7 @@ test('legacy migration covers active state, old delayed snapshots and undo recor
     for (const key of ['draftRuleMode', 'draftHistory', 'draftGameNumber', 'committedGameId', 'blueAssignments', 'redAssignments']) delete st[key];
     for (const side of ['blue', 'red']) { delete st[`${side}Team`].playerRoles; delete st[`${side}Team`].players; delete st[`${side}Team`].id; }
   }
-  const file = join(mkdtempSync(join(tmpdir(), 'hok-legacy-')), 'match.json'); writeFileSync(file, JSON.stringify(legacy));
+  const file = join(mkdtempSync(join(tmpdir(), 'lol-legacy-')), 'match.json'); writeFileSync(file, JSON.stringify(legacy));
   const restored = new Store(file, () => Date.now() + 3600000);
   for (const st of [restored.data.state, restored.snapshot('caster').state, ...restored.data.history]) {
     assert.equal(st.draftRuleMode, 'normal'); assert.deepEqual(st.draftHistory, []);
@@ -233,7 +141,7 @@ test('legacy migration covers active state, old delayed snapshots and undo recor
   }
   assert.deepEqual(restored.data.state.bluePicks, s.data.state.bluePicks);
   assert.deepEqual(restored.data.state.blueAssignments, [...s.data.state.bluePicks, ...Array(5 - s.data.state.bluePicks.length).fill(null)]);
-  act(restored, { type: 'undo' }); assert.equal(restored.data.state.currentPhase, 17);
+  act(restored, { type: 'undo' }); assert.equal(restored.data.state.currentPhase, 19);
 });
 test('player assignment changes preserve immutable pick order and cannot bypass personal restrictions', () => {
   const s = setup('player'); fill(s); const original = [...s.data.state.bluePicks];
@@ -282,7 +190,7 @@ test('live roster edits preserve draft and committed history, follow delay and s
   const s = setup('global', new Store(undefined, () => now)); fill(s);
   now += 180000;
   const before = structuredClone(s.data.state);
-  act(s, { type: 'settings', settings: { ...s.data.state, blueTeam: { ...s.data.state.blueTeam, players: ['Sub', 'A2', 'A3', 'A4', 'A5'], playerRoles: ['mid','jungle','clash','farm','roam'], playerPortraits: ['/playerImg/sub.png','','','',''] } } });
+  act(s, { type: 'settings', settings: { ...s.data.state, blueTeam: { ...s.data.state.blueTeam, players: ['Sub', 'A2', 'A3', 'A4', 'A5'], playerRoles: ['mid','jungle','top','bot','support'], playerPortraits: ['/playerImg/sub.png','','','',''] } } });
   assert.deepEqual(s.data.state.bluePicks, before.bluePicks);
   assert.equal(s.data.state.currentPhase, before.currentPhase);
   assert.equal(s.snapshot('overlay').state.blueTeam.players[0], 'Sub');
@@ -301,7 +209,7 @@ test('live player ID changes revalidate selected heroes atomically against perso
   const s = setup('player'); fill(s);
   const used = s.data.state.bluePicks[0]; advance(s);
   act(s, { type: 'settings', settings: { ...s.data.state, blueTeam: { ...s.data.state.blueTeam, players: ['Sub','A2','A3','A4','A5'] } } });
-  for (let i=0;i<4;i++) act(s,{type:'draft_action',...phases('match')[i],heroId:heroes[80+i].id});
+  for (let i=0;i<6;i++) act(s,{type:'draft_action',...phases('match')[i],heroId:heroes[80+i].id});
   act(s,{type:'draft_action',team:'blue',action:'pick',heroId:used});
   fill(s);
   const before = structuredClone(s.data);
