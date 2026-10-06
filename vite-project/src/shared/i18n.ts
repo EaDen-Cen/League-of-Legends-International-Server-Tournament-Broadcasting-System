@@ -32,6 +32,8 @@ const messages = {
   championSearchHint: {zh:'名称、英文名、称号、拼音首字母…',eng:'Name, title, alias, initials…'},
   championSearchResults: {zh:'英雄搜索结果',eng:'Champion search results'},
   championResultCount: {zh:'显示 {shown} / {total}',eng:'Showing {shown} / {total}'},
+  championLoadMore: {zh:'再显示 48 个',eng:'Show 48 more'},
+  championShowAll: {zh:'显示全部',eng:'Show all'},
   championProfile: {zh:'CHAMPION PROFILE',eng:'CHAMPION PROFILE'},
   dataOverrideActive: {zh:'资料已覆盖',eng:'Data override active'},
   artOverrideActive: {zh:'素材已覆盖',eng:'Artwork override active'},
