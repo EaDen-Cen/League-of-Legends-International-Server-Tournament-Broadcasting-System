@@ -1,94 +1,49 @@
-# Windows BP recognition and broadcast update
+# LoL Screen Recognition
 
-## Start
+[返回文档索引](../README.md)
 
-Run `npm ci` and `npm run build` in `vite-project`. In the host's `.env`, set
-`HOK_CAPTURE_ENABLED=1`, then use the existing `start-broadcast.bat` or `npm run server`.
-Open the **local** Control URL (normally `http://127.0.0.1:3001/control`). In match
-settings select **Screen recognition (review required)** and save. Settings now expand
-under the game confirmation controls on the left.
+Screen Recognition 是导播辅助工具，不应绕过人工确认。
 
-Enter the desktop physical-pixel rectangle `x`, `y`, `width`, `height` around the
-current game's current hero portrait. Coordinates can be negative on secondary
-monitors. The rectangle can be inside a visible game/OBS window; it must contain one
-portrait, not the entire draft screen. Region coordinates stay in this browser's
-local storage and are not shared with remote operators.
+## 启用
 
-Click **Read region**, inspect the captured crop and the top three candidates, then
-confirm the correct hero or reject the result. The current side and ban/pick phase
-are shown in the review. Confidence is image similarity, not a calibrated accuracy
-percentage. Results below 0.55 similarity fail closed to manual input. The server
-still checks duplicates, phase order, Player/Global BP eligibility and revision.
-Every candidate expires after 30 seconds and is discarded on any match revision.
-You can always use the normal picker or change the mode back to manual.
+1. 在 `vite-project/` 完成 `npm ci` 与 `npm run build`。
+2. Match Settings 把 **BP Input Mode** 切换为 Screen Recognition。
+3. 如需 Windows 原生窗口捕获，在主机 `.env` 设置：
 
-## Capture boundary
+```env
+LOL_CAPTURE_ENABLED=1
+```
 
-- Capture and recognition run on the Windows authoritative host, never in Caster,
-  Overlay or the remote browser. The capture route only returns candidates and a
-  crop; it cannot submit a draft action.
-- Requires an interactive, unlocked desktop. Minimized, obscured, protected or
-  exclusive-fullscreen windows may return the wrong pixels or black frames. Keep
-  the target visible and prefer windowed/borderless game or an OBS preview.
-- Desktop capture uses Windows GDI through a hidden PowerShell child process.
-  Sharp decodes all supported roster assets locally and compares normalized RGB
-  templates. Nothing is uploaded to an OCR/AI service, and crops are not saved.
-- The route requires the control token, loopback address/host and same-origin
-  requests; forwarded/Cloudflare requests are rejected. The existing public
-  control, caster and overlay routes continue to work as before.
-- This first version is on-demand, one calibrated current slot per read. It does
-  not track a window as it moves or infer the full ten-player draft automatically.
-  Different skins, overlays, animations or portrait crops may require manual input.
+4. 启动 `npm run server` 或 `start-broadcast.bat`。
+5. 只从本机 Control 使用捕获功能。
 
-## Decisions for the production capture workflow
+## LoL 校准
 
-1. **Use the included visible-region capture** for a fixed Windows/OBS setup.
-   No extra desktop application is required. Confirm the monitor scaling and
-   portrait rectangles against actual tournament footage before relying on it.
-2. **Windows Graphics Capture companion** if operators need a native window picker,
-   a region that follows a moved window, or continuous candidate detection. This
-   needs a separate packaged Windows helper and representative game recordings.
-3. **OBS source integration** if the production team already keeps a stable game
-   capture source. Decide which OBS source/scene and whether OBS WebSocket may be
-   enabled and paired locally.
+LoL 标准 Draft 涉及双方最多 20 个独立识别槽：
 
-Recommended next decision: whether the match feed is a PC game window, emulator,
-capture-card/phone feed or OBS source. Provide the target resolution and a few
-representative BP screenshots to calibrate per-slot regions and measure accuracy.
-The current release does not claim live-match recognition accuracy.
+- Blue Bans × 5
+- Red Bans × 5
+- Blue Picks × 5
+- Red Picks × 5
 
-## Art audit and display
+仓库内默认坐标只作为起点。不同客户端比例、窗口模式、显示缩放、语言和直播裁切都会改变实际位置。
 
-Initial main `d617664b7e27ea586748e7986c292ce8dbec8e39` had **116 heroes and 0 artLink**.
-During implementation, main advanced to `a2b4d87504e36672ad26c0deea3c4564ba1c5fa9`
-by merging Hero Sync PR #4. This implementation incorporates that latest main and
-retains all **118 heroes**, with **111 actual official main-art URLs**:
-108 decoded images have a longest edge >=1000 px; Ao'yin, Flowborn (Tank), and
-Garuda have approximately 756×780 px official character images. Missing art:
-Flowborn (Marksman), Flowborn (Mage), Flowborn (Assassin), Flowborn (Roamer),
-Annette, Florentino and Lorion.
+正式比赛前必须：
+1. 选择真实比赛窗口；
+2. 对每个槽校准 ROI；
+3. 用多位 Champion 测试；
+4. 检查空 Ban；
+5. 检查第二轮 Ban / Pick；
+6. 完成一次完整 Draft 彩排。
 
-PR #4 admitted Flowborn (Assassin) and Flowborn (Roamer). They are preserved from
-latest main; its audit still marks them unconfirmed and their Chinese labels remain
-"Coming soon". Review their tournament availability separately. Seven artLink values
-that merely aliased thumbnails have been removed, so they do not masquerade as full
-art or prevent subsequent backfill retries.
+## 识别素材
 
-`research/hero-sync/art-audit.json` records browser-decoded dimensions and URLs.
-Run `npm run hero:art-audit` to repeat (Chrome required; override `CHROME_PATH`).
-Missing full art no longer becomes an artLink pointing at a small local icon;
-future sync attempts keep retrying it. Existing fallback aliases also retry.
+识别模板使用 `public/champions/` 中的本地 Data Dragon Portrait，与 Hero Picker 使用同一套 Champion ID。
 
-Side cards are 300 px wide and show full art with `object-fit: contain`, plus a
-separate caption and role column. Current-game bans are 72×72 px with hero labels.
-Empty history is omitted entirely. Numeric or win-box scores follow team identity,
-side swaps and the existing delayed caster timeline (BO1:1, BO3:2, BO5:3 boxes).
-Remote full art still falls back to local portraits when the CDN is unavailable.
+Broadcast Card 的 Splash Art 不参与识别；它只负责转播视觉。
 
-## Validation scope
+## Review Required
 
-Build, lint, hero validation, server tests and Playwright regression tests cover
-the original draft modes, first pick, swapping, delay, team library and portraits.
-Recognition tests use image fixtures and mocked capture responses; they do not
-record the operator's desktop. Live game accuracy, mixed-DPI capture calibration,
-and a real Cloudflare/OBS deployment require the production setup.
+任何识别结果都应先进入 Review，再由导播确认。低置信度、空槽、客户端动画中的过渡帧都不应自动写入正式 Draft。
+
+出现异常时优先切回 Manual。比赛状态由服务器维护，因此切换输入方式不会要求重建比赛。
