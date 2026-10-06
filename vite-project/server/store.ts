@@ -402,8 +402,23 @@ export class Store {
         if (!override.artLink.trim()) throw new Error('heroDataOverrideInvalid');
         portraitURL(override.artLink);
       }
+      const normalized: HeroDataOverride = {};
+      if (override.englishName !== undefined && override.englishName.trim() !== baseHero.englishName) normalized.englishName = override.englishName.trim();
+      if (override.chineseName !== undefined && override.chineseName.trim() !== baseHero.chineseName) normalized.chineseName = override.chineseName.trim();
+      if (override.occupation !== undefined && override.occupation !== baseHero.occupation) normalized.occupation = override.occupation;
+      if (override.altOccupation !== undefined && override.altOccupation !== (baseHero.altOccupation ?? '')) normalized.altOccupation = override.altOccupation;
+      if (override.aliases !== undefined) {
+        const aliases = [...new Set(override.aliases.map(alias => alias.trim()).filter(Boolean))];
+        if (JSON.stringify(aliases) !== JSON.stringify(baseHero.aliases ?? [])) normalized.aliases = aliases;
+      }
+      if (override.imageLink !== undefined && override.imageLink !== baseHero.imageLink) normalized.imageLink = override.imageLink;
+      if (override.artLink !== undefined && override.artLink !== (baseHero.artLink ?? '')) normalized.artLink = override.artLink;
+
       next.history.push(copy(state));
-      state.heroDataOverrides = { ...(state.heroDataOverrides || {}), [String(action.heroId)]: copy(override) };
+      const map = { ...(state.heroDataOverrides || {}) };
+      if (Object.keys(normalized).length) map[String(action.heroId)] = copy(normalized);
+      else delete map[String(action.heroId)];
+      state.heroDataOverrides = map;
       break;
     }
     case 'reset_hero_data_override': {
