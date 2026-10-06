@@ -131,6 +131,8 @@ test('director hero data overrides persist, reset, and survive match reset', () 
       occupation: 'Mid Lane',
       altOccupation: 'Support',
       aliases: ['test', 'th'],
+      imageLink: '/champions/custom.png',
+      artLink: 'https://example.com/custom-splash.jpg',
     },
   });
   assert.deepEqual(s.data.state.heroDataOverrides[String(heroId)], {
@@ -139,6 +141,8 @@ test('director hero data overrides persist, reset, and survive match reset', () 
     occupation: 'Mid Lane',
     altOccupation: 'Support',
     aliases: ['test', 'th'],
+    imageLink: '/champions/custom.png',
+    artLink: 'https://example.com/custom-splash.jpg',
   });
 
   apply(s, { type: 'reset_match' });
@@ -154,6 +158,8 @@ test('director hero data overrides reject invalid names lanes and aliases', () =
   assert.throws(() => apply(s, { type: 'hero_data_override', heroId, override: { englishName: '' } }), /heroDataOverrideInvalid/);
   assert.throws(() => apply(s, { type: 'hero_data_override', heroId, override: { occupation: 'Bottom Lane' } }), /heroDataOverrideInvalid/);
   assert.throws(() => apply(s, { type: 'hero_data_override', heroId, override: { aliases: Array.from({ length: 21 }, (_, i) => String(i)) } }), /heroDataOverrideInvalid/);
+  assert.throws(() => apply(s, { type: 'hero_data_override', heroId, override: { artLink: 'http://insecure.example.com/a.jpg' } }), /portraitInvalid/);
+  assert.throws(() => apply(s, { type: 'hero_data_override', heroId, override: { imageLink: '' } }), /heroDataOverrideInvalid/);
 });
 
 test('director artwork settings validate crop ranges and presentation settings', () => {
