@@ -578,3 +578,65 @@
   .explicit-slot-calibration-heading > button { width:100%; }
   .explicit-slot-groups { grid-template-columns:1fr; }
 }
+
+
+/* LoL control-room skin: denser, flatter and gold-accented instead of HOK neon cards. */
+.control-workspace {
+  --control-gold:#c8aa6e;
+  --control-ink:#06101a;
+}
+.control-workspace .topbar {
+  padding:10px 14px 12px;
+  border-top:1px solid #c8aa6e;
+  border-bottom:1px solid #293e50;
+  background:linear-gradient(90deg,#07131f,#0b1b29 55%,#07131f);
+}
+.control-workspace .topbar .eyebrow { color:#b99b60; letter-spacing:2px; }
+.control-workspace .topbar h1 { color:#f0e6d2; }
+.control-workspace .panel {
+  border-color:#263b4c;
+  border-radius:4px;
+  background:linear-gradient(180deg,#0b1724,#08131f);
+}
+.control-workspace .operator-bar { border-top:1px solid #c8aa6e55; }
+.control-workspace button.primary {
+  border-color:#b89758;
+  background:linear-gradient(180deg,#8d713e,#6b532c);
+  color:#fff7e6;
+}
+.control-workspace button.primary:hover { background:linear-gradient(180deg,#a98a4e,#7b6234); }
+.control-hero-picker .picker-heading {
+  padding:10px;
+  border:1px solid #304456;
+  border-top:2px solid #c8aa6e;
+  background:#07131f;
+}
+.control-hero-picker .current-phase {
+  border-left:0;
+  border-bottom:1px solid #c8aa6e55;
+  padding:2px 0 8px;
+  color:#d8c28f;
+}
+.control-hero-picker .current-phase h2 {
+  color:#f0e6d2;
+  font-size:21px;
+  text-transform:uppercase;
+  letter-spacing:.8px;
+}
+.control-hero-picker .hero-grid button {
+  overflow:hidden;
+  border:1px solid #223749;
+  border-radius:2px;
+  background:#07131f;
+}
+.control-hero-picker .hero-grid button:hover {
+  border-color:#c8aa6e;
+  background:#102334;
+}
+.control-hero-picker .hero-grid button:disabled { opacity:.34; filter:grayscale(.6); }
+.control-hero-picker .filters button.selected,
+.control-hero-picker .filters button[aria-pressed="true"] {
+  border-color:#c8aa6e;
+  color:#f0e6d2;
+  background:#2c2418;
+}
