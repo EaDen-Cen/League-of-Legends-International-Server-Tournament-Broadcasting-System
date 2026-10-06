@@ -16,6 +16,10 @@ export interface HeroDataOverride {
   occupation?: string;
   altOccupation?: string;
   aliases?: string[];
+  /** Optional per-match/local tournament portrait source. HTTPS or absolute local path. */
+  imageLink?: string;
+  /** Optional per-match/local tournament splash source. HTTPS or absolute local path. */
+  artLink?: string;
 }
 export type DraftRuleMode = 'normal' | 'player' | 'global';
 export type SideSwapMode = 'moveTeams' | 'colorsOnly';
