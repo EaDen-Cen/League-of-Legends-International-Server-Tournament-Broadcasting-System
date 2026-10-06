@@ -187,7 +187,6 @@ export function HeroArtEditorDialog({
     () => effectiveHeroes.filter(item => heroMatchesSearch(item, heroQuery, state.language)).slice(0, 48),
     [effectiveHeroes, heroQuery, state.language],
   );
-  const baseHero = heroes.find(item => item.id === heroId);
   const hasDataOverride = Boolean(state.heroDataOverrides?.[String(heroId)]);
   const hasArtOverride = Boolean(state.heroArtOverrides?.[String(heroId)]);
   if (!hero) return null;
@@ -248,21 +247,18 @@ export function HeroArtEditorDialog({
             <small className="champion-studio-result-count">{t('championResultCount', { shown: filteredHeroes.length, total: effectiveHeroes.length })}</small>
           </section>
 
-          <label>{t('chooseHeroToEdit')}
-            <select value={hero.id} onChange={event => selectHero(Number(event.target.value))}>
-              {effectiveHeroes.map(item => <option key={item.id} value={item.id}>{state.language === 'zh' ? item.chineseName : item.englishName} · {item.englishName}</option>)}
-            </select>
-          </label>
-
           <fieldset className="hero-data-editor">
             <legend>{t('heroDataSettings')}</legend>
             <label>{t('heroChineseName')}<input maxLength={60} value={dataDraft.chineseName ?? ''} onChange={event => setDataDraft(previous => ({ ...previous, chineseName: event.target.value }))} /></label>
             <label>{t('heroEnglishName')}<input maxLength={60} value={dataDraft.englishName ?? ''} onChange={event => setDataDraft(previous => ({ ...previous, englishName: event.target.value }))} /></label>
             <label>{t('heroPrimaryLane')}<select value={dataDraft.occupation ?? ''} onChange={event => setDataDraft(previous => ({ ...previous, occupation: event.target.value }))}>{['Top Lane','Jungle','Mid Lane','Bot Lane','Support'].map(lane => <option key={lane} value={lane}>{lane}</option>)}</select></label>
             <label>{t('heroSecondaryLane')}<select value={dataDraft.altOccupation ?? ''} onChange={event => setDataDraft(previous => ({ ...previous, altOccupation: event.target.value }))}><option value="">{t('noSecondaryLane')}</option>{['Top Lane','Jungle','Mid Lane','Bot Lane','Support'].map(lane => <option key={lane} value={lane}>{lane}</option>)}</select></label>
-            <label>{t('championPortraitUrl')}<input maxLength={1000} value={dataDraft.imageLink ?? ''} onChange={event => setDataDraft(previous => ({ ...previous, imageLink: event.target.value }))} /><small>{t('championPortraitUrlHint')}</small></label>
-            <label>{t('championSplashUrl')}<input maxLength={1000} value={dataDraft.artLink ?? ''} onChange={event => setDataDraft(previous => ({ ...previous, artLink: event.target.value }))} /><small>{t('championSplashUrlHint')}</small></label>
-            <label>{t('heroAliases')}<input maxLength={500} value={(dataDraft.aliases ?? []).join(', ')} onChange={event => setDataDraft(previous => ({ ...previous, aliases: event.target.value.split(',').map(value => value.trim()).filter(Boolean) }))} /><small>{t('heroAliasesHint')}</small></label>
+            <details className="champion-data-advanced">
+              <summary>{t('championAdvancedData')}</summary>
+              <label>{t('championPortraitUrl')}<input maxLength={1000} value={dataDraft.imageLink ?? ''} onChange={event => setDataDraft(previous => ({ ...previous, imageLink: event.target.value }))} /><small>{t('championPortraitUrlHint')}</small></label>
+              <label>{t('championSplashUrl')}<input maxLength={1000} value={dataDraft.artLink ?? ''} onChange={event => setDataDraft(previous => ({ ...previous, artLink: event.target.value }))} /><small>{t('championSplashUrlHint')}</small></label>
+              <label>{t('heroAliases')}<input maxLength={500} value={(dataDraft.aliases ?? []).join(', ')} onChange={event => setDataDraft(previous => ({ ...previous, aliases: event.target.value.split(',').map(value => value.trim()).filter(Boolean) }))} /><small>{t('heroAliasesHint')}</small></label>
+            </details>
             <div className="art-editor-actions">
               <button type="button" className="primary" disabled={disabled} onClick={() => send({ type: 'hero_data_override', heroId: hero.id, override: dataDraft })}>{t('saveHeroData')}</button>
               <button type="button" disabled={disabled} onClick={() => { send({ type: 'reset_hero_data_override', heroId: hero.id }); const base = heroes.find(item => item.id === hero.id); if (base) setDataDraft({ englishName: base.englishName, chineseName: base.chineseName, occupation: base.occupation, altOccupation: base.altOccupation ?? '', aliases: base.aliases ?? [], imageLink: base.imageLink, artLink: base.artLink ?? '' }); }}>{t('resetHeroData')}</button>
@@ -316,11 +312,10 @@ export function HeroArtEditorDialog({
               <h2>{heroName}</h2>
               <p>{hero.englishName} · Riot ID {hero.id} · {hero.occupation}{hero.altOccupation ? ` / ${hero.altOccupation}` : ''}</p>
             </div>
-            <div className="champion-studio-badges">
-              <span className={hasDataOverride ? 'active' : ''}>{hasDataOverride ? t('dataOverrideActive') : t('baseChampionData')}</span>
-              <span className={hasArtOverride ? 'active' : ''}>{hasArtOverride ? t('artOverrideActive') : t('baseChampionArt')}</span>
-              {baseHero && <span>{t('sourceDataDragon')}</span>}
-            </div>
+            {(hasDataOverride || hasArtOverride) && <div className="champion-studio-badges">
+              {hasDataOverride && <span className="active">{t('dataOverrideActive')}</span>}
+              {hasArtOverride && <span className="active">{t('artOverrideActive')}</span>}
+            </div>}
           </div>
           <div>
             <h3>{t('artReference')}</h3>
