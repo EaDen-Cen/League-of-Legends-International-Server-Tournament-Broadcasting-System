@@ -184,7 +184,7 @@ export function HeroArtEditorDialog({
 
   const hero = useMemo(() => effectiveHeroes.find(item => item.id === heroId) ?? effectiveHeroes[0], [effectiveHeroes, heroId]);
   const filteredHeroes = useMemo(
-    () => effectiveHeroes.filter(item => heroMatchesSearch(item, heroQuery, state.language)).slice(0, 48),
+    () => effectiveHeroes.filter(item => heroMatchesSearch(item, heroQuery, state.language)),
     [effectiveHeroes, heroQuery, state.language],
   );
   const hasDataOverride = Boolean(state.heroDataOverrides?.[String(heroId)]);
