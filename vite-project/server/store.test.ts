@@ -138,7 +138,6 @@ test('director hero data overrides persist, reset, and survive match reset', () 
   assert.deepEqual(s.data.state.heroDataOverrides[String(heroId)], {
     chineseName: '测试英雄',
     englishName: 'Test Hero',
-    occupation: 'Mid Lane',
     altOccupation: 'Support',
     aliases: ['test', 'th'],
     imageLink: '/champions/custom.png',
