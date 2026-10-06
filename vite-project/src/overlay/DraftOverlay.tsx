@@ -121,7 +121,7 @@ export function DraftOverlay({ state }: { state: MatchState }) {
         {state[`${side}Team`].logo && <img src={state[`${side}Team`].logo} alt="" />}
         <h2>{state[`${side}Team`].name}</h2>
       </div>)}
-      <div className="broadcast-score" aria-label={t('seriesScore')}><Score state={state} side={left} /><span>:</span><Score state={state} side={right} /></div>
+      <div className={`broadcast-score ${state.scoreDisplay === 'boxes' ? 'box-score' : 'number-score'}`} aria-label={t('seriesScore')}><Score state={state} side={left} />{state.scoreDisplay !== 'boxes' && <span>:</span>}<Score state={state} side={right} /></div>
     </header></div>
     <div className="broadcast-center" aria-hidden="true" />
     <div className="broadcast-bottom">
