@@ -21,6 +21,10 @@ test('LoL art uses neutral defaults and preserves director crop overrides', () =
   assert.deepEqual(heroArtCrop(19,'side',{side:{x:44,y:23,scale:1.41}}), {x:44,y:23,scale:1.41});
   assert.equal(heroArtCrop(1,'panel',{panel:{x:47,y:0,scale:.6}}).scale,1);
   assert.ok(heroes.every(hero => !hero.counter && !hero.combo && !hero.variantGroup));
+  const annie = heroes.find(hero => hero.englishName === 'Annie');
+  assert.equal(annie?.chineseName, '安妮');
+  assert.ok(annie?.aliases?.includes('黑暗之女'));
+  assert.match(annie?.artLink || '', /\/champion\/splash\/Annie_0\.jpg$/);
 });
 
 test('all sorting modes retain unavailable champions at the end', () => {
