@@ -84,7 +84,7 @@ Champion Studio 的数据与裁切修改属于 Match State：
 - `heroDataOverrides`
 - `heroArtOverrides`
 
-它们不会修改 `lolHeroes.ts`，也不会被当作下一次 Data Dragon 同步的基线。
+它们不会修改 `lolHeroes.ts`，也不会被当作下一次 Data Dragon 同步的基线。服务端只保存与生成基线真正不同的字段，因此仅修改名称时不会顺带锁死旧 Portrait / Splash URL。
 
 ## 已停用的 HOK 链路
 
