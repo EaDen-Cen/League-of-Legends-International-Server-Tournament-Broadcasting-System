@@ -114,12 +114,12 @@ export function DraftOverlay({ state }: { state: MatchState }) {
   const sides = displaySides(state), [left, right] = sides;
   return <section className={`broadcast-overlay broadcast-${state.overlayLayout} ${state.showHeroName ? 'hero-names-visible' : 'hero-names-hidden'} ${phase ? `draft-action-${phase.action} draft-team-${phase.team}` : 'draft-complete'}`}>
     <div className="broadcast-top"><header className="broadcast-header">
-      <div className="broadcast-brand"><span>RIFT</span>{t('gameTitle')}</div>
+      <div className="broadcast-brand">{t('gameTitle')}</div>
       <div className="broadcast-draft-label">{state.committedGameId ? t('gameCommitted') : phaseName(state)}</div>
       <div className="broadcast-meta">{stageName(state.stage, state.language)} · {state.seriesFormat} · {t('gameNumber', { number: currentGame(state) })} · {draftRuleName(state)}</div>
       {sides.map((side, position) => <div key={state[`${side}Team`].id} className={`broadcast-team ${side} display-${position === 0 ? 'left' : 'right'}`}>
         {state[`${side}Team`].logo && <img src={state[`${side}Team`].logo} alt="" />}
-        <h2>{state[`${side}Team`].name}</h2><small className="color-label">{t(side === 'blue' ? 'blueSide' : 'redSide')}</small>
+        <h2>{state[`${side}Team`].name}</h2>
       </div>)}
       <div className="broadcast-score" aria-label={t('seriesScore')}><Score state={state} side={left} /><span>:</span><Score state={state} side={right} /></div>
     </header></div>
@@ -140,7 +140,7 @@ export function DraftOverlay({ state }: { state: MatchState }) {
       <div className="broadcast-picks">{sides.map((side, position) => <div key={state[`${side}Team`].id} className={`pick-team ${side} display-${position === 0 ? 'left' : 'right'} ${phase?.team === side ? 'acting' : ''}`}>
         {Array.from({ length: 5 }, (_, index) => <PickCard key={index} state={state} side={side} index={index} position={position === 0 ? 'left' : 'right'} />)}
       </div>)}</div>
-      <footer className={`phase ${phase?.team || ''}`}><span>{state.committedGameId ? t('gameCommitted') : phaseName(state)}</span><small>{phase ? `${state.currentPhase + 1} / ${phases(state.draftMode, state.firstPickSide).length}` : ''}</small></footer>
+      <footer className={`phase ${phase?.team || ''}`}><small>{phase ? `${state.currentPhase + 1} / ${phases(state.draftMode, state.firstPickSide).length}` : ''}</small></footer>
     </div>
   </section>;
 }
