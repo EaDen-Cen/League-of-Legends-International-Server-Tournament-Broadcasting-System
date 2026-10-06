@@ -39,6 +39,7 @@ Control 中的 **Champion Studio** 把原来的“英雄图片设置”升级为
 - 英文名、中文名、主分路、副分路、搜索 alias 覆盖；
 - Panel / Side 两套独立焦点与缩放；
 - 完整 Splash Art 参考和实时裁切预览；
+- 单 Champion 可替换 Portrait / Splash Art 来源（HTTPS 或站内路径）；
 - 单英雄强制使用本地 Portrait fallback；
 - 明确显示 Data Override / Artwork Override 状态。
 
