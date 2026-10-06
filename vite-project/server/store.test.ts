@@ -150,6 +150,22 @@ test('director hero data overrides persist, reset, and survive match reset', () 
 
   apply(s, { type: 'reset_hero_data_override', heroId });
   assert.equal(s.data.state.heroDataOverrides[String(heroId)], undefined);
+
+  const base = heroes.find(hero => hero.id === heroId)!;
+  apply(s, {
+    type: 'hero_data_override',
+    heroId,
+    override: {
+      chineseName: base.chineseName,
+      englishName: base.englishName,
+      occupation: base.occupation,
+      altOccupation: base.altOccupation ?? '',
+      aliases: base.aliases ?? [],
+      imageLink: base.imageLink,
+      artLink: base.artLink ?? '',
+    },
+  });
+  assert.equal(s.data.state.heroDataOverrides[String(heroId)], undefined);
 });
 
 test('director hero data overrides reject invalid names lanes and aliases', () => {
