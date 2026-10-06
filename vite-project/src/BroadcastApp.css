@@ -1775,3 +1775,152 @@
 @media(max-width:900px) {
   .hero-art-editor-body { grid-template-columns:1fr; }
 }
+
+
+/* LoL refinement: portrait-only history, restored gold structure, vertical win boxes,
+   and tightly joined champion cards. */
+.broadcast-header {
+  border:1px solid #c8aa6e55;
+  border-top:2px solid #c8aa6e;
+  box-shadow:0 10px 28px #0004;
+}
+.broadcast-team {
+  border-bottom-width:2px;
+}
+.broadcast-score {
+  border-left:1px solid #c8aa6e66;
+  border-right:1px solid #c8aa6e66;
+  background:#09131bea;
+}
+.broadcast-score.box-score {
+  position:relative;
+  justify-content:center;
+  gap:22px;
+  margin:5px 14px;
+  padding:6px 18px;
+}
+.broadcast-score.box-score::after {
+  content:"";
+  position:absolute;
+  top:12px;
+  bottom:12px;
+  left:50%;
+  width:1px;
+  background:#c8aa6e3d;
+}
+.broadcast-score.box-score .score-boxes {
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  gap:4px;
+  z-index:1;
+}
+.broadcast-score.box-score .score-box {
+  width:28px;
+  height:10px;
+  border:1px solid currentColor;
+  transform:none;
+  opacity:.32;
+  box-shadow:none;
+}
+.broadcast-score.box-score .score-box.lit {
+  opacity:1;
+  box-shadow:none;
+}
+.broadcast-score.box-score .blue-score { color:#55baff; }
+.broadcast-score.box-score .red-score { color:#ff657c; }
+
+/* Compact committed-game history is intentionally only champion portraits. */
+.broadcast-overlay .draft-history.compact {
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:10px 16px;
+  min-height:28px;
+  margin:0;
+  padding:0;
+  background:transparent;
+  border:0;
+}
+.broadcast-overlay .draft-history.compact .history-game {
+  display:flex;
+  align-items:center;
+  gap:6px;
+  width:auto;
+  margin:0;
+}
+.broadcast-overlay .draft-history.compact .history-team,
+.broadcast-overlay .draft-history.compact .history-team.display-left,
+.broadcast-overlay .draft-history.compact .history-team.display-right {
+  display:block;
+  justify-content:initial;
+  min-width:0;
+}
+.broadcast-overlay .draft-history.compact .history-heroes {
+  display:flex;
+  gap:2px;
+}
+.broadcast-overlay .draft-history.compact .history-heroes img {
+  width:27px;
+  height:27px;
+  object-fit:cover;
+  border:1px solid #c8aa6e66;
+  border-bottom-color:#c8aa6e;
+  background:#050a0e;
+}
+.broadcast-overlay .draft-history.compact .history-team.blue .history-heroes img {
+  box-shadow:inset 0 -1px #55baff;
+}
+.broadcast-overlay .draft-history.compact .history-team.red .history-heroes img {
+  box-shadow:inset 0 -1px #ff657c;
+}
+
+/* Re-introduce LoL gold framing without bringing back the earlier heavy glow. */
+.broadcast-bans {
+  gap:12px;
+}
+.broadcast-bans .ban-team {
+  border:1px solid #c8aa6e38;
+  background:#050c12df;
+}
+.broadcast-overlay .bans .hero-slot {
+  border:1px solid #c8aa6e4a;
+}
+.position-bar {
+  border-top:1px solid #c8aa6e55;
+}
+
+/* Champion cards should read as one continuous five-player strip. */
+.broadcast-picks {
+  gap:12px;
+}
+.broadcast-panel .pick-team {
+  gap:0;
+}
+.broadcast-panel .broadcast-card {
+  border:1px solid #c8aa6e5c;
+  border-top-color:#c8aa6e99;
+}
+.broadcast-panel .broadcast-card + .broadcast-card {
+  border-left:0;
+}
+.broadcast-panel .acting .broadcast-card {
+  border-top-color:var(--card-accent);
+  box-shadow:inset 0 2px var(--card-accent);
+}
+.broadcast-side .pick-team {
+  gap:0;
+}
+.broadcast-side .broadcast-card {
+  border:1px solid #c8aa6e5c;
+}
+.broadcast-side .broadcast-card + .broadcast-card {
+  border-top:0;
+}
+.broadcast-side .acting .broadcast-card {
+  border-left-color:var(--card-accent);
+  border-right-color:var(--card-accent);
+  box-shadow:none;
+}
