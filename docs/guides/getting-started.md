@@ -64,7 +64,18 @@ npm run lint
 
 要更新版本时显式传入新的 Data Dragon 版本号。不要重新启用旧 HOK Hero Sync 工具。
 
-## 6. 运行数据
+## 6. 浏览器缩放与画面尺寸
+
+Control / Caster 可以正常使用浏览器缩放。Screen Recognition 的 Browser Window Capture 不使用网页像素保存校准框，因此缩放 Control 页面不会移动 ROI。
+
+需要区分两件事：
+
+- **网页缩放 / Control 窗口大小变化**：无需重新校准。
+- **League Client 捕获画面宽高比变化**：系统会提示检查识别框。
+
+OBS Overlay 是固定 1920×1080 设计画布。OBS Browser Source 请直接设置 1920×1080，不要靠浏览器 Zoom 调整布局。
+
+## 7. 运行数据
 
 默认：
 
