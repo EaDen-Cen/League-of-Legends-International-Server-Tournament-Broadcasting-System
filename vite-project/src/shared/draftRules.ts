@@ -91,6 +91,8 @@ export function normalizeState(raw: MatchState): MatchState {
     blueAssignments: normalizeAssignments(raw.blueAssignments, raw.bluePicks ?? []),
     redAssignments: normalizeAssignments(raw.redAssignments, raw.redPicks ?? []),
     showHeroName: raw.showHeroName ?? true,
+    roleIconStyle: raw.roleIconStyle ?? 'minimal',
+    roleIconBackground: raw.roleIconBackground ?? 'light',
     artSourceMode: raw.artSourceMode ?? 'auto',
     heroArtOverrides: raw.heroArtOverrides ?? {},
     heroDataOverrides: raw.heroDataOverrides ?? {},
@@ -105,6 +107,8 @@ export function normalizeState(raw: MatchState): MatchState {
   };
   // Old archives use independent games. Upgrading must not silently impose Global BP.
   state.draftRuleMode = raw.draftRuleMode ?? 'normal';
+  // Migrate the former user-facing screen-capture mode to the new LCU workflow.
+  state.bpInputMode = raw.bpInputMode === 'screen' ? 'lcu' : (raw.bpInputMode ?? 'manual');
   state.flowbornFormsIndependent = raw.flowbornFormsIndependent ?? true;
   state.displayLeftSide = raw.displayLeftSide ?? 'blue';
   state.firstPickSide = raw.firstPickSide ?? 'blue';
