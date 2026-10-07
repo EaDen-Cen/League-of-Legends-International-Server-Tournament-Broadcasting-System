@@ -4,6 +4,19 @@
 
 # 验证记录
 
+## 2026-10-06 缩放与 Recognition 坐标稳定性重构
+
+- 将 Browser Window Capture 明确拆分为 source frame / normalized ROI / browser preview stage 三层坐标；ROI 不再依赖网页 CSS 像素。
+- 新增 `fitCapturePreview()`：预览舞台始终保持捕获源真实宽高比，避免 `object-fit: contain` 产生的 letterbox 导致识别框与视频内容错位。
+- 预览舞台监听 container、window 与 `visualViewport` 尺寸变化；浏览器 Zoom 和 Control 响应式布局改变时重新计算显示尺寸，但不修改校准数据。
+- League Client 共享画面动态改变 source resolution 时重新读取 `videoWidth/videoHeight`；同宽高比变化继续沿用 ROI，不同宽高比变化给出复查提示。
+- 校准时保存 source aspect profile，用于判断之后连接的画面是否发生结构变化。
+- Recognition 增加 in-flight context guard：请求返回时如果 revision / Draft Phase 已变化，结果直接丢弃；Review 提交前再次检查，防止旧截图写进新槽位。
+- Control sticky 工作区同时监听 ResizeObserver、window resize 与 visualViewport resize，避免浏览器缩放后 Hero Picker 顶部偏移沿用旧值。
+- `windowCaptureGeometry.test.ts` 新增 preview aspect-fit 与 aspect-ratio drift 测试。
+- GitHub Actions 在代码提交 `cb2b64254ac579a8c1d3ff89c8b92b2d64f075c4` 上完成 `npm test` 与 `npm run build`，结果通过。
+- 仍需真实 League Client + OBS 做现场 Zoom、分辨率切换和长时间 Auto Watch 彩排；自动化测试不能替代实际共享窗口行为。
+
 ## 文档目录整理验证（2026-09-23）
 
 - 基线：main `bbcf24807596c75046ebb3e8a82d775c760c4dd6`；提交前再次核对远端 main 未变化。
