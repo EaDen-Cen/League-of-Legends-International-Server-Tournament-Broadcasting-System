@@ -88,6 +88,7 @@ const messages = {
   lcuPracticeHint: {zh:'当前房间没有标准 Ban 阶段。程序会把赛事 Ban 槽记为空 Ban，并仅同步实际锁定的 Pick；正式比赛请使用标准赛事 BP 房间。',eng:'This room has no standard ban phase. Tournament ban slots are recorded as empty bans while completed picks are synced. Use a tournament-draft room for production.'},
   lcuSide: {zh:'本机阵营映射',eng:'Local side mapping'},
   lcuLastSync: {zh:'最近同步',eng:'Last sync'},
+  lcuActionShape: {zh:'LCU 动作结构',eng:'LCU action shape'},
   lcuClientPhase: {zh:'客户端阶段',eng:'Client phase'},
   lcuManualFallback: {zh:'LCU 不可用或出现不一致时不会强行写入；Hero Picker 仍可手动操作。',eng:'If LCU is unavailable or the draft differs, nothing is forced into the match. The Hero Picker remains available for manual fallback.'},
   casterRosterTitle: {zh:'解说阵容资料',eng:'Caster roster'},
