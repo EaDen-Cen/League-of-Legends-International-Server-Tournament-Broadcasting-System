@@ -18,11 +18,24 @@ const rolePaths: Record<PlayerRole, string> = {
   bot: 'M5 3c15 1 15 17 0 18l8-9L5 3Zm0 0v18M3 12h18m-3-3 3 3-3 3',
   support: 'M12 2 3 6v6c0 5 9 10 9 10s9-5 9-10V6l-9-4Zm0 4v11m-4-7h8',
 };
+const ornateAccents: Record<PlayerRole, string> = {
+  top: 'M5.4 5.4 8 4.2M18.6 5.4 16 4.2M5.4 18.6 8 19.8M18.6 18.6 16 19.8',
+  jungle: 'M7 5.5 9 7M17 5.5 15 7M6.4 16.8 8.8 15.8M17.6 16.8 15.2 15.8',
+  mid: 'M5 8 8 5M16 19 19 16M5 16 8 19M16 5 19 8',
+  bot: 'M5.5 7.2 8.3 6M18.5 16.8 15.7 18M5.5 16.8 8.3 18M18.5 7.2 15.7 6',
+  support: 'M7 5.5 9 4.5M17 5.5 15 4.5M7 18.5 9 19.5M17 18.5 15 19.5',
+};
+
 export function PositionIcon({ role, label, style = 'minimal' }: { role: PlayerRole; label: string; style?: RoleIconStyle }) {
   return <svg className={`position-icon position-icon-${style}`} viewBox="0 0 24 24" role="img" aria-label={label}>
     <title>{label}</title>
-    {style === 'ornate' && <path className="position-icon-frame" d="M12 1.8 20.2 6v12L12 22.2 3.8 18V6L12 1.8Z" fill="none" stroke="currentColor" strokeWidth="1.05" />}
-    <path className="position-icon-glyph" d={rolePaths[role]} fill="none" stroke="currentColor" strokeWidth={style === 'ornate' ? '1.55' : '1.8'} strokeLinecap="round" strokeLinejoin="round" />
+    {style === 'ornate' && <>
+      <path className="position-icon-medallion" d="M12 1.3 20.7 5.8v12.4L12 22.7 3.3 18.2V5.8L12 1.3Z" />
+      <path className="position-icon-inner-frame" d="M12 3.8 18.4 7.1v9.8L12 20.2 5.6 16.9V7.1L12 3.8Z" />
+      <circle className="position-icon-ring" cx="12" cy="12" r="6.15" />
+      <path className="position-icon-accent" d={ornateAccents[role]} />
+    </>}
+    <path className="position-icon-glyph" d={rolePaths[role]} fill="none" stroke="currentColor" strokeWidth={style === 'ornate' ? '1.45' : '1.8'} strokeLinecap="round" strokeLinejoin="round" />
   </svg>;
 }
 
