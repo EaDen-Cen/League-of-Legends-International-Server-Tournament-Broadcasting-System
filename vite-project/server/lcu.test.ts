@@ -86,3 +86,37 @@ test('LCU non-standard mixed rooms are rejected instead of silently remapped',()
     ],
   },state),/does not match tournament BP/);
 });
+
+
+test('LCU AI room with dummy ban action is still detected as pick-only practice',()=>{
+  const state=initialState();
+  state.firstPickSide='blue';
+  const expected=phases(state.draftMode,state.firstPickSide);
+  const pickPhases=expected.map((phase,index)=>({phase,index})).filter(item=>item.phase.action==='pick');
+  const picks:LcuChampSelectAction[]=pickPhases.map((item,index)=>({
+    id:200+index,
+    actorCellId:item.phase.team==='blue'?10+index:20+index,
+    championId:3000+index,
+    completed:index!==0,
+    type:'pick',
+    isAllyAction:item.phase.team==='blue',
+  }));
+  const dummyBan:LcuChampSelectAction={
+    id:99,
+    actorCellId:10,
+    championId:0,
+    completed:false,
+    type:'ban',
+    isAllyAction:true,
+  };
+  const session:LcuChampSelectSession={
+    actions:[[dummyBan],...picks.map(action=>[action])],
+    myTeam:picks.filter(action=>action.isAllyAction).map(action=>({cellId:action.actorCellId})),
+    theirTeam:picks.filter(action=>!action.isAllyAction).map(action=>({cellId:action.actorCellId})),
+  };
+  const mapped=mapLcuSession(session,state);
+  assert.equal(mapped.mode,'pick-only-practice');
+  assert.equal(mapped.actions.length,10);
+  assert.ok(mapped.actions.every(action=>action.action==='pick'));
+  assert.ok(!mapped.actions.some(action=>action.id===dummyBan.id));
+});
