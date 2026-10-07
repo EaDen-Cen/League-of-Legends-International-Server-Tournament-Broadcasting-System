@@ -29,7 +29,10 @@ test('input, score and role-icon settings are authoritative, validated, undoable
   assert.equal(store.snapshot('overlay').state.scoreDisplay,'boxes');
   assert.equal(store.snapshot('overlay').state.roleIconStyle,'ornate');
   assert.equal(store.snapshot('overlay').state.roleIconBackground,'dark');
-  assert.equal(store.snapshot('caster').state.bpInputMode,'manual');
+  assert.equal(store.snapshot('caster').state.bpInputMode,'lcu');
+  assert.equal(store.snapshot('caster').state.roleIconStyle,'ornate');
+  assert.equal(store.snapshot('caster').state.roleIconBackground,'dark');
+  assert.equal(store.snapshot('caster').state.blueScore,0);
   now=180000;
   assert.equal(store.snapshot('caster').state.bpInputMode,'lcu');
   assert.equal(store.snapshot('caster').state.roleIconStyle,'ornate');
