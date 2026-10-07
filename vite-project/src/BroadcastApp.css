@@ -1949,3 +1949,41 @@
   background:#14212a;
   color:#e2e7ea;
 }
+
+
+/* Configurable role icon presentation. The light preset is the new default. */
+.broadcast-overlay.role-icon-bg-light .position-bar {
+  background:#f1f3f4;
+  color:#111820;
+  border-top:1px solid #c8aa6e88;
+}
+.broadcast-overlay.role-icon-bg-dark .position-bar {
+  background:#081118;
+  color:#edf1f4;
+  border-top:1px solid #c8aa6e55;
+}
+.broadcast-overlay.role-icons-minimal .position-icon-frame {
+  display:none;
+}
+.broadcast-overlay.role-icons-ornate .position-icon {
+  width:26px;
+  height:26px;
+}
+.broadcast-overlay.role-icons-ornate .position-icon-frame {
+  color:#b89b62;
+  opacity:.95;
+}
+.broadcast-overlay.role-icons-ornate .position-icon-glyph {
+  transform:scale(.72);
+  transform-origin:center;
+}
+.broadcast-side.role-icons-ornate .position-icon {
+  width:23px;
+  height:23px;
+}
+.broadcast-overlay.role-icon-bg-dark.role-icons-ornate .position-icon-frame {
+  color:#c8aa6e;
+}
+.broadcast-overlay.role-icon-bg-light.role-icons-ornate .position-icon-frame {
+  color:#8d7447;
+}
