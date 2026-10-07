@@ -64,4 +64,19 @@ Broadcast Card 的 Splash Art 不参与识别；它只负责转播视觉。
 
 任何识别结果都应先进入 Review，再由导播确认。低置信度、空槽、客户端动画中的过渡帧都不应自动写入正式 Draft。
 
+Recognition 请求发出时会绑定当前 revision 与 Draft Phase。若识别仍在计算时有人手动推进 BP，旧结果返回后会直接被丢弃；即使 Review 已打开，确认前也会再次检查 phase / revision。这样旧截图不能污染下一阶段。
+
 出现异常时优先切回 Manual。比赛状态由服务器维护，因此切换输入方式不会要求重建比赛。
+
+## Browser Capture 与 Native Capture
+
+**Browser Window Capture（推荐）**
+- 读取用户明确选择的窗口；
+- ROI 使用 normalized source coordinates；
+- 对网页缩放和响应式布局稳定；
+- 不需要 Windows 桌面绝对坐标。
+
+**Native Windows Capture（兼容模式）**
+- 依赖 Windows 桌面像素坐标；
+- 移动窗口、改变显示器布局或 DPI 后可能需要重新输入区域；
+- 仅在 Browser Window Capture 不可用时使用。
