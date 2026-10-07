@@ -150,9 +150,13 @@ export function ScreenInput({ state, revision, token, disabled, send }: { state:
     const stream=streamRef.current;
     streamRef.current=undefined;
     if(stream) stream.getTracks().forEach(track=>track.stop());
-    if(videoRef.current) videoRef.current.srcObject=null;
+    if(videoRef.current) {
+      videoRef.current.onresize=null;
+      videoRef.current.srcObject=null;
+    }
     setVideoReady(false);
     setWindowInfo(undefined);
+    setPreviewSize({width:0,height:0});
     setCalibratingSlot(undefined);
   },[]);
 
@@ -179,6 +183,28 @@ export function ScreenInput({ state, revision, token, disabled, send }: { state:
     if(!result||!dialog.current||dialog.current.open) return;
     dialog.current.showModal();
   },[result]);
+  useEffect(()=>{
+    if(!videoReady||!windowInfo) return;
+    const host=previewHostRef.current;
+    if(!host) return;
+    const measure=()=>{
+      const viewportHeight=window.visualViewport?.height||window.innerHeight;
+      const maxWidth=Math.min(960,Math.max(1,host.clientWidth));
+      const maxHeight=Math.max(180,viewportHeight*.58);
+      setPreviewSize(fitCapturePreview(windowInfo.width,windowInfo.height,maxWidth,maxHeight));
+    };
+    measure();
+    const observer=new ResizeObserver(measure);
+    observer.observe(host);
+    window.addEventListener('resize',measure);
+    window.visualViewport?.addEventListener('resize',measure);
+    return()=>{
+      observer.disconnect();
+      window.removeEventListener('resize',measure);
+      window.visualViewport?.removeEventListener('resize',measure);
+    };
+  },[videoReady,windowInfo]);
+
 
   const connectWindow=useCallback(async()=>{
     if(!navigator.mediaDevices?.getDisplayMedia){
