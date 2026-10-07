@@ -167,25 +167,29 @@ function allyForAction(action: LcuChampSelectAction, session: LcuChampSelectSess
 
 export function mapLcuSession(session: LcuChampSelectSession, state: MatchState) {
   const expected = phases(state.draftMode, state.firstPickSide);
+  // The outer action array is the Champ Select turn order. Preserve that order:
+  // observers may not have a meaningful ally/enemy identity, but the draft turn
+  // sequence is still authoritative and can be checked against phases().
   const actions = (session.actions || [])
     .flat()
-    .filter(action => action && ['ban', 'pick'].includes(action.type))
-    .sort((left, right) => left.id - right.id);
+    .filter(action => action && ['ban', 'pick'].includes(action.type));
 
   if (!actions.length) return { actions: [] as LcuMappedAction[], localSide: undefined as Side | undefined };
 
   const anchorIndex = actions.findIndex(action => allyForAction(action, session) !== undefined);
-  if (anchorIndex < 0 || !expected[anchorIndex]) throw new Error('LCU side mapping is unavailable');
-  const anchorAlly = allyForAction(actions[anchorIndex], session)!;
-  const localSide = anchorAlly ? expected[anchorIndex].team : opposite(expected[anchorIndex].team);
+  const anchorRelation = anchorIndex >= 0 ? allyForAction(actions[anchorIndex], session) : undefined;
+  const localSide = anchorIndex >= 0 && anchorRelation !== undefined && expected[anchorIndex]
+    ? (anchorRelation ? expected[anchorIndex].team : opposite(expected[anchorIndex].team))
+    : undefined;
 
   const mapped = actions.map((action, index): LcuMappedAction => {
-    const relation = allyForAction(action, session);
-    if (relation === undefined) throw new Error('LCU action side is unavailable');
+    const phase = expected[index];
+    if (!phase) throw new Error(`LCU returned more draft actions than this ruleset supports`);
+    if (action.type !== phase.action) throw new Error(`LCU action type differs at phase ${index + 1}`);
     return {
       id: action.id,
-      side: relation ? localSide : opposite(localSide),
-      action: action.type as 'ban' | 'pick',
+      side: phase.team,
+      action: phase.action,
       championId: Number(action.championId || 0),
       completed: Boolean(action.completed),
     };
