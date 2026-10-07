@@ -25,7 +25,7 @@ test('caster sees picks only at the exact delay boundary, and no realtime revisi
   now += 179999; assert.equal(s.snapshot('caster').state.blueBans.length, 0); assert.equal(s.snapshot('caster').revision, 0);
   now++; assert.deepEqual(s.snapshot('caster').state.blueBans, [64]);
 });
-test('all metadata and next-game resets follow the same delayed timeline', () => {
+test('Caster gets live tournament metadata while scores and match progress stay delayed', () => {
   let now = 1000000; const s = new Store(undefined, () => now);
   apply(s, {
     type: 'settings',
@@ -41,9 +41,10 @@ test('all metadata and next-game resets follow the same delayed timeline', () =>
     },
   });
   assert.equal(s.snapshot('caster').state.blueScore, 0); assert.equal(s.snapshot('caster').state.gameNumber, 1);
-  assert.equal(s.snapshot('caster').state.blueTeam.name, initialState().blueTeam.name);
+  assert.equal(s.snapshot('caster').state.blueTeam.name, 'Secret finalist');
   now += 180000; assert.equal(s.snapshot('caster').state.blueScore, 1);
   apply(s, { type: 'reset_match' }); assert.equal(s.snapshot('caster').state.blueScore, 1);
+  assert.equal(s.snapshot('caster').state.stage, initialState().stage);
   now += 180000; assert.equal(s.snapshot('caster').state.blueScore, 0);
 });
 test('undo is a new delayed event, preserving the earlier timeline', () => {
@@ -240,4 +241,35 @@ test('empty bans do not consume heroes and are persisted in committed history', 
   apply(s, { type: 'commit_game' });
   assert.equal(s.data.state.draftHistory[0].blueBans?.[0], null);
   assert.equal(s.data.state.draftHistory[0].redBans?.[0], firstHero);
+});
+
+
+test('reset match clears progress but preserves tournament configuration', () => {
+  const s = new Store();
+  apply(s, { type: 'settings', settings: {
+    ...s.data.state,
+    stage: 'Community Final',
+    seriesFormat: 'BO5',
+    scoreDisplay: 'boxes',
+    draftMode: 'match',
+    draftRuleMode: 'global',
+    firstPickSide: 'red',
+    sideSwapMode: 'colorsOnly',
+    overlayLayout: 'side',
+    bpInputMode: 'lcu',
+  } });
+  apply(s, { type: 'score', team: 'blue', delta: 1 });
+  apply(s, { type: 'reset_match' });
+  assert.equal(s.data.state.blueScore, 0);
+  assert.equal(s.data.state.redScore, 0);
+  assert.equal(s.data.state.currentPhase, 0);
+  assert.equal(s.data.state.stage, 'Community Final');
+  assert.equal(s.data.state.seriesFormat, 'BO5');
+  assert.equal(s.data.state.scoreDisplay, 'boxes');
+  assert.equal(s.data.state.draftMode, 'match');
+  assert.equal(s.data.state.draftRuleMode, 'global');
+  assert.equal(s.data.state.firstPickSide, 'red');
+  assert.equal(s.data.state.sideSwapMode, 'colorsOnly');
+  assert.equal(s.data.state.overlayLayout, 'side');
+  assert.equal(s.data.state.bpInputMode, 'lcu');
 });
