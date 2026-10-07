@@ -84,13 +84,13 @@ LOL_LCU_LOCKFILE=C:\Riot Games\League of Legends\lockfile
 
 LCU token 是本机 League Client 的临时凭证，不应复制到网页、OBS URL、聊天或公开日志。
 
-## 阵营映射
+## Draft Turn 与阵营映射
 
-Champ Select action 提供 `isAllyAction`。程序根据 League Client action 顺序和当前比赛的 `firstPickSide` 推导本机队伍对应蓝方还是红方。
+自动同步首先使用 Champ Select `actions` 的**回合顺序**对齐项目自己的 `phases()`。因此即使赛事电脑是 Observer、没有明确的 ally/enemy 身份，也可以按第 1、2、3… 个 Draft turn 同步蓝红 Ban/Pick。
 
-如果客户端没有提供 `isAllyAction`，程序会用 `myTeam / theirTeam` 的 `cellId` 作为回退依据。
+`isAllyAction` 只用于 Control 状态面板显示“本机阵营映射”。如果该字段缺失，会尝试用 `myTeam / theirTeam` 的 `cellId` 推导；仍无法判断时只显示 `—`，不会影响按 Draft turn 自动同步。
 
-如果仍无法确认阵营，程序**停止同步而不是猜测**。
+每个 LCU action 的 `type` 仍必须和对应 authoritative phase 一致；如果 turn 数量或 Ban/Pick 类型不匹配，程序会停止写入而不是猜测。
 
 ## 与手动操作共存
 
