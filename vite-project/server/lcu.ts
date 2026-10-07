@@ -56,6 +56,7 @@ export type LcuStatus = {
   localSide?: Side;
   phase?: string;
   draftMode?: LcuDraftMode;
+  actionSummary?: { groups:number; bans:number; picks:number; completedBans:number; completedPicks:number };
   lastSyncAt?: number;
   lastError?: string;
   lastAction?: { side: Side; action: 'ban' | 'pick'; championId: number | null };
@@ -183,17 +184,33 @@ export function mapLcuSession(session: LcuChampSelectSession, state: MatchState)
     };
   }
 
-  const standardCompatible = actions.every((action, index) =>
+  const banActions = actions.filter(action => action.type === 'ban');
+  const pickActions = actions.filter(action => action.type === 'pick');
+  const expectedBanCount = expected.filter(phase => phase.action === 'ban').length;
+  const expectedPickCount = expected.filter(phase => phase.action === 'pick').length;
+
+  const standardCompatible = actions.length <= expected.length && actions.every((action, index) =>
     Boolean(expected[index]) && action.type === expected[index].action
   );
+
+  // AI/custom pick-only rooms can still expose one or more dummy/incomplete
+  // "ban" actions even though the UI never enters a real ban phase. Do not
+  // require literally every LCU action to be a pick. Instead identify the
+  // shape by a full/near-full pick roster with fewer ban actions than the
+  // configured tournament rules require, then ignore those dummy bans.
+  const uniquePickActors = new Set(pickActions.map(action => action.actorCellId)).size;
   const pickOnlyPractice = !standardCompatible
-    && actions.length >= 5
-    && actions.every(action => action.type === 'pick')
-    && expected.some(phase => phase.action === 'ban');
+    && expectedBanCount > 0
+    && pickActions.length >= Math.min(5, expectedPickCount)
+    && uniquePickActors >= Math.min(5, expectedPickCount)
+    && banActions.length < expectedBanCount;
 
   if (!standardCompatible && !pickOnlyPractice) {
     const mismatch = actions.findIndex((action, index) => !expected[index] || action.type !== expected[index].action);
-    throw new Error(`LCU room draft does not match tournament BP at phase ${Math.max(1, mismatch + 1)}`);
+    throw new Error(
+      `LCU room draft does not match tournament BP at phase ${Math.max(1, mismatch + 1)} `
+      + `(LCU: ${banActions.length} ban / ${pickActions.length} pick; expected: ${expectedBanCount} ban / ${expectedPickCount} pick)`
+    );
   }
 
   if (standardCompatible) {
@@ -229,7 +246,7 @@ export function mapLcuSession(session: LcuChampSelectSession, state: MatchState)
   const fallbackPickIndexes = expected.map((phase, index) => ({ phase, index })).filter(item => item.phase.action === 'pick').map(item => item.index);
   let fallbackCursor = 0;
 
-  const mapped = actions.map((action): LcuMappedAction => {
+  const mapped = pickActions.map((action): LcuMappedAction => {
     const relation = allyForAction(action, session);
     let phaseIndex: number | undefined;
     let side: Side | undefined;
@@ -331,6 +348,23 @@ export class LcuBridge {
       }
 
       const session = response.data as LcuChampSelectSession;
+      const filteredActions = (session.actions || []).flat().filter(action => action && ['ban','pick'].includes(action.type));
+      const actionSummary = {
+        groups: session.actions?.length ?? 0,
+        bans: filteredActions.filter(action => action.type === 'ban').length,
+        picks: filteredActions.filter(action => action.type === 'pick').length,
+        completedBans: filteredActions.filter(action => action.type === 'ban' && action.completed).length,
+        completedPicks: filteredActions.filter(action => action.type === 'pick' && action.completed).length,
+      };
+      this.statusValue = {
+        ...this.statusValue,
+        clientConnected: true,
+        sessionActive: true,
+        source: credentials.source,
+        phase: session.timer?.phase,
+        actionSummary,
+        lastError: undefined,
+      };
       const state = this.store.data.state;
       const mapped = mapLcuSession(session, state);
       const expected = phases(state.draftMode, state.firstPickSide);
@@ -344,6 +378,7 @@ export class LcuBridge {
         localSide: mapped.localSide,
         phase: session.timer?.phase,
         draftMode: mapped.mode,
+        actionSummary,
         lastError: undefined,
       };
 
