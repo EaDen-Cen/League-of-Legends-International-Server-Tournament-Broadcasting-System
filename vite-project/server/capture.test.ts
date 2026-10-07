@@ -22,16 +22,24 @@ test('capture rejects remote, tunnel and cross-origin requests even with loopbac
   assert.ok(!localCaptureRequest(request({host:'example.com'})));
   assert.ok(!localCaptureRequest(request({host:'127.0.0.1:3001'},'192.168.1.10')));
 });
-test('input and score settings are authoritative, validated, undoable and delayed',()=>{
+test('input, score and role-icon settings are authoritative, validated, undoable and delayed',()=>{
   let now=0;const store=new Store(undefined,()=>now);
-  const settings={...store.data.state,scoreDisplay:'boxes',bpInputMode:'screen'} as MatchSettings;
+  const settings={...store.data.state,scoreDisplay:'boxes',bpInputMode:'lcu',roleIconStyle:'ornate',roleIconBackground:'dark'} as MatchSettings;
   store.apply('settings-001',0,{type:'settings',settings});
   assert.equal(store.snapshot('overlay').state.scoreDisplay,'boxes');
+  assert.equal(store.snapshot('overlay').state.roleIconStyle,'ornate');
+  assert.equal(store.snapshot('overlay').state.roleIconBackground,'dark');
   assert.equal(store.snapshot('caster').state.bpInputMode,'manual');
-  now=180000; assert.equal(store.snapshot('caster').state.bpInputMode,'screen');
+  now=180000;
+  assert.equal(store.snapshot('caster').state.bpInputMode,'lcu');
+  assert.equal(store.snapshot('caster').state.roleIconStyle,'ornate');
   assert.throws(()=>store.apply('settings-002',1,{type:'settings',settings:{...settings,bpInputMode:'bad'} as unknown as MatchSettings}));
+  assert.throws(()=>store.apply('settings-003',1,{type:'settings',settings:{...settings,roleIconStyle:'bad'} as unknown as MatchSettings}));
   assert.equal(store.data.revision,1);
-  store.apply('undo-mode-001',1,{type:'undo'}); assert.equal(store.data.state.bpInputMode,'manual');
+  store.apply('undo-mode-001',1,{type:'undo'});
+  assert.equal(store.data.state.bpInputMode,'manual');
+  assert.equal(store.data.state.roleIconStyle,'minimal');
+  assert.equal(store.data.state.roleIconBackground,'light');
 });
 
 
