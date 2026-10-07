@@ -93,7 +93,11 @@ npm run lint
 
 ## Screenshot / Auto BP
 
-默认使用手动 BP。需要截图识别时，在 Match Settings 选择 Screen Recognition，并完成当前 LoL 窗口的槽位校准。
+默认使用手动 BP。需要截图识别时，在 Match Settings 选择 Screen Recognition，并完成当前 LoL 窗口的 20 个独立槽位校准。
+
+Browser Window Capture 使用**源画面归一化坐标**：识别框保存为 0–1 比例，并绑定到与视频源完全相同宽高比的预览舞台。浏览器 Zoom、Control 面板宽度变化和同宽高比的分辨率变化不会改变实际识别位置。游戏画面宽高比真正改变时，系统会提示重新检查当前槽位。
+
+异步 Recognition 会记录请求发起时的 revision / phase；如果结果返回前 BP 已进入下一阶段，旧结果会被直接丢弃，避免写入错误 Ban / Pick 槽位。
 
 Windows 原生捕获是显式 opt-in：
 
