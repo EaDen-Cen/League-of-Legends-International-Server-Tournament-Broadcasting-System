@@ -2086,3 +2086,109 @@
 .broadcast-side .broadcast-bans .ban-team.display-right {
   flex-direction:row-reverse;
 }
+
+
+/* Caster desk baseline: useful roster metadata is live even while BP is delayed. */
+.caster-roster {
+  display:grid;
+  gap:12px;
+}
+.caster-roster-header {
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:16px;
+}
+.caster-roster-header h2 {
+  margin:0 0 4px;
+}
+.caster-delay-badge {
+  flex:none;
+  padding:5px 8px;
+  border:1px solid #c8aa6e55;
+  border-radius:999px;
+  color:#d8c28f;
+  background:#17140e;
+  font-size:10px;
+}
+.caster-delay-note {
+  margin:0;
+  padding:8px 10px;
+  border-left:2px solid #8a7448;
+  background:#0c141a;
+  color:#8e9ba4;
+  font-size:11px;
+}
+.caster-roster-grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.caster-roster-team {
+  overflow:hidden;
+  border:1px solid #ffffff10;
+  border-radius:6px;
+  background:#0a1218;
+}
+.caster-roster-team > header {
+  display:flex;
+  align-items:center;
+  gap:9px;
+  padding:9px 10px;
+  border-bottom:1px solid #ffffff0d;
+}
+.caster-roster-team.blue > header { box-shadow:inset 3px 0 #3a9ee8; }
+.caster-roster-team.red > header { box-shadow:inset -3px 0 #df5362; }
+.caster-roster-team > header img {
+  width:30px;
+  height:30px;
+  object-fit:contain;
+}
+.caster-roster-team > header div {
+  min-width:0;
+  display:grid;
+  gap:1px;
+}
+.caster-roster-team > header small {
+  color:#74828b;
+  font-size:9px;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+}
+.caster-roster-team > header strong {
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  color:#edf1f4;
+}
+.caster-player-list {
+  display:grid;
+}
+.caster-player {
+  display:grid;
+  grid-template-columns:76px minmax(0,1fr);
+  align-items:center;
+  gap:9px;
+  min-height:34px;
+  padding:6px 10px;
+  border-bottom:1px solid #ffffff08;
+}
+.caster-player:last-child { border-bottom:0; }
+.caster-role {
+  color:#7d8d97;
+  font-size:9px;
+  letter-spacing:.05em;
+  text-transform:uppercase;
+}
+.caster-player b {
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  color:#cfd7dc;
+  font-size:11px;
+}
+@media(max-width:720px) {
+  .caster-roster-header { flex-direction:column; }
+  .caster-roster-grid { grid-template-columns:1fr; }
+}
