@@ -261,6 +261,14 @@
   white-space:nowrap;
 }
 .window-capture-status.connected { color:#73deb6; }
+.window-capture-preview-host {
+  width:100%;
+  min-width:0;
+  min-height:220px;
+  display:grid;
+  place-items:center;
+  overflow:hidden;
+}
 .window-capture-preview {
   position:relative;
   width:min(100%,960px);
@@ -272,14 +280,22 @@
   background:#050b13;
   touch-action:none;
   user-select:none;
+  contain:layout paint;
+}
+.window-capture-preview.ready {
+  min-height:0;
+  flex:none;
 }
 .window-capture-preview video {
+  position:absolute;
+  inset:0;
   width:100%;
-  height:auto;
-  max-height:58dvh;
+  height:100%;
+  max-height:none;
   display:block;
-  object-fit:contain;
+  object-fit:fill;
   background:#02050a;
+  pointer-events:none;
 }
 .window-capture-placeholder {
   min-height:260px;
@@ -346,7 +362,9 @@
   .screen-input-heading { flex-direction:column; }
   .capture-mode-switch { width:100%; }
   .capture-mode-switch button { flex:1 1 150px; }
+  .window-capture-preview-host { min-height:180px; }
   .window-capture-preview { min-height:180px; }
+  .window-capture-preview.ready { min-height:0; }
   .window-capture-placeholder { min-height:200px; }
   .window-capture-calibration { align-items:stretch; }
   .window-capture-calibration > button { flex:1 1 180px; }
@@ -840,4 +858,22 @@
 .library-dialog > header {
   border-bottom:1px solid #ffffff0d;
   background:#0d161d;
+}
+
+
+/* Capture overlays share the exact fitted source stage. Browser zoom, responsive
+   layout and viewport resizing can change the stage size without changing the
+   normalized calibration coordinates. */
+.window-capture-preview.ready .capture-explicit-slot {
+  will-change:left,top,width,height;
+}
+.window-capture-preview.calibrating {
+  cursor:crosshair;
+  outline:1px solid #53d1d166;
+  outline-offset:2px;
+}
+.explicit-slot-buttons button.active {
+  border-color:#f0e6d2;
+  color:#f0e6d2;
+  box-shadow:inset 0 0 0 1px #c8aa6e66;
 }
