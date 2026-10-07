@@ -239,6 +239,7 @@ export class LcuBridge {
       let response: { status: number; data?: unknown };
       try {
         response = await lcuGet(credentials, '/lol-champ-select/v1/session');
+        if (response.status === 404) response = await lcuGet(credentials, '/lol-lobby-team-builder/champ-select/v1/session');
       } catch (error) {
         this.credentials = undefined;
         this.statusValue = {
@@ -275,11 +276,13 @@ export class LcuBridge {
       const currentValues = currentDraftValues(state);
 
       this.statusValue = {
+        ...this.statusValue,
         clientConnected: true,
         sessionActive: true,
         source: credentials.source,
         localSide: mapped.localSide,
         phase: session.timer?.phase,
+        lastError: undefined,
       };
 
       // Never silently merge two different drafts. Manual fallback is safe only
