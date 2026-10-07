@@ -126,6 +126,7 @@ GitHub Actions 使用 `.github/workflows/lol-checks.yml` 进行 LoL 专用检查
 - [导播操作指南](docs/guides/operator-guide.md)
 - [Windows / Cloudflare](docs/guides/windows-launcher.md)
 - [Screen Recognition](docs/guides/screen-recognition.md)
+- [系统架构与坐标模型](docs/design/architecture.md)
 - [Champion Data Pipeline](docs/research/hero-sync.md)
 - [项目里程碑](MILESTONES.md)
 
