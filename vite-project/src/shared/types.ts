@@ -3,6 +3,8 @@ export type Side = 'blue' | 'red';
 export type Language = 'zh' | 'eng';
 
 export type OverlayLayout = 'panel' | 'side';
+export type RoleIconStyle = 'minimal' | 'ornate';
+export type RoleIconBackground = 'light' | 'dark';
 export type HeroArtLayout = OverlayLayout;
 export interface HeroArtCrop { x: number; y: number; scale: number }
 export interface HeroArtOverride {
@@ -84,7 +86,10 @@ export interface MatchState {
   language: Language;
   overlayLayout: OverlayLayout;
   scoreDisplay?: 'number' | 'boxes';
-  bpInputMode?: 'manual' | 'screen';
+  /** `screen` is retained only for legacy snapshots/tests; new UI exposes manual/lcu. */
+  bpInputMode?: 'manual' | 'lcu' | 'screen';
+  roleIconStyle: RoleIconStyle;
+  roleIconBackground: RoleIconBackground;
   showHeroName: boolean;
   artSourceMode: 'auto' | 'legacy';
   heroArtOverrides: Record<string, HeroArtOverride>;
@@ -131,6 +136,8 @@ export type MatchSettings = Pick<
   | 'overlayLayout'
   | 'scoreDisplay'
   | 'bpInputMode'
+  | 'roleIconStyle'
+  | 'roleIconBackground'
   | 'showHeroName'
   | 'artSourceMode'
 >;
@@ -192,6 +199,8 @@ export const initialState = (): MatchState => ({
   overlayLayout: 'panel',
   scoreDisplay: 'number',
   bpInputMode: 'manual',
+  roleIconStyle: 'minimal',
+  roleIconBackground: 'light',
   showHeroName: true,
   artSourceMode: 'auto',
   heroArtOverrides: {},
