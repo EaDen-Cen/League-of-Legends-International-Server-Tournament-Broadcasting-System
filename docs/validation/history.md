@@ -4,6 +4,15 @@
 
 # 验证记录
 
+## 2026-10-06 Overlay / Reset / Caster 体验修正
+
+- 分路图标 Light preset 更名为 Silver，并使用压暗银灰渐变，避免纯白底在 OBS 中过亮。
+- Ornate 分路图标改为独立赛事徽章：八边奖章、内框、菱形、圆环、左右翼与金色 jewel，和 Minimal glyph 明显区分。
+- Red Ban strip 在 Panel / Side 中使用反向 flex 与反向 slot 顺序，并锚定右边缘，与 Blue Ban strip 以中心轴镜像。
+- `reset_match` 清空比赛进度、队伍、比分、选禁与历史，但保留 stage/event 名称、BO 赛制、比分显示、Draft Mode、BP Rule、先手方、换边方式、Overlay、输入模式与图标/素材展示设置。
+- Caster snapshot 保持当前队伍/选手/赛事展示元数据实时可见，比赛进度继续遵守 Caster Delay；Caster UI 新增即时 roster 面板与延迟提示，避免 180 秒缓冲期被误认为“没有数据”。
+- Store tests 已覆盖 reset 保留设置、Caster metadata、loaded roster 与 substitution metadata；相关功能提交均通过 `npm test` / `npm run build`。
+
 ## 2026-10-06 League Client Auto BP 与分路图标设置
 
 - Match Settings 的正常 BP 输入入口改为 Manual / League Client 房间 API自动同步；Legacy Screen Recognition 代码仍保留，但不再作为日常入口。
