@@ -13,7 +13,7 @@ import {
 } from './bpCaptureLayout';
 import { detectEmptyBan, EMPTY_BAN_GRACE_MS, type EmptyBanStability } from './emptyBanDetection';
 import { updateHeroRecognitionStability, type HeroRecognitionStability } from './heroRecognitionStability';
-import { regionFromDrag, regionToPixels } from './windowCaptureGeometry';
+import { captureAspectRatioDrift, fitCapturePreview, regionFromDrag, regionToPixels, type PreviewSize } from './windowCaptureGeometry';
 import { phaseName } from '../shared/display';
 import { translator } from '../shared/i18n';
 import { phases, type Action, type MatchState } from '../shared/types';
@@ -23,6 +23,8 @@ type CaptureResult = {
   candidates: { heroId:number; confidence:number }[];
   preview: string;
   at: number;
+  phaseKey: string;
+  revision: number;
 };
 
 type CaptureMode = 'window' | 'native';
@@ -44,7 +46,18 @@ const freshEmptyStability = (): EmptyBanStability => ({ phaseKey:'', fingerprint
 const freshHeroStability = (): HeroRecognitionStability => ({ phaseKey:'', heroId:null, count:0 });
 const nativeDefault = {x:0,y:0,width:100,height:100};
 const SLOTS_STORAGE='lol-window-capture-slots-v3';
+const PROFILE_STORAGE='lol-window-capture-profile-v1';
 const LEGACY_ZONES_STORAGE='lol-window-capture-zones-v2';
+
+type CaptureProfile={width:number;height:number;savedAt:number};
+
+function readCaptureProfile():CaptureProfile|undefined {
+  try {
+    const value=JSON.parse(localStorage.getItem(PROFILE_STORAGE)||'null') as CaptureProfile|null;
+    if(value&&Number.isFinite(value.width)&&Number.isFinite(value.height)&&value.width>0&&value.height>0) return value;
+  } catch { /* ignore invalid saved metadata */ }
+  return undefined;
+}
 
 function readCaptureSlots() {
   try {
@@ -99,9 +112,11 @@ export function ScreenInput({ state, revision, token, disabled, send }: { state:
   const [windowInfo,setWindowInfo]=useState<WindowInfo>();
   const [calibratingSlot,setCalibratingSlot]=useState<CaptureSlotKey>();
   const [videoReady,setVideoReady]=useState(false);
+  const [previewSize,setPreviewSize]=useState<PreviewSize>({width:0,height:0});
 
   const dialog=useRef<HTMLDialogElement>(null);
   const videoRef=useRef<HTMLVideoElement>(null);
+  const previewHostRef=useRef<HTMLDivElement>(null);
   const streamRef=useRef<MediaStream>();
   const mounted=useRef(true);
   const busyRef=useRef(false);
