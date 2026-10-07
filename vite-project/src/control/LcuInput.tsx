@@ -10,6 +10,7 @@ type LcuStatus = {
   source?: 'env' | 'lockfile' | 'process';
   localSide?: Side;
   phase?: string;
+  draftMode?: 'tournament' | 'pick-only-practice';
   lastSyncAt?: number;
   lastError?: string;
   lastAction?: { side: Side; action: 'ban' | 'pick'; championId: number | null };
@@ -61,9 +62,11 @@ export function LcuInput({ state, token }: { state: MatchState; token: string })
     <div className="lcu-status-grid">
       <div className={status.clientConnected?'ok':'waiting'}><span>{t('lcuClient')}</span><strong>{status.clientConnected?t('lcuConnected'):t('lcuNotFound')}</strong></div>
       <div className={status.sessionActive?'ok':'waiting'}><span>{t('lcuChampSelect')}</span><strong>{status.sessionActive?t('lcuActive'):t('lcuWaiting')}</strong></div>
+      <div><span>{t('lcuRoomMode')}</span><strong>{status.draftMode?t(status.draftMode==='pick-only-practice'?'lcuPracticeMode':'lcuTournamentMode'):'—'}</strong></div>
       <div><span>{t('lcuSide')}</span><strong>{status.localSide?t(status.localSide==='blue'?'blueSide':'redSide'):'—'}</strong></div>
       <div><span>{t('lcuLastSync')}</span><strong>{status.lastAction?`${t(status.lastAction.side==='blue'?'blueSide':'redSide')} · ${t(status.lastAction.action==='ban'?'banAction':'pickAction')} · ${heroName}`:'—'}</strong></div>
     </div>
+    {status.draftMode==='pick-only-practice'&&<p className="lcu-practice-note">{t('lcuPracticeHint')}</p>}
     {status.phase&&<p className="lcu-phase">{t('lcuClientPhase')}: <strong>{status.phase}</strong></p>}
     {status.lastError&&<p className="lcu-warning" role="status">{status.lastError}</p>}
     <small>{t('lcuManualFallback')}</small>
