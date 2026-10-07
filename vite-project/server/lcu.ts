@@ -40,11 +40,14 @@ export type LcuChampSelectSession = {
 
 export type LcuMappedAction = {
   id: number;
+  phaseIndex: number;
   side: Side;
   action: 'ban' | 'pick';
   championId: number;
   completed: boolean;
 };
+
+export type LcuDraftMode = 'tournament' | 'pick-only-practice';
 
 export type LcuStatus = {
   clientConnected: boolean;
@@ -52,6 +55,7 @@ export type LcuStatus = {
   source?: LcuCredentials['source'];
   localSide?: Side;
   phase?: string;
+  draftMode?: LcuDraftMode;
   lastSyncAt?: number;
   lastError?: string;
   lastAction?: { side: Side; action: 'ban' | 'pick'; championId: number | null };
@@ -167,34 +171,87 @@ function allyForAction(action: LcuChampSelectAction, session: LcuChampSelectSess
 
 export function mapLcuSession(session: LcuChampSelectSession, state: MatchState) {
   const expected = phases(state.draftMode, state.firstPickSide);
-  // The outer action array is the Champ Select turn order. Preserve that order:
-  // observers may not have a meaningful ally/enemy identity, but the draft turn
-  // sequence is still authoritative and can be checked against phases().
   const actions = (session.actions || [])
     .flat()
     .filter(action => action && ['ban', 'pick'].includes(action.type));
 
-  if (!actions.length) return { actions: [] as LcuMappedAction[], localSide: undefined as Side | undefined };
+  if (!actions.length) {
+    return {
+      actions: [] as LcuMappedAction[],
+      localSide: undefined as Side | undefined,
+      mode: 'tournament' as LcuDraftMode,
+    };
+  }
 
-  const anchorIndex = actions.findIndex(action => allyForAction(action, session) !== undefined);
-  const anchorRelation = anchorIndex >= 0 ? allyForAction(actions[anchorIndex], session) : undefined;
-  const localSide = anchorIndex >= 0 && anchorRelation !== undefined && expected[anchorIndex]
-    ? (anchorRelation ? expected[anchorIndex].team : opposite(expected[anchorIndex].team))
-    : undefined;
+  const standardCompatible = actions.every((action, index) =>
+    Boolean(expected[index]) && action.type === expected[index].action
+  );
+  const pickOnlyPractice = !standardCompatible
+    && actions.length >= 5
+    && actions.every(action => action.type === 'pick')
+    && expected.some(phase => phase.action === 'ban');
 
-  const mapped = actions.map((action, index): LcuMappedAction => {
-    const phase = expected[index];
-    if (!phase) throw new Error(`LCU returned more draft actions than this ruleset supports`);
-    if (action.type !== phase.action) throw new Error(`LCU action type differs at phase ${index + 1}`);
+  if (!standardCompatible && !pickOnlyPractice) {
+    const mismatch = actions.findIndex((action, index) => !expected[index] || action.type !== expected[index].action);
+    throw new Error(`LCU room draft does not match tournament BP at phase ${Math.max(1, mismatch + 1)}`);
+  }
+
+  if (standardCompatible) {
+    const anchorIndex = actions.findIndex(action => allyForAction(action, session) !== undefined);
+    const anchorRelation = anchorIndex >= 0 ? allyForAction(actions[anchorIndex], session) : undefined;
+    const localSide = anchorIndex >= 0 && anchorRelation !== undefined && expected[anchorIndex]
+      ? (anchorRelation ? expected[anchorIndex].team : opposite(expected[anchorIndex].team))
+      : undefined;
+
+    return {
+      mode: 'tournament' as LcuDraftMode,
+      localSide,
+      actions: actions.map((action, index): LcuMappedAction => ({
+        id: action.id,
+        phaseIndex: index,
+        side: expected[index].team,
+        action: expected[index].action,
+        championId: Number(action.championId || 0),
+        completed: Boolean(action.completed),
+      })),
+    };
+  }
+
+  // Custom AI / blind-style rooms can expose only ten pick actions and no bans.
+  // Keep tournament state structurally valid by treating the missing ban turns as
+  // explicit empty bans, then map completed picks into each team's five pick slots.
+  const localSide: Side = state.firstPickSide;
+  const pickPhaseIndexes = {
+    blue: expected.map((phase, index) => ({ phase, index })).filter(item => item.phase.action === 'pick' && item.phase.team === 'blue').map(item => item.index),
+    red: expected.map((phase, index) => ({ phase, index })).filter(item => item.phase.action === 'pick' && item.phase.team === 'red').map(item => item.index),
+  };
+  const used = { blue: 0, red: 0 };
+  const fallbackPickIndexes = expected.map((phase, index) => ({ phase, index })).filter(item => item.phase.action === 'pick').map(item => item.index);
+  let fallbackCursor = 0;
+
+  const mapped = actions.map((action): LcuMappedAction => {
+    const relation = allyForAction(action, session);
+    let phaseIndex: number | undefined;
+    let side: Side | undefined;
+    if (relation !== undefined) {
+      side = relation ? localSide : opposite(localSide);
+      phaseIndex = pickPhaseIndexes[side][used[side]++];
+    } else {
+      phaseIndex = fallbackPickIndexes[fallbackCursor++];
+      side = phaseIndex === undefined ? undefined : expected[phaseIndex].team;
+    }
+    if (phaseIndex === undefined || !side) throw new Error('LCU pick-only room contains more picks than supported');
     return {
       id: action.id,
-      side: phase.team,
-      action: phase.action,
+      phaseIndex,
+      side,
+      action: 'pick',
       championId: Number(action.championId || 0),
       completed: Boolean(action.completed),
     };
-  });
-  return { actions: mapped, localSide };
+  }).sort((left, right) => left.phaseIndex - right.phaseIndex);
+
+  return { actions: mapped, localSide, mode: 'pick-only-practice' as LcuDraftMode };
 }
 
 function currentDraftValues(state: MatchState) {
@@ -286,28 +343,53 @@ export class LcuBridge {
         source: credentials.source,
         localSide: mapped.localSide,
         phase: session.timer?.phase,
+        draftMode: mapped.mode,
         lastError: undefined,
       };
+
+      const byPhase = new Map(mapped.actions.map(action => [action.phaseIndex, action]));
 
       // Never silently merge two different drafts. Manual fallback is safe only
       // while the already-recorded prefix matches the League Client session.
       for (let index = 0; index < state.currentPhase; index++) {
-        const action = mapped.actions[index];
         const expectedPhase = expected[index];
+        const action = byPhase.get(index);
+        const localValue = currentValues[index];
+
+        if (mapped.mode === 'pick-only-practice' && expectedPhase.action === 'ban') {
+          if (localValue !== null) throw new Error(`LCU practice room differs at phase ${index + 1}`);
+          continue;
+        }
+
         if (!action || !action.completed || action.side !== expectedPhase.team || action.action !== expectedPhase.action) {
           throw new Error(`LCU draft differs at phase ${index + 1}`);
         }
-        const localValue = currentValues[index];
         const remoteValue = action.action === 'ban' && action.championId <= 0 ? null : action.championId;
         if (localValue !== remoteValue) throw new Error(`LCU draft differs at phase ${index + 1}`);
       }
 
-      for (let index = this.store.data.state.currentPhase; index < expected.length; index++) {
-        const action = mapped.actions[index];
+      while (this.store.data.state.currentPhase < expected.length) {
+        const phaseIndex = this.store.data.state.currentPhase;
+        const phase = phases(this.store.data.state.draftMode, this.store.data.state.firstPickSide)[phaseIndex];
+        const action = byPhase.get(phaseIndex);
+        if (!phase) break;
+
+        if (mapped.mode === 'pick-only-practice' && phase.action === 'ban' && !action) {
+          this.store.apply(
+            `lcu-practice-skip-${phaseIndex}-${this.store.data.revision}`,
+            this.store.data.revision,
+            { type: 'skip_ban', team: phase.team },
+          );
+          this.statusValue.lastSyncAt = Date.now();
+          this.statusValue.lastError = undefined;
+          this.statusValue.lastAction = { side: phase.team, action: 'ban', championId: null };
+          this.onChanged();
+          continue;
+        }
+
         if (!action?.completed) break;
-        const phase = phases(this.store.data.state.draftMode, this.store.data.state.firstPickSide)[this.store.data.state.currentPhase];
-        if (!phase || action.side !== phase.team || action.action !== phase.action) {
-          throw new Error(`LCU phase mapping mismatch at phase ${this.store.data.state.currentPhase + 1}`);
+        if (action.side !== phase.team || action.action !== phase.action) {
+          throw new Error(`LCU phase mapping mismatch at phase ${phaseIndex + 1}`);
         }
 
         let storeAction: Action;
