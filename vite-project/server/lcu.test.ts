@@ -45,9 +45,13 @@ test('LCU side mapping falls back to cell membership when isAllyAction is absent
   assert.equal(mapped.actions[1].side,expected[1].team);
 });
 
-test('LCU session without side evidence is rejected instead of guessing',()=>{
+test('LCU observer session can sync by turn order without ally-side evidence',()=>{
   const state=initialState();
-  assert.throws(()=>mapLcuSession({
+  const mapped=mapLcuSession({
     actions:[[{id:1,actorCellId:7,championId:1,completed:true,type:'ban'}]],
-  },state),/side mapping is unavailable/);
+  },state);
+  assert.equal(mapped.localSide,undefined);
+  assert.equal(mapped.actions[0].side,'blue');
+  assert.equal(mapped.actions[0].action,'ban');
+  assert.equal(mapped.actions[0].championId,1);
 });
