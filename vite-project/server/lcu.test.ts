@@ -55,3 +55,34 @@ test('LCU observer session can sync by turn order without ally-side evidence',()
   assert.equal(mapped.actions[0].action,'ban');
   assert.equal(mapped.actions[0].championId,1);
 });
+
+
+test('LCU pick-only custom AI rooms map picks onto tournament pick phases',()=>{
+  const state=initialState();
+  state.firstPickSide='blue';
+  const expected=phases(state.draftMode,state.firstPickSide);
+  const pickPhases=expected.map((phase,index)=>({phase,index})).filter(item=>item.phase.action==='pick');
+  const actions:LcuChampSelectAction[]=pickPhases.map((item,index)=>({
+    id:index+100,
+    actorCellId:item.phase.team==='blue'?10:20,
+    championId:1000+index,
+    completed:true,
+    type:'pick',
+    isAllyAction:item.phase.team==='blue',
+  }));
+  const mapped=mapLcuSession({actions:actions.map(action=>[action]),myTeam:[{cellId:10}],theirTeam:[{cellId:20}]},state);
+  assert.equal(mapped.mode,'pick-only-practice');
+  assert.equal(mapped.localSide,'blue');
+  assert.deepEqual(mapped.actions.map(action=>action.phaseIndex),pickPhases.map(item=>item.index));
+  assert.ok(mapped.actions.every(action=>action.action==='pick'));
+});
+
+test('LCU non-standard mixed rooms are rejected instead of silently remapped',()=>{
+  const state=initialState();
+  assert.throws(()=>mapLcuSession({
+    actions:[
+      [{id:1,actorCellId:1,championId:1,completed:true,type:'pick'}],
+      [{id:2,actorCellId:2,championId:2,completed:true,type:'ban'}],
+    ],
+  },state),/does not match tournament BP/);
+});
