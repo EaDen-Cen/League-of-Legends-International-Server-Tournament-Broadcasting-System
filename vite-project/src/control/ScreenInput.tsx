@@ -296,6 +296,7 @@ export function ScreenInput({ state, revision, token, disabled, send }: { state:
 
   const capture=useCallback(async()=>{
     if(busyRef.current||disabled||!phase||state.committedGameId) return;
+    const captureContext={phaseKey,revision};
     busyRef.current=true;
     setBusy(true);
     setMessage('');
@@ -323,6 +324,10 @@ export function ScreenInput({ state, revision, token, disabled, send }: { state:
         if(!response.ok) throw new Error(zh?'识别不可用：请使用 Windows 本机控制台、启用采集并检查区域。可继续手动选择。':'Capture unavailable: use the enabled Windows local console and check the region. Manual selection remains available.');
       }
       if(!mounted.current) return;
+      if(latestCaptureContext.current.phaseKey!==captureContext.phaseKey||latestCaptureContext.current.revision!==captureContext.revision){
+        setMessage(t('captureStaleDiscarded'));
+        return;
+      }
 
       const candidates=data.candidates??[];
       const heroEvidence=updateHeroRecognitionStability(heroStability.current,phaseKey,candidates);
@@ -346,7 +351,7 @@ export function ScreenInput({ state, revision, token, disabled, send }: { state:
           confidence:Math.round(top.confidence*100),
           count:heroEvidence.stability.count,
         }));
-        setResult({kind:'hero',candidates,preview:data.preview,at:Date.now()});
+        setResult({kind:'hero',candidates,preview:data.preview,at:Date.now(),phaseKey:captureContext.phaseKey,revision:captureContext.revision});
         return;
       }
 
@@ -362,7 +367,7 @@ export function ScreenInput({ state, revision, token, disabled, send }: { state:
 
       if(empty.suspected){
         emptyPromptedPhase.current=phaseKey;
-        setResult({kind:'empty-ban',candidates,preview:data.preview,at:Date.now()});
+        setResult({kind:'empty-ban',candidates,preview:data.preview,at:Date.now(),phaseKey:captureContext.phaseKey,revision:captureContext.revision});
         setMessage(t('emptyBanSuspected',{count:3}));
         return;
       }
@@ -421,6 +426,7 @@ export function ScreenInput({ state, revision, token, disabled, send }: { state:
     const updated={...slots,[calibratingSlot]:next};
     setSlots(updated);
     localStorage.setItem(SLOTS_STORAGE,JSON.stringify(updated));
+    if(windowInfo?.width&&windowInfo?.height) localStorage.setItem(PROFILE_STORAGE,JSON.stringify({width:windowInfo.width,height:windowInfo.height,savedAt:Date.now()} satisfies CaptureProfile));
     setMessage(t('captureExplicitSlotSaved',{slot:captureSlotLabel(calibratingSlot)}));
     setCalibratingSlot(undefined);
   };
@@ -432,6 +438,11 @@ export function ScreenInput({ state, revision, token, disabled, send }: { state:
 
   const submitReview=()=>{
     if(!phase||disabled||!result) return;
+    if(result.phaseKey!==phaseKey||result.revision!==revision){
+      closeReview();
+      setMessage(t('captureStaleDiscarded'));
+      return;
+    }
     if(Date.now()-result.at>30000){
       closeReview();
       setMessage(zh?'结果已过期，请重新读取。':'Result expired. Capture again.');
