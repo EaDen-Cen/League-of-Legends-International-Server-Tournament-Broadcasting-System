@@ -45,7 +45,10 @@ Node.js + WebSocket authoritative state
 - Team Library；
 - substitutes；
 - Final Lineup Assignment；
-- Caster Delay。
+- Caster Delay；
+- 浏览器 Zoom / responsive viewport 下动态重算 sticky 布局；
+- Server pending 状态锁定写操作，避免重复提交；
+- Champion Studio 48 位渐进加载 + 显示全部。
 
 ## L2 — LoL Broadcast Graphics
 
