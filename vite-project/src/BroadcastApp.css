@@ -2051,6 +2051,7 @@
    B1 remains nearest its team's outside label on both sides. */
 .broadcast-bans .ban-team.display-right {
   flex-direction:row-reverse;
+  justify-content:flex-start;
 }
 .broadcast-bans .ban-team.display-right .bans {
   flex-direction:row-reverse;
