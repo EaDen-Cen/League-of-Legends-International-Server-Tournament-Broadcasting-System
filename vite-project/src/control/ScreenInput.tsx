@@ -128,6 +128,8 @@ export function ScreenInput({ state, revision, token, disabled, send }: { state:
 
   const phase=phases(state.draftMode,state.firstPickSide)[state.currentPhase];
   const phaseKey=`${state.draftGameNumber ?? state.gameNumber}:${state.currentPhase}:${phase?.team ?? 'done'}:${phase?.action ?? 'done'}`;
+  const latestCaptureContext=useRef({phaseKey,revision});
+  latestCaptureContext.current={phaseKey,revision};
   const target=useMemo(()=>captureTargetForState(state,slots),[state,slots]);
 
   const label=useCallback((id:number)=>{
