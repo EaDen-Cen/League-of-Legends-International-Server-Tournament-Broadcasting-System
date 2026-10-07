@@ -239,6 +239,8 @@ export class Store {
       reset.heroArtOverrides = copy(state.heroArtOverrides || {});
       reset.heroDataOverrides = copy(state.heroDataOverrides || {});
       reset.showHeroName = state.showHeroName ?? true;
+      reset.roleIconStyle = state.roleIconStyle ?? 'minimal';
+      reset.roleIconBackground = state.roleIconBackground ?? 'light';
       reset.artSourceMode = state.artSourceMode ?? 'auto';
       next.state = reset;
       break;
@@ -255,7 +257,9 @@ export class Store {
         !['zh', 'eng'].includes(s.language) ||
         !['panel', 'side'].includes(s.overlayLayout) ||
         !['number', 'boxes'].includes(s.scoreDisplay ?? state.scoreDisplay ?? 'number') ||
-        !['manual', 'screen'].includes(s.bpInputMode ?? state.bpInputMode ?? 'manual') ||
+        !['manual', 'lcu', 'screen'].includes(s.bpInputMode ?? state.bpInputMode ?? 'manual') ||
+        !['minimal', 'ornate'].includes(s.roleIconStyle ?? state.roleIconStyle ?? 'minimal') ||
+        !['light', 'dark'].includes(s.roleIconBackground ?? state.roleIconBackground ?? 'light') ||
         typeof (s.showHeroName ?? state.showHeroName) !== 'boolean' ||
         typeof (s.flowbornFormsIndependent ?? state.flowbornFormsIndependent) !== 'boolean' ||
         !['auto', 'legacy'].includes(s.artSourceMode ?? state.artSourceMode ?? 'auto')
@@ -352,6 +356,8 @@ export class Store {
         overlayLayout: s.overlayLayout,
         scoreDisplay: s.scoreDisplay ?? state.scoreDisplay ?? 'number',
         bpInputMode: s.bpInputMode ?? state.bpInputMode ?? 'manual',
+        roleIconStyle: s.roleIconStyle ?? state.roleIconStyle ?? 'minimal',
+        roleIconBackground: s.roleIconBackground ?? state.roleIconBackground ?? 'light',
         showHeroName: s.showHeroName ?? state.showHeroName ?? true,
         artSourceMode: s.artSourceMode ?? state.artSourceMode ?? 'auto',
 
