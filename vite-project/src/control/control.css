@@ -877,3 +877,69 @@
   color:#f0e6d2;
   box-shadow:inset 0 0 0 1px #c8aa6e66;
 }
+
+
+/* League Client API status panel */
+.lcu-input {
+  display:grid;
+  gap:12px;
+}
+.lcu-input-heading {
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:14px;
+}
+.lcu-input-heading > div { min-width:0; }
+.lcu-input-heading p { margin-top:4px; line-height:1.45; }
+.lcu-status-grid {
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:7px;
+}
+.lcu-status-grid > div {
+  min-width:0;
+  display:grid;
+  gap:3px;
+  padding:9px 10px;
+  border:1px solid #ffffff0d;
+  border-radius:5px;
+  background:#0a1218;
+}
+.lcu-status-grid span {
+  color:#70808a;
+  font-size:9px;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+}
+.lcu-status-grid strong {
+  min-width:0;
+  color:#dce3e7;
+  font-size:11px;
+  line-height:1.35;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.lcu-status-grid .ok strong { color:#78d4a7; }
+.lcu-status-grid .waiting strong { color:#b0bbc2; }
+.lcu-phase {
+  color:#7f8d96;
+  font-size:11px;
+}
+.lcu-warning {
+  margin:0;
+  padding:8px 10px;
+  border:1px solid #6d5b3155;
+  border-radius:5px;
+  background:#1b1710;
+  color:#d7c79e;
+  font-size:11px;
+}
+@media(max-width:900px) {
+  .lcu-status-grid { grid-template-columns:1fr 1fr; }
+}
+@media(max-width:560px) {
+  .lcu-input-heading { flex-direction:column; }
+  .lcu-status-grid { grid-template-columns:1fr; }
+}
