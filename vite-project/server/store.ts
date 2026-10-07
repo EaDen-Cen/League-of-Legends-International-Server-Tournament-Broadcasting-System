@@ -45,6 +45,31 @@ function validateScores(blue: number, red: number, format: MatchState['seriesFor
   const wins = (Number(format.slice(2)) + 1) / 2;
   if (blue > wins || red > wins || (blue === wins && red === wins)) throw new Error('比分或局数不符合当前赛制');
 }
+function casterBaseline(current: MatchState): MatchState {
+  const baseline = initialState();
+  baseline.blueTeam = copy(current.blueTeam);
+  baseline.redTeam = copy(current.redTeam);
+  baseline.seriesFormat = current.seriesFormat;
+  baseline.stage = current.stage;
+  baseline.language = current.language;
+  baseline.overlayLayout = current.overlayLayout;
+  baseline.scoreDisplay = current.scoreDisplay;
+  baseline.bpInputMode = current.bpInputMode;
+  baseline.roleIconStyle = current.roleIconStyle;
+  baseline.roleIconBackground = current.roleIconBackground;
+  baseline.showHeroName = current.showHeroName;
+  baseline.artSourceMode = current.artSourceMode;
+  baseline.heroArtOverrides = copy(current.heroArtOverrides || {});
+  baseline.heroDataOverrides = copy(current.heroDataOverrides || {});
+  baseline.draftMode = current.draftMode;
+  baseline.displayLeftSide = current.displayLeftSide;
+  baseline.firstPickSide = current.firstPickSide;
+  baseline.sideSwapMode = current.sideSwapMode;
+  baseline.draftRuleMode = current.draftRuleMode;
+  baseline.flowbornFormsIndependent = current.flowbornFormsIndependent;
+  return baseline;
+}
+
 function validateLineup(state: MatchState, requireComplete = state.draftComplete) {
   for (const side of ['blue', 'red'] as const) {
     const picks = state[`${side}Picks`];
@@ -85,7 +110,10 @@ export class Store {
 
       return {
         type: 'match_state_update',
-        state: copy(event?.resultingState ?? initialState()),
+        // Before the delayed timeline has any eligible event, expose only
+        // non-sensitive tournament/team metadata instead of an empty default
+        // board. Draft progress, scores and history remain delayed.
+        state: copy(event?.resultingState ?? casterBaseline(this.data.state)),
         revision: event?.revision ?? 0,
         casterDelaySeconds: this.data.delay,
       };
@@ -236,6 +264,21 @@ export class Store {
     case 'reset_match': {
       next.history.push(copy(state));
       const reset = initialState();
+
+      // Reset match progress, but keep tournament configuration. A director
+      // should not have to rebuild the event identity/rules after clearing a match.
+      reset.stage = state.stage;
+      reset.seriesFormat = state.seriesFormat;
+      reset.draftMode = state.draftMode;
+      reset.draftRuleMode = state.draftRuleMode;
+      reset.flowbornFormsIndependent = state.flowbornFormsIndependent;
+      reset.firstPickSide = state.firstPickSide;
+      reset.sideSwapMode = state.sideSwapMode;
+      reset.language = state.language;
+      reset.overlayLayout = state.overlayLayout;
+      reset.scoreDisplay = state.scoreDisplay;
+      reset.bpInputMode = state.bpInputMode;
+
       reset.heroArtOverrides = copy(state.heroArtOverrides || {});
       reset.heroDataOverrides = copy(state.heroDataOverrides || {});
       reset.showHeroName = state.showHeroName ?? true;
