@@ -11,7 +11,8 @@
 | [快速开始](guides/getting-started.md) | 安装、启动、三个入口、基础验证 |
 | [导播操作指南](guides/operator-guide.md) | BP、比分、换边、队伍、Champion Studio、阵容确认 |
 | [Windows 启动](guides/windows-launcher.md) | 一键启动 Server + Cloudflare Quick Tunnel |
-| [Screen Recognition](guides/screen-recognition.md) | LoL BP 截图识别、20 槽校准、Review 流程 |
+| [League Client 自动 BP](guides/lcu-auto-bp.md) | 本机 LCU Champ Select 读取、自动同步、手动 fallback |
+| [Legacy Screen Recognition](guides/screen-recognition.md) | 旧截图识别、20 槽校准与维护参考 |
 
 ## 数据与维护
 
