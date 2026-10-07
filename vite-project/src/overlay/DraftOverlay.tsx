@@ -8,7 +8,7 @@ import { currentGame, displaySides } from '../shared/draftRules';
 import { DraftHistory } from '../shared/DraftHistory';
 import { draftRuleName, phaseName, stageName } from '../shared/display';
 import { translator } from '../shared/i18n';
-import { phases, type MatchState, type PlayerRole, type Side } from '../shared/types';
+import { phases, type MatchState, type PlayerRole, type RoleIconStyle, type Side } from '../shared/types';
 import { heroArtCrop } from '../data/heroArtFocus';
 
 const rolePaths: Record<PlayerRole, string> = {
@@ -18,8 +18,12 @@ const rolePaths: Record<PlayerRole, string> = {
   bot: 'M5 3c15 1 15 17 0 18l8-9L5 3Zm0 0v18M3 12h18m-3-3 3 3-3 3',
   support: 'M12 2 3 6v6c0 5 9 10 9 10s9-5 9-10V6l-9-4Zm0 4v11m-4-7h8',
 };
-export function PositionIcon({ role, label }: { role: PlayerRole; label: string }) {
-  return <svg className="position-icon" viewBox="0 0 24 24" role="img" aria-label={label}><title>{label}</title><path d={rolePaths[role]} fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>;
+export function PositionIcon({ role, label, style = 'minimal' }: { role: PlayerRole; label: string; style?: RoleIconStyle }) {
+  return <svg className={`position-icon position-icon-${style}`} viewBox="0 0 24 24" role="img" aria-label={label}>
+    <title>{label}</title>
+    {style === 'ornate' && <path className="position-icon-frame" d="M12 1.8 20.2 6v12L12 22.2 3.8 18V6L12 1.8Z" fill="none" stroke="currentColor" strokeWidth="1.05" />}
+    <path className="position-icon-glyph" d={rolePaths[role]} fill="none" stroke="currentColor" strokeWidth={style === 'ornate' ? '1.55' : '1.8'} strokeLinecap="round" strokeLinejoin="round" />
+  </svg>;
 }
 
 function AutoFitPlayerId({ value, layout }: { value: string; layout: MatchState['overlayLayout'] }) {
@@ -106,13 +110,13 @@ function PickCard({ state, side, index, position }: { state: MatchState; side: S
         ? <span className="player-id" title={player}>{player}</span>
         : <AutoFitPlayerId value={player} layout={state.overlayLayout} />}
     </>} />
-    <div className="position-bar"><PositionIcon role={role} label={t(role)} /></div>
+    <div className="position-bar"><PositionIcon role={role} label={t(role)} style={state.roleIconStyle} /></div>
   </article>;
 }
 export function DraftOverlay({ state }: { state: MatchState }) {
   const t = translator(state.language), phase = phases(state.draftMode, state.firstPickSide)[state.currentPhase];
   const sides = displaySides(state), [left, right] = sides;
-  return <section className={`broadcast-overlay broadcast-${state.overlayLayout} ${state.showHeroName ? 'hero-names-visible' : 'hero-names-hidden'} ${phase ? `draft-action-${phase.action} draft-team-${phase.team}` : 'draft-complete'}`}>
+  return <section className={`broadcast-overlay broadcast-${state.overlayLayout} ${state.showHeroName ? 'hero-names-visible' : 'hero-names-hidden'} role-icons-${state.roleIconStyle} role-icon-bg-${state.roleIconBackground} ${phase ? `draft-action-${phase.action} draft-team-${phase.team}` : 'draft-complete'}`}>
     <div className="broadcast-top"><header className="broadcast-header">
       <div className="broadcast-brand">{t('gameTitle')}</div>
       <div className="broadcast-draft-label">{state.committedGameId ? t('gameCommitted') : phaseName(state)}</div>
