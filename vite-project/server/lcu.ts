@@ -244,7 +244,10 @@ export function mapLcuSession(session: LcuChampSelectSession, state: MatchState)
   // the selected champions. LCU may expose only one local pick action plus a dummy
   // ban action even after all bots are locked. Map roster champions onto the ten
   // tournament pick slots and synthesize the missing bans as Empty Ban later.
-  const localSide: Side = inferredLocalSide ?? state.firstPickSide;
+  // Blind/AI rooms have no meaningful first-pick side. Treat the local League
+  // Client roster as the currently displayed left team so practice sync follows
+  // the operator's visible team layout rather than a dummy action index.
+  const localSide: Side = state.displayLeftSide;
   const remoteSide = opposite(localSide);
   const pickPhaseIndexes = {
     blue: expected.map((phase, index) => ({ phase, index })).filter(item => item.phase.action === 'pick' && item.phase.team === 'blue').map(item => item.index),
@@ -287,13 +290,16 @@ export function mapLcuSession(session: LcuChampSelectSession, state: MatchState)
     }));
   };
 
-  const rosterMapped = [
-    ...rosterForSide(session.myTeam || [], localSide),
-    ...rosterForSide(session.theirTeam || [], remoteSide),
-  ].sort((left, right) => left.phaseIndex - right.phaseIndex);
+  const rosterMapped = rosterChampionCount > 0
+    ? [
+        ...rosterForSide(session.myTeam || [], localSide),
+        ...rosterForSide(session.theirTeam || [], remoteSide),
+      ].sort((left, right) => left.phaseIndex - right.phaseIndex)
+    : [];
 
-  // Some practice implementations do not populate roster arrays early in the
-  // session. Keep an action-only fallback so the bridge still works as picks appear.
+  // Some practice implementations expose team cell IDs without championId and
+  // put the actual picks only in actions. Do not let those sparse roster shells
+  // collapse ten action picks into one entry per actorCellId.
   if (!rosterMapped.length) {
     const used = { blue: 0, red: 0 };
     const fallbackPickIndexes = expected
