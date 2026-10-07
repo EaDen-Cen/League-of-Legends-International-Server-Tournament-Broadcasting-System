@@ -10,7 +10,7 @@ LoL Broadcast 已具备完整三端结构：
 Control
   ├─ Tournament / Team / Draft operations
   ├─ Champion Studio
-  ├─ Manual / Screen Recognition
+  ├─ Manual / League Client Auto BP
   └─ Final Lineup Assignment
         │
         ▼
@@ -94,24 +94,25 @@ Node.js + WebSocket authoritative state
 - 新 Champion 未配置分路时同步失败；
 - 回归测试锁定 Champion name / alias / art pipeline。
 
-## L5 — Auto BP / Recognition
+## L5 — League Client Auto BP
 
-**状态：✅ 结构稳定，仍需真实赛事彩排**
+**状态：✅ 主链路已实现，等待真实 League Client 彩排**
 
-- 20 个独立 Ban / Pick 槽；
-- 本地 Portrait 模板；
-- Browser Window Capture；
-- ROI 使用 source-relative normalized coordinates；
-- 预览 stage 强制保持捕获源准确宽高比；
-- 浏览器 Zoom / responsive resize 不改变 ROI；
-- 共享窗口动态分辨率变化自动更新 preview geometry；
-- aspect ratio 改变时主动提示复查；
-- Recognition 绑定 revision / phase，旧异步结果不会污染新阶段；
-- Windows 原生捕获 opt-in，降级为兼容模式；
-- Review Required；
-- Final Lineup Sync。
+- Match Settings 提供 Manual / League Client API；
+- 本机 League Client credentials 自动发现；
+- `/lol-champ-select/v1/session` 轮询；
+- 只处理 completed Ban / Pick；
+- `isAllyAction` / cell membership 阵营映射；
+- Riot Champion ID 直接进入 LoL Store；
+- Empty Ban → `skip_ban`；
+- 已记录 BP prefix 与 LCU prefix 强一致性检查；
+- 不一致时停止，不强行覆盖；
+- 所有自动动作继续经过 revision / Store validation；
+- Control LCU 状态面板；
+- Manual Hero Picker 永久 fallback；
+- Legacy Screen Recognition 保留但退出正常入口。
 
-下一步重点是使用真实 League Client 完成 BO3 / BO5 长时间彩排，并评估 LCU Direct Sync 作为 Screen Recognition 之前的第一输入源。
+下一步重点是使用真实 Custom Game 完成蓝方 / 红方各至少一轮完整 BO3 彩排，并记录 Riot 客户端版本变化对 LCU schema 的影响。
 
 ## L6 — Production Rehearsal
 
@@ -121,7 +122,7 @@ Node.js + WebSocket authoritative state
 
 1. 两队资料载入；
 2. 真实 LoL Draft；
-3. Screen Recognition 与 Manual fallback；
+3. League Client Auto BP 与 Manual fallback；
 4. Help-pick / Swap；
 5. Commit Game；
 6. Score / Side Swap；
