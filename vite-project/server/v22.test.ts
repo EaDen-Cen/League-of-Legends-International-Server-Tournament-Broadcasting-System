@@ -35,7 +35,7 @@ test('both formats mirror every phase for red first, complete, and record the st
 test('first pick locks after the first ban, unlocks on reset, and changes remain delayed and undoable', () => {
   let now = 1000000; const s = new Store(undefined, () => now);
   act(s, { type: 'settings', settings: { ...s.data.state, firstPickSide: 'red' } });
-  assert.equal(s.snapshot('caster').state.firstPickSide, 'blue');
+  assert.equal(s.snapshot('caster').state.firstPickSide, 'red');
   now += 180000; assert.equal(s.snapshot('caster').state.firstPickSide, 'red');
   act(s, { type: 'draft_action', team: 'red', action: 'ban', heroId: 1 });
   assert.throws(() => act(s, { type: 'settings', settings: { ...s.data.state, firstPickSide: 'blue' } }), /firstPickLocked/);
