@@ -4,6 +4,20 @@
 
 # 验证记录
 
+## 2026-10-06 League Client Auto BP 与分路图标设置
+
+- Match Settings 的正常 BP 输入入口改为 Manual / League Client 房间 API自动同步；Legacy Screen Recognition 代码仍保留，但不再作为日常入口。
+- 新增 `server/lcu.ts`：本机自动发现 League Client credentials，读取 `/lol-champ-select/v1/session`；主 endpoint 404 时回退 `/lol-lobby-team-builder/champ-select/v1/session`。
+- LCU 只提交 `completed` Ban / Pick，并通过既有 `Store.apply()`、revision、BP restriction、Undo 与持久化逻辑进入 authoritative state。
+- 自动同步会验证 League Client 已完成 BP prefix 与本地已记录 prefix；不一致时停止，不覆盖现场状态。
+- `isAllyAction` 缺失时使用 `myTeam / theirTeam` cell membership 推导阵营；无法推导时直接拒绝猜测。
+- Empty Ban 映射到 `skip_ban`；Hero Picker 保留为 Manual fallback。
+- Control 新增 League Client 状态面板，不向浏览器暴露 LCU token。
+- Overlay 新增分路图标配置：Minimal / Ornate，以及 Light / Dark background；旧存档默认迁移为 Minimal + Light。
+- 新增 LCU 阵营映射测试，以及 LCU input / role icon settings 的 authoritative、delay、validation、undo 测试。
+- GitHub Actions 在 `c5381352b6133104178b13b10c9bedea1c191808` 完成 `npm test` 与 `npm run build`，结果通过；此前 `ab9d43feb35263ec255af7e4d6f80ac61faa2d7c` 的功能测试提交同样通过。
+- CI 环境没有真实 League Client，因此当前自动化验证的是映射、Store integration 与构建；真实 Custom Game 的本机 LCU 连接仍必须在赛事 PC 上彩排。
+
 ## 2026-10-06 缩放与 Recognition 坐标稳定性重构
 
 - 将 Browser Window Capture 明确拆分为 source frame / normalized ROI / browser preview stage 三层坐标；ROI 不再依赖网页 CSS 像素。
