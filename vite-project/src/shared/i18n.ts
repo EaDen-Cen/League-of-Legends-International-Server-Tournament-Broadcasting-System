@@ -70,7 +70,7 @@ const messages = {
   roleIconMinimal: {zh:'简约',eng:'Minimal'},
   roleIconOrnate: {zh:'华丽',eng:'Ornate'},
   roleIconBackground: {zh:'分路图标底色',eng:'Role icon background'},
-  roleIconLight: {zh:'白底',eng:'Light / white'},
+  roleIconLight: {zh:'银底',eng:'Silver'},
   roleIconDark: {zh:'黑底',eng:'Dark / black'},
   lcuPanelTitle: {zh:'League Client 自动 BP',eng:'League Client Auto BP'},
   lcuPanelHint: {zh:'服务端直接读取本机 League Client 的 Champ Select 会话；锁定后自动写入当前 Ban/Pick。',eng:'The server reads the local League Client Champ Select session and records completed bans/picks automatically.'},
@@ -90,6 +90,9 @@ const messages = {
   lcuLastSync: {zh:'最近同步',eng:'Last sync'},
   lcuClientPhase: {zh:'客户端阶段',eng:'Client phase'},
   lcuManualFallback: {zh:'LCU 不可用或出现不一致时不会强行写入；Hero Picker 仍可手动操作。',eng:'If LCU is unavailable or the draft differs, nothing is forced into the match. The Hero Picker remains available for manual fallback.'},
+  casterRosterTitle: {zh:'解说阵容资料',eng:'Caster roster'},
+  casterRosterHint: {zh:'队伍与选手资料实时可见；Ban/Pick、比分与有效局按解说延迟显示。',eng:'Team and player metadata is live; bans, picks, score and committed games follow the caster delay.'},
+  casterDelayWaiting: {zh:'当前 BP 数据按 {seconds} 秒延迟显示。若刚开始测试，英雄选禁不会立刻出现。',eng:'BP data is delayed by {seconds}s. During a fresh test, bans and picks will not appear immediately.'},
   rosterSource: {zh:'选手资料来源',eng:'Roster source'},
   substitutes: {zh:"替补名单",eng:"Substitutes"},
   addSubstitute: {zh:"添加替补",eng:"Add substitute"},
@@ -598,7 +601,7 @@ const messages = {
     "eng": "Reset this draft? Team settings and scores will be kept."
   },
   "confirmResetMatch": {
-    "zh": "确定重置整场比赛？队伍、比分和选禁都会清空。",
+    "zh": "确定重置整场比赛？队伍、比分、选禁和历史会清空；赛事名称/阶段、赛制、比分显示和 BP 规则会保留。",
     "eng": "Reset the entire match? Teams, scores and draft will be cleared."
   },
   "casterDelay": {
