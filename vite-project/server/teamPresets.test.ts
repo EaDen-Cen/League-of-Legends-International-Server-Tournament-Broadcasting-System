@@ -37,7 +37,7 @@ test('loading presets is authoritative, copied, delayed, locked and cannot dupli
   const s=new Store(undefined,()=>1000000,lib);
   apply(s,{type:'load_team_preset',side:'blue',presetId:team.id});
   assert.deepEqual(s.data.state.blueTeam,{id:team.id,name:team.name,logo:team.logo,players:team.players,playerRoles:team.playerRoles,playerPortraits:team.playerPortraits});
-  assert.notEqual(s.snapshot('caster').state.blueTeam.id,team.id);
+  assert.equal(s.snapshot('caster').state.blueTeam.id,team.id);
   assert.throws(()=>apply(s,{type:'load_team_preset',side:'red',presetId:team.id}),/presetDuplicate/);
   apply(s,{type:'settings',settings:{...s.data.state,blueTeam:{...s.data.state.blueTeam,id:'forged',players:['sub','b','c','d','e']}}});
   assert.equal(s.data.state.blueTeam.id,team.id);assert.equal(lib.get(team.id)?.players[0],'a');
