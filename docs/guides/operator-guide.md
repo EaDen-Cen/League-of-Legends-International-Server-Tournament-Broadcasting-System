@@ -48,7 +48,9 @@ Draft
 - 中文 / English；
 - Panel / Side Overlay；
 - 数字 / Box Series Score；
-- Manual / Screen Recognition；
+- Manual / League Client 房间 API 自动同步；
+- 分路图标：简约 / 华丽；
+- 分路图标底色：白底 / 黑底；
 - 是否在卡片显示 Champion Name；
 - Splash Art 优先 / 本地 Portrait fallback。
 
@@ -91,18 +93,26 @@ Hero Picker 的推荐操作：
 
 Champion Studio 默认先显示 48 位 Champion；可以“再显示 48 个”或“显示全部”。搜索会重新从 48 个结果开始，避免一次渲染完整英雄池造成界面过重。
 
-## Screen Recognition 操作原则
+## League Client 自动 BP
 
-Browser Window Capture 是首选。20 个 BP 槽保存的是源画面 0–1 比例，不是浏览器像素。
+推荐模式是 **League Client 房间 API 自动同步**。
 
-- 缩放 Control 页面：无需重做校准；
-- 改变 Control 窗口大小：无需重做校准；
-- 1920×1080 改到 1280×720：同宽高比，通常无需重做；
-- 改成不同宽高比：系统提示检查当前槽；
-- 共享中的游戏窗口动态改分辨率：预览舞台跟随 source size 更新；
-- Recognition 返回时若 BP 已进入下一阶段：结果自动丢弃。
+Server 在本机读取 League Client 的 Champ Select session，只处理已经完成的 Ban / Pick。导播在 Control 中只需要观察 LCU 状态面板：
 
-Native Windows Capture 仍使用桌面像素坐标，只作为兼容模式。
+- League Client：是否连接；
+- Champ Select：是否进入选禁；
+- Local side mapping：本机队伍映射到蓝 / 红哪一侧；
+- Last sync：最近一次自动写入。
+
+LCU 自动操作仍然通过 `Store.apply()`，所以所有现有规则继续生效。如果 LCU 与程序已记录 BP 的前缀不一致，自动同步会停止，不会覆盖现场数据。
+
+Hero Picker 永远保留，可以在客户端异常时直接手动继续。
+
+详细排错见 [League Client 自动 BP](lcu-auto-bp.md)。
+
+## Legacy Screen Recognition
+
+旧 Browser / Native Screen Recognition 代码仍保留作为兼容层，但不再出现在普通 Match Settings。后续如果 Riot 修改 LCU，可以临时恢复该入口。其 ROI 仍使用 source-relative normalized coordinates，并保留 zoom-safe 与 stale-result protection。
 
 ## Overlay
 
