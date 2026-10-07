@@ -4,7 +4,7 @@
 
 ## 当前能力
 
-- **Control**：比赛设置、BP、比分、换边、最终阵容归属、队伍资料库、替补、Champion Studio、截图识别。
+- **Control**：比赛设置、BP、比分、换边、最终阵容归属、队伍资料库、替补、Champion Studio、League Client 自动 BP。
 - **Caster**：只读延迟状态，适合异地解说。
 - **OBS Overlay**：固定 1920×1080 透明画布，支持 Panel / Side 两种布局。
 - **赛事状态**：BO1 / BO3 / BO5、Stage、Game、Series Score、Undo、Draft History。
@@ -91,21 +91,22 @@ npm run lint
 
 详细说明见 [LoL Champion Data Pipeline](docs/research/hero-sync.md)。
 
-## Screenshot / Auto BP
+## League Client Auto BP
 
-默认使用手动 BP。需要截图识别时，在 Match Settings 选择 Screen Recognition，并完成当前 LoL 窗口的 20 个独立槽位校准。
+比赛设置现在提供：
 
-Browser Window Capture 使用**源画面归一化坐标**：识别框保存为 0–1 比例，并绑定到与视频源完全相同宽高比的预览舞台。浏览器 Zoom、Control 面板宽度变化和同宽高比的分辨率变化不会改变实际识别位置。游戏画面宽高比真正改变时，系统会提示重新检查当前槽位。
+- **Manual Selection**：手动录入；
+- **League Client 房间 API 自动同步**：推荐。
 
-异步 Recognition 会记录请求发起时的 revision / phase；如果结果返回前 BP 已进入下一阶段，旧结果会被直接丢弃，避免写入错误 Ban / Pick 槽位。
+当 League Client 与 Broadcast Server 在同一台电脑运行时，Server 会本地读取 `/lol-champ-select/v1/session`，只同步已经 `completed` 的 Ban / Pick。Champion ID 直接进入现有 authoritative Store，因此 Overlay、Caster、Undo、历史和 BP 规则仍使用同一套状态逻辑。
 
-Windows 原生捕获是显式 opt-in：
+自动同步不会覆盖不一致的比赛状态：如果 LCU 已完成的 BP 前缀和程序当前记录不同，会停止并提示导播核对；Hero Picker 始终保留作为手动 fallback。
 
-```env
-LOL_CAPTURE_ENABLED=1
-```
+LCU 连接凭证只留在 Server 进程中，不发送到浏览器。普通 Windows 安装会自动发现 League Client；特殊安装可参考 `.env.example` 设置 lockfile / port / token。
 
-详细说明见 [Screen Recognition](docs/guides/screen-recognition.md)。
+详细说明见 [League Client 房间 API 自动 BP](docs/guides/lcu-auto-bp.md)。
+
+旧 Screen Recognition 代码暂时保留作兼容/维护 fallback，但已退出正常 Match Settings 流程。
 
 ## 验证
 
@@ -125,7 +126,8 @@ GitHub Actions 使用 `.github/workflows/lol-checks.yml` 进行 LoL 专用检查
 - [快速开始](docs/guides/getting-started.md)
 - [导播操作指南](docs/guides/operator-guide.md)
 - [Windows / Cloudflare](docs/guides/windows-launcher.md)
-- [Screen Recognition](docs/guides/screen-recognition.md)
+- [League Client 自动 BP](docs/guides/lcu-auto-bp.md)
+- [Legacy Screen Recognition](docs/guides/screen-recognition.md)
 - [系统架构与坐标模型](docs/design/architecture.md)
 - [Champion Data Pipeline](docs/research/hero-sync.md)
 - [项目里程碑](MILESTONES.md)
