@@ -198,11 +198,9 @@ export function mapLcuSession(session: LcuChampSelectSession, state: MatchState)
   // require literally every LCU action to be a pick. Instead identify the
   // shape by a full/near-full pick roster with fewer ban actions than the
   // configured tournament rules require, then ignore those dummy bans.
-  const uniquePickActors = new Set(pickActions.map(action => action.actorCellId)).size;
   const pickOnlyPractice = !standardCompatible
     && expectedBanCount > 0
-    && pickActions.length >= Math.min(5, expectedPickCount)
-    && uniquePickActors >= Math.min(5, expectedPickCount)
+    && pickActions.length >= expectedPickCount
     && banActions.length < expectedBanCount;
 
   if (!standardCompatible && !pickOnlyPractice) {
