@@ -39,18 +39,54 @@ Control 提交操作时携带当前 revision。Server 校验成功、落盘后�
 | 位置 | 职责 |
 | --- | --- |
 | `vite-project/src/BroadcastApp.tsx` | Control / Caster / Overlay 当前入口 |
-| `vite-project/src/control/` | 导播工作区、Hero Picker、Screen Recognition、Champion Studio、队伍与阵容 |
+| `vite-project/src/control/` | 导播工作区、Hero Picker、LCU 状态、Legacy Screen Recognition、Champion Studio、队伍与阵容 |
 | `vite-project/src/overlay/` | OBS Draft Overlay、英雄揭示 |
 | `vite-project/src/shared/` | Match 类型、规则、显示、国际化、WebSocket 连接 |
 | `vite-project/src/data/lolHeroes.ts` | Data Dragon 生成的 LoL Champion 基线 |
 | `vite-project/server/store.ts` | 比赛状态、修订号、Undo、延迟、历史与落盘 |
-| `vite-project/server/server.ts` | HTTP / WebSocket / 权限 / 静态文件 / Recognition API |
+| `vite-project/server/server.ts` | HTTP / WebSocket / 权限 / 静态文件 / LCU Bridge / Legacy Recognition API |
 | `vite-project/server/*.test.ts` | Server、规则、识别几何单元测试 |
 | `vite-project/e2e/` | 浏览器级 Control / Caster / Overlay 验收 |
 | `vite-project/data/lol/` | LoL 比赛运行数据 |
 | `docs/archive/` | HOK 阶段和旧实现历史资料，不参与生产逻辑 |
 
-## Screen Recognition 坐标体系
+## League Client 输入链路
+
+正常自动 BP 不再依赖画面坐标：
+
+```text
+LeagueClientUx.exe
+       │ local HTTPS + Basic auth
+       ▼
+/lol-champ-select/v1/session
+       │
+       ▼
+server/lcu.ts
+       │ completed actions only
+       │ prefix / side validation
+       ▼
+Store.apply()
+       │
+       ├── realtime Overlay
+       └── delayed Caster
+```
+
+`server/lcu.ts` 只负责读取和解释输入，不直接修改 MatchState。
+
+它会：
+
+- 自动发现本机 LCU port / temporary token；
+- 解析 Champ Select action；
+- 根据 `isAllyAction` 或 cell membership 推导本机阵营；
+- 将 Champion ID 映射到当前 Draft Phase；
+- 对比已记录 BP 前缀；
+- 只把一致的下一步提交给 Store。
+
+LCU token 不进入浏览器，也不通过 WebSocket 广播。
+
+如果 Server 和 League Client 不在同一台机器，当前实现不会远程读取 LCU；未来应使用本机 Bridge，而不是开放 LCU 端口到公网。
+
+## Legacy Screen Recognition 坐标体系
 
 Screen Recognition 明确分成三个坐标空间：
 
