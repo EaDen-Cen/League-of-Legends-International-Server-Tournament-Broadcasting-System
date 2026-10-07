@@ -233,22 +233,37 @@ export function ScreenInput({ state, revision, token, disabled, send }: { state:
       }
       const track=stream.getVideoTracks()[0];
       const settings=track.getSettings();
-      setWindowInfo({
-        label:track.label||t('windowCaptureConnected'),
-        surface:String(settings.displaySurface||'window'),
-        width:video.videoWidth||settings.width||0,
-        height:video.videoHeight||settings.height||0,
-      });
+      const syncVideoMetrics=()=>{
+        if(!mounted.current) return;
+        const info={
+          label:track.label||t('windowCaptureConnected'),
+          surface:String(track.getSettings().displaySurface||settings.displaySurface||'window'),
+          width:video.videoWidth||track.getSettings().width||settings.width||0,
+          height:video.videoHeight||track.getSettings().height||settings.height||0,
+        };
+        setWindowInfo(info);
+        const saved=readCaptureProfile();
+        if(saved&&captureAspectRatioDrift(saved,info)>.015) setMessage(t('captureAspectChanged'));
+      };
+      syncVideoMetrics();
+      video.onresize=syncVideoMetrics;
       setVideoReady(true);
       track.addEventListener('ended',()=>{
         if(!mounted.current) return;
         streamRef.current=undefined;
+        video.onresize=null;
         setVideoReady(false);
         setWindowInfo(undefined);
+        setPreviewSize({width:0,height:0});
         setCalibratingSlot(undefined);
         setMessage(t('windowCaptureEnded'));
       },{once:true});
-      setMessage(t('windowCaptureConnected'));
+      const savedProfile=readCaptureProfile();
+      const currentInfo={
+        width:video.videoWidth||settings.width||0,
+        height:video.videoHeight||settings.height||0,
+      };
+      setMessage(savedProfile&&captureAspectRatioDrift(savedProfile,currentInfo)>.015?t('captureAspectChanged'):t('windowCaptureConnected'));
     }catch(error){
       stopWindowCapture();
       if(!mounted.current) return;
