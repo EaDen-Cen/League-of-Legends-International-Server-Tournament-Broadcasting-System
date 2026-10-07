@@ -30,10 +30,15 @@ export function PositionIcon({ role, label, style = 'minimal' }: { role: PlayerR
   return <svg className={`position-icon position-icon-${style}`} viewBox="0 0 24 24" role="img" aria-label={label}>
     <title>{label}</title>
     {style === 'ornate' && <>
-      <path className="position-icon-medallion" d="M12 1.3 20.7 5.8v12.4L12 22.7 3.3 18.2V5.8L12 1.3Z" />
-      <path className="position-icon-inner-frame" d="M12 3.8 18.4 7.1v9.8L12 20.2 5.6 16.9V7.1L12 3.8Z" />
-      <circle className="position-icon-ring" cx="12" cy="12" r="6.15" />
+      <path className="position-icon-wing position-icon-wing-left" d="M3.8 7.4 1.4 10.2 3.2 12 1.4 13.8 3.8 16.6" />
+      <path className="position-icon-wing position-icon-wing-right" d="M20.2 7.4 22.6 10.2 20.8 12 22.6 13.8 20.2 16.6" />
+      <path className="position-icon-medallion" d="M12 1.1 19.7 4.4 22.9 12l-3.2 7.6L12 22.9l-7.7-3.3L1.1 12l3.2-7.6L12 1.1Z" />
+      <path className="position-icon-inner-frame" d="M12 3.5 18.5 6.2 20.5 12l-2 5.8L12 20.5l-6.5-2.7L3.5 12l2-5.8L12 3.5Z" />
+      <path className="position-icon-diamond" d="M12 5.1 18.9 12 12 18.9 5.1 12 12 5.1Z" />
+      <circle className="position-icon-ring" cx="12" cy="12" r="5.25" />
       <path className="position-icon-accent" d={ornateAccents[role]} />
+      <circle className="position-icon-jewel" cx="12" cy="2.6" r=".72" />
+      <circle className="position-icon-jewel" cx="12" cy="21.4" r=".72" />
     </>}
     <path className="position-icon-glyph" d={rolePaths[role]} fill="none" stroke="currentColor" strokeWidth={style === 'ornate' ? '1.45' : '1.8'} strokeLinecap="round" strokeLinejoin="round" />
   </svg>;
