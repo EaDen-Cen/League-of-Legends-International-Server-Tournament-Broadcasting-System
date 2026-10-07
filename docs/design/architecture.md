@@ -63,7 +63,7 @@ LeagueClientUx.exe
        ▼
 server/lcu.ts
        │ completed actions only
-       │ prefix / side validation
+       │ turn-order / prefix validation
        ▼
 Store.apply()
        │
@@ -77,7 +77,8 @@ Store.apply()
 
 - 自动发现本机 LCU port / temporary token；
 - 解析 Champ Select action；
-- 根据 `isAllyAction` 或 cell membership 推导本机阵营；
+- 按 LCU action turn order 对齐项目 `phases()`，Observer 客户端无需 ally/enemy 身份也能同步；
+- `isAllyAction` 或 cell membership 仅用于可选的本机阵营状态显示；
 - 将 Champion ID 映射到当前 Draft Phase；
 - 对比已记录 BP 前缀；
 - 只把一致的下一步提交给 Store。
