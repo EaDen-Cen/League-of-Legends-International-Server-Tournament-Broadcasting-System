@@ -894,7 +894,7 @@
 .lcu-input-heading p { margin-top:4px; line-height:1.45; }
 .lcu-status-grid {
   display:grid;
-  grid-template-columns:repeat(4,minmax(0,1fr));
+  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
   gap:7px;
 }
 .lcu-status-grid > div {
@@ -942,4 +942,16 @@
 @media(max-width:560px) {
   .lcu-input-heading { flex-direction:column; }
   .lcu-status-grid { grid-template-columns:1fr; }
+}
+
+
+.lcu-practice-note {
+  margin:0;
+  padding:8px 10px;
+  border:1px solid #8d744744;
+  border-radius:5px;
+  background:#17140f;
+  color:#d9c895;
+  font-size:11px;
+  line-height:1.45;
 }
