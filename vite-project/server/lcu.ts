@@ -56,7 +56,7 @@ export type LcuStatus = {
   localSide?: Side;
   phase?: string;
   draftMode?: LcuDraftMode;
-  actionSummary?: { groups:number; bans:number; picks:number; completedBans:number; completedPicks:number };
+  actionSummary?: { groups:number; bans:number; picks:number; completedBans:number; completedPicks:number; myRoster:number; theirRoster:number };
   lastSyncAt?: number;
   lastError?: string;
   lastAction?: { side: Side; action: 'ban' | 'pick'; championId: number | null };
@@ -176,7 +176,14 @@ export function mapLcuSession(session: LcuChampSelectSession, state: MatchState)
     .flat()
     .filter(action => action && ['ban', 'pick'].includes(action.type));
 
-  if (!actions.length) {
+  const banActions = actions.filter(action => action.type === 'ban');
+  const pickActions = actions.filter(action => action.type === 'pick');
+  const expectedBanCount = expected.filter(phase => phase.action === 'ban').length;
+  const expectedPickCount = expected.filter(phase => phase.action === 'pick').length;
+  const rosterChampionCount = [...(session.myTeam || []), ...(session.theirTeam || [])]
+    .filter(player => Number(player.championId || 0) > 0).length;
+
+  if (!actions.length && rosterChampionCount === 0) {
     return {
       actions: [] as LcuMappedAction[],
       localSide: undefined as Side | undefined,
@@ -184,43 +191,44 @@ export function mapLcuSession(session: LcuChampSelectSession, state: MatchState)
     };
   }
 
-  const banActions = actions.filter(action => action.type === 'ban');
-  const pickActions = actions.filter(action => action.type === 'pick');
-  const expectedBanCount = expected.filter(phase => phase.action === 'ban').length;
-  const expectedPickCount = expected.filter(phase => phase.action === 'pick').length;
+  const standardCompatible = actions.length > 0
+    && actions.length <= expected.length
+    && actions.every((action, index) => Boolean(expected[index]) && action.type === expected[index].action);
 
-  const standardCompatible = actions.length <= expected.length && actions.every((action, index) =>
-    Boolean(expected[index]) && action.type === expected[index].action
-  );
-
-  // AI/custom pick-only rooms can still expose one or more dummy/incomplete
-  // "ban" actions even though the UI never enters a real ban phase. Do not
-  // require literally every LCU action to be a pick. Instead identify the
-  // shape by a full/near-full pick roster with fewer ban actions than the
-  // configured tournament rules require, then ignore those dummy bans.
+  const phaseName = String(session.timer?.phase || '').toUpperCase();
+  const practicePhase = phaseName.includes('FINAL') || phaseName.includes('PICK') || phaseName.includes('PLANNING');
+  // Blind/custom-AI Champ Select often exposes only the local player's actionable
+  // ban/pick entries while the actual ten selected champions live in myTeam/theirTeam.
+  // Prefer the roster shape over action count whenever the action sequence is not a
+  // valid tournament prefix and the client has already populated a meaningful roster.
   const pickOnlyPractice = !standardCompatible
     && expectedBanCount > 0
-    && pickActions.length >= expectedPickCount
-    && banActions.length < expectedBanCount;
+    && banActions.length < expectedBanCount
+    && (
+      rosterChampionCount >= Math.min(5, expectedPickCount)
+      || pickActions.length >= expectedPickCount
+      || (practicePhase && rosterChampionCount > 0)
+    );
 
   if (!standardCompatible && !pickOnlyPractice) {
     const mismatch = actions.findIndex((action, index) => !expected[index] || action.type !== expected[index].action);
     throw new Error(
       `LCU room draft does not match tournament BP at phase ${Math.max(1, mismatch + 1)} `
-      + `(LCU: ${banActions.length} ban / ${pickActions.length} pick; expected: ${expectedBanCount} ban / ${expectedPickCount} pick)`
+      + `(LCU: ${banActions.length} ban / ${pickActions.length} pick / ${rosterChampionCount} roster; `
+      + `expected: ${expectedBanCount} ban / ${expectedPickCount} pick; client: ${phaseName || 'unknown'})`
     );
   }
 
-  if (standardCompatible) {
-    const anchorIndex = actions.findIndex(action => allyForAction(action, session) !== undefined);
-    const anchorRelation = anchorIndex >= 0 ? allyForAction(actions[anchorIndex], session) : undefined;
-    const localSide = anchorIndex >= 0 && anchorRelation !== undefined && expected[anchorIndex]
-      ? (anchorRelation ? expected[anchorIndex].team : opposite(expected[anchorIndex].team))
-      : undefined;
+  const anchorIndex = actions.findIndex(action => allyForAction(action, session) !== undefined);
+  const anchorRelation = anchorIndex >= 0 ? allyForAction(actions[anchorIndex], session) : undefined;
+  const inferredLocalSide = anchorIndex >= 0 && anchorRelation !== undefined && expected[anchorIndex]
+    ? (anchorRelation ? expected[anchorIndex].team : opposite(expected[anchorIndex].team))
+    : undefined;
 
+  if (standardCompatible) {
     return {
       mode: 'tournament' as LcuDraftMode,
-      localSide,
+      localSide: inferredLocalSide,
       actions: actions.map((action, index): LcuMappedAction => ({
         id: action.id,
         phaseIndex: index,
@@ -232,41 +240,92 @@ export function mapLcuSession(session: LcuChampSelectSession, state: MatchState)
     };
   }
 
-  // Custom AI / blind-style rooms can expose only ten pick actions and no bans.
-  // Keep tournament state structurally valid by treating the missing ban turns as
-  // explicit empty bans, then map completed picks into each team's five pick slots.
-  const localSide: Side = state.firstPickSide;
+  // In custom AI / blind-style rooms, myTeam/theirTeam are the reliable source of
+  // the selected champions. LCU may expose only one local pick action plus a dummy
+  // ban action even after all bots are locked. Map roster champions onto the ten
+  // tournament pick slots and synthesize the missing bans as Empty Ban later.
+  const localSide: Side = inferredLocalSide ?? state.firstPickSide;
+  const remoteSide = opposite(localSide);
   const pickPhaseIndexes = {
     blue: expected.map((phase, index) => ({ phase, index })).filter(item => item.phase.action === 'pick' && item.phase.team === 'blue').map(item => item.index),
     red: expected.map((phase, index) => ({ phase, index })).filter(item => item.phase.action === 'pick' && item.phase.team === 'red').map(item => item.index),
   };
-  const used = { blue: 0, red: 0 };
-  const fallbackPickIndexes = expected.map((phase, index) => ({ phase, index })).filter(item => item.phase.action === 'pick').map(item => item.index);
-  let fallbackCursor = 0;
 
-  const mapped = pickActions.map((action): LcuMappedAction => {
-    const relation = allyForAction(action, session);
-    let phaseIndex: number | undefined;
-    let side: Side | undefined;
-    if (relation !== undefined) {
-      side = relation ? localSide : opposite(localSide);
-      phaseIndex = pickPhaseIndexes[side][used[side]++];
-    } else {
-      phaseIndex = fallbackPickIndexes[fallbackCursor++];
-      side = phaseIndex === undefined ? undefined : expected[phaseIndex].team;
+  const explicitPickByCell = new Map<number, LcuChampSelectAction>();
+  for (const action of pickActions) explicitPickByCell.set(action.actorCellId, action);
+
+  const rosterForSide = (players: LcuChampSelectPlayer[], side: Side) => {
+    const entries = players
+      .map((player, rosterIndex) => {
+        const explicit = explicitPickByCell.get(player.cellId);
+        const championId = Number(player.championId || explicit?.championId || 0);
+        if (championId <= 0) return undefined;
+        return {
+          player,
+          rosterIndex,
+          explicit,
+          championId,
+          // Bots/remote slots usually have no explicit action at all: a non-zero
+          // roster champion is therefore already authoritative for this practice room.
+          completed: explicit ? Boolean(explicit.completed) : true,
+        };
+      })
+      .filter((entry): entry is NonNullable<typeof entry> => Boolean(entry))
+      .sort((left, right) => Number(right.completed) - Number(left.completed) || left.rosterIndex - right.rosterIndex);
+
+    if (entries.length > pickPhaseIndexes[side].length) {
+      throw new Error(`LCU practice roster for ${side} contains more than five champions`);
     }
-    if (phaseIndex === undefined || !side) throw new Error('LCU pick-only room contains more picks than supported');
-    return {
-      id: action.id,
-      phaseIndex,
+
+    return entries.map((entry, index): LcuMappedAction => ({
+      id: entry.explicit?.id ?? -(side === 'blue' ? 1000 : 2000) - entry.player.cellId - index,
+      phaseIndex: pickPhaseIndexes[side][index],
       side,
       action: 'pick',
-      championId: Number(action.championId || 0),
-      completed: Boolean(action.completed),
-    };
-  }).sort((left, right) => left.phaseIndex - right.phaseIndex);
+      championId: entry.championId,
+      completed: entry.completed,
+    }));
+  };
 
-  return { actions: mapped, localSide, mode: 'pick-only-practice' as LcuDraftMode };
+  const rosterMapped = [
+    ...rosterForSide(session.myTeam || [], localSide),
+    ...rosterForSide(session.theirTeam || [], remoteSide),
+  ].sort((left, right) => left.phaseIndex - right.phaseIndex);
+
+  // Some practice implementations do not populate roster arrays early in the
+  // session. Keep an action-only fallback so the bridge still works as picks appear.
+  if (!rosterMapped.length) {
+    const used = { blue: 0, red: 0 };
+    const fallbackPickIndexes = expected
+      .map((phase, index) => ({ phase, index }))
+      .filter(item => item.phase.action === 'pick')
+      .map(item => item.index);
+    let fallbackCursor = 0;
+    const mapped = pickActions.map((action): LcuMappedAction => {
+      const relation = allyForAction(action, session);
+      let side: Side;
+      let phaseIndex: number | undefined;
+      if (relation !== undefined) {
+        side = relation ? localSide : remoteSide;
+        phaseIndex = pickPhaseIndexes[side][used[side]++];
+      } else {
+        phaseIndex = fallbackPickIndexes[fallbackCursor++];
+        side = phaseIndex === undefined ? localSide : expected[phaseIndex].team;
+      }
+      if (phaseIndex === undefined) throw new Error('LCU pick-only room contains more picks than supported');
+      return {
+        id: action.id,
+        phaseIndex,
+        side,
+        action: 'pick',
+        championId: Number(action.championId || 0),
+        completed: Boolean(action.completed),
+      };
+    }).sort((left, right) => left.phaseIndex - right.phaseIndex);
+    return { actions: mapped, localSide, mode: 'pick-only-practice' as LcuDraftMode };
+  }
+
+  return { actions: rosterMapped, localSide, mode: 'pick-only-practice' as LcuDraftMode };
 }
 
 function currentDraftValues(state: MatchState) {
@@ -353,6 +412,8 @@ export class LcuBridge {
         picks: filteredActions.filter(action => action.type === 'pick').length,
         completedBans: filteredActions.filter(action => action.type === 'ban' && action.completed).length,
         completedPicks: filteredActions.filter(action => action.type === 'pick' && action.completed).length,
+        myRoster: (session.myTeam || []).filter(player => Number(player.championId || 0) > 0).length,
+        theirRoster: (session.theirTeam || []).filter(player => Number(player.championId || 0) > 0).length,
       };
       this.statusValue = {
         ...this.statusValue,
