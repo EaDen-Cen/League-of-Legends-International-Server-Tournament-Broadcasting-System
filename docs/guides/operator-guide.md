@@ -78,13 +78,39 @@ Champion Studio 是 LoL 版本的 Champion 数据和视觉素材入口。
 
 右侧参考区显示完整原图和两个布局的实际取景范围。
 
+## 操作手感与网页缩放
+
+Control 的工作区会监听组件尺寸、浏览器窗口和 `visualViewport` 变化。浏览器 Zoom 或窗口宽度改变后，左侧 Monitor 与右侧 Hero Picker 的 sticky 偏移会重新计算，而不是沿用旧高度。
+
+Hero Picker 的推荐操作：
+
+- `/` 或 `Ctrl/Cmd + K` 随时回到搜索；
+- 提交成功后搜索框自动清空并重新获得焦点；
+- Server 正在确认一条操作时所有写操作进入 pending，防止连续点击重复提交；
+- 连接中断时保留当前画面，但禁止继续写入，重连后以 Server state 为准。
+
+Champion Studio 默认先显示 48 位 Champion；可以“再显示 48 个”或“显示全部”。搜索会重新从 48 个结果开始，避免一次渲染完整英雄池造成界面过重。
+
+## Screen Recognition 操作原则
+
+Browser Window Capture 是首选。20 个 BP 槽保存的是源画面 0–1 比例，不是浏览器像素。
+
+- 缩放 Control 页面：无需重做校准；
+- 改变 Control 窗口大小：无需重做校准；
+- 1920×1080 改到 1280×720：同宽高比，通常无需重做；
+- 改成不同宽高比：系统提示检查当前槽；
+- 共享中的游戏窗口动态改分辨率：预览舞台跟随 source size 更新；
+- Recognition 返回时若 BP 已进入下一阶段：结果自动丢弃。
+
+Native Windows Capture 仍使用桌面像素坐标，只作为兼容模式。
+
 ## Overlay
 
 **Panel** 适合 BP 专用画面：顶部赛事条 + 中央透明区 + 底部双方 Champion Card。
 
 **Side** 适合保留中央游戏 / 客户端画面：双方 Champion Card 固定在左右边缘。
 
-LoL 主题采用深墨蓝、金色赛事线框和阵营蓝 / 红，不与 HOK 版本共享视觉主题。
+LoL 主题采用深墨蓝、金色赛事线框和阵营蓝 / 红，不与 HOK 版本共享视觉主题。Overlay 是固定 **1920×1080** 播出画布；不要用网页 Zoom 代替 OBS Browser Source 尺寸设置。
 
 ## Caster Delay
 
