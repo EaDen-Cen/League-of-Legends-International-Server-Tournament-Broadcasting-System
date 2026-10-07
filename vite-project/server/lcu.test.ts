@@ -21,7 +21,7 @@ test('LCU champ-select actions map to authoritative blue/red phases',()=>{
   const session:LcuChampSelectSession={actions:actions.map(action=>[action]),myTeam:[{cellId:10}],theirTeam:[{cellId:20}]};
   const mapped=mapLcuSession(session,state);
   assert.equal(mapped.localSide,'red');
-  assert.deepEqual(mapped.actions.map(action=>({side:action.side,action:action.action})),expected);
+  assert.deepEqual(mapped.actions.map(action=>({side:action.side,action:action.action})),expected.map(phase=>({side:phase.team,action:phase.action})));
   assert.equal(mapped.actions.filter(action=>action.completed).length,7);
 });
 
