@@ -96,16 +96,22 @@ Node.js + WebSocket authoritative state
 
 ## L5 — Auto BP / Recognition
 
-**状态：🚧 可用但必须继续实机校准**
+**状态：✅ 结构稳定，仍需真实赛事彩排**
 
 - 20 个独立 Ban / Pick 槽；
 - 本地 Portrait 模板；
-- Browser Capture；
-- Windows 原生捕获 opt-in；
+- Browser Window Capture；
+- ROI 使用 source-relative normalized coordinates；
+- 预览 stage 强制保持捕获源准确宽高比；
+- 浏览器 Zoom / responsive resize 不改变 ROI；
+- 共享窗口动态分辨率变化自动更新 preview geometry；
+- aspect ratio 改变时主动提示复查；
+- Recognition 绑定 revision / phase，旧异步结果不会污染新阶段；
+- Windows 原生捕获 opt-in，降级为兼容模式；
 - Review Required；
 - Final Lineup Sync。
 
-下一步重点不是扩大自动化，而是使用真实 LoL 客户端分辨率完成稳定性彩排。
+下一步重点是使用真实 League Client 完成 BO3 / BO5 长时间彩排，并评估 LCU Direct Sync 作为 Screen Recognition 之前的第一输入源。
 
 ## L6 — Production Rehearsal
 
