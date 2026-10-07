@@ -11,7 +11,7 @@ type LcuStatus = {
   localSide?: Side;
   phase?: string;
   draftMode?: 'tournament' | 'pick-only-practice';
-  actionSummary?: { groups:number; bans:number; picks:number; completedBans:number; completedPicks:number };
+  actionSummary?: { groups:number; bans:number; picks:number; completedBans:number; completedPicks:number; myRoster:number; theirRoster:number };
   lastSyncAt?: number;
   lastError?: string;
   lastAction?: { side: Side; action: 'ban' | 'pick'; championId: number | null };
@@ -66,7 +66,7 @@ export function LcuInput({ state, token }: { state: MatchState; token: string })
       <div><span>{t('lcuRoomMode')}</span><strong>{status.draftMode?t(status.draftMode==='pick-only-practice'?'lcuPracticeMode':'lcuTournamentMode'):'—'}</strong></div>
       <div><span>{t('lcuSide')}</span><strong>{status.localSide?t(status.localSide==='blue'?'blueSide':'redSide'):'—'}</strong></div>
       <div><span>{t('lcuLastSync')}</span><strong>{status.lastAction?`${t(status.lastAction.side==='blue'?'blueSide':'redSide')} · ${t(status.lastAction.action==='ban'?'banAction':'pickAction')} · ${heroName}`:'—'}</strong></div>
-      <div><span>{t('lcuActionShape')}</span><strong>{status.actionSummary?`G${status.actionSummary.groups} · B${status.actionSummary.bans}(${status.actionSummary.completedBans}) · P${status.actionSummary.picks}(${status.actionSummary.completedPicks})`:'—'}</strong></div>
+      <div><span>{t('lcuActionShape')}</span><strong>{status.actionSummary?`G${status.actionSummary.groups} · B${status.actionSummary.bans}(${status.actionSummary.completedBans}) · P${status.actionSummary.picks}(${status.actionSummary.completedPicks}) · R${status.actionSummary.myRoster}/${status.actionSummary.theirRoster}`:'—'}</strong></div>
     </div>
     {status.draftMode==='pick-only-practice'&&<p className="lcu-practice-note">{t('lcuPracticeHint')}</p>}
     {status.phase&&<p className="lcu-phase">{t('lcuClientPhase')}: <strong>{status.phase}</strong></p>}
