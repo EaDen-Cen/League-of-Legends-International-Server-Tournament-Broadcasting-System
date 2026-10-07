@@ -104,6 +104,8 @@ const settingsFromState = (state: MatchState): MatchSettings => ({
   overlayLayout: state.overlayLayout,
   scoreDisplay: state.scoreDisplay,
   bpInputMode: state.bpInputMode,
+  roleIconStyle: state.roleIconStyle,
+  roleIconBackground: state.roleIconBackground,
   showHeroName: state.showHeroName,
   artSourceMode: state.artSourceMode,
 });
@@ -149,9 +151,15 @@ function MatchSettingsPanel({ state, send, disabled }: { state: MatchState; send
           <option value="zh">{t('chinese')}</option><option value="eng">{t('english')}</option>
         </select><small>{t('languageHint')}</small></label>
         <label>{t('scoreDisplay')}<select value={form.scoreDisplay || 'number'} onChange={e => setForm({ ...form, scoreDisplay: e.target.value as MatchSettings['scoreDisplay'] })}><option value="number">{t('scoreNumber')}</option><option value="boxes">{t('scoreBoxes')}</option></select></label>
-        <label>{t('bpInputMode')}<select value={form.bpInputMode || 'manual'} onChange={e => setForm({ ...form, bpInputMode: e.target.value as MatchSettings['bpInputMode'] })}><option value="manual">{t('manualInput')}</option><option value="screen">{t('screenInput')}</option></select></label>
+        <label>{t('bpInputMode')}<select value={form.bpInputMode === 'lcu' ? 'lcu' : 'manual'} onChange={e => setForm({ ...form, bpInputMode: e.target.value as MatchSettings['bpInputMode'] })}><option value="manual">{t('manualInput')}</option><option value="lcu">{t('lcuInput')}</option></select><small>{t('lcuInputHint')}</small></label>
         <label>{t('overlayLayout')}<select value={form.overlayLayout} onChange={e => setForm({ ...form, overlayLayout: e.target.value as MatchSettings['overlayLayout'] })}>
           <option value="panel">{t('panelLayout')}</option><option value="side">{t('sideLayout')}</option>
+        </select></label>
+        <label>{t('roleIconStyle')}<select value={form.roleIconStyle} onChange={e => setForm({ ...form, roleIconStyle: e.target.value as MatchSettings['roleIconStyle'] })}>
+          <option value="minimal">{t('roleIconMinimal')}</option><option value="ornate">{t('roleIconOrnate')}</option>
+        </select></label>
+        <label>{t('roleIconBackground')}<select value={form.roleIconBackground} onChange={e => setForm({ ...form, roleIconBackground: e.target.value as MatchSettings['roleIconBackground'] })}>
+          <option value="light">{t('roleIconLight')}</option><option value="dark">{t('roleIconDark')}</option>
         </select></label>
         <label>{t('heroImageSource')}<select value={form.artSourceMode} onChange={e => setForm({ ...form, artSourceMode: e.target.value as MatchSettings['artSourceMode'] })}>
           <option value="auto">{t('heroImageAuto')}</option><option value="legacy">{t('heroImageLegacy')}</option>
@@ -281,7 +289,7 @@ export default function BroadcastApp() {
           </section>
 
           <DraftLifecycle state={state} send={send} disabled={disabled} />
-          {showSettings && <SettingsDialog label={t('matchSettings')} closeLabel={t('hideSettings')} onClose={() => setShowSettings(false)}><MatchSettingsPanel key={JSON.stringify([state.seriesFormat, state.stage, state.draftMode, state.draftRuleMode, state.firstPickSide, state.sideSwapMode, state.language, state.overlayLayout, state.scoreDisplay, state.bpInputMode, state.showHeroName, state.artSourceMode])} state={state} send={send} disabled={disabled} /></SettingsDialog>}
+          {showSettings && <SettingsDialog label={t('matchSettings')} closeLabel={t('hideSettings')} onClose={() => setShowSettings(false)}><MatchSettingsPanel key={JSON.stringify([state.seriesFormat, state.stage, state.draftMode, state.draftRuleMode, state.firstPickSide, state.sideSwapMode, state.language, state.overlayLayout, state.scoreDisplay, state.bpInputMode, state.roleIconStyle, state.roleIconBackground, state.showHeroName, state.artSourceMode])} state={state} send={send} disabled={disabled} /></SettingsDialog>}
           {state.bpInputMode === 'screen' && <ScreenInput state={state} revision={snapshot!.revision} token={token} disabled={disabled} send={send} />}
           <LineupAssignments state={state} revision={snapshot!.revision} token={token} disabled={disabled} send={send} />
         </>}>
