@@ -19,6 +19,7 @@
 | --- | --- |
 | [Champion Data Pipeline](research/hero-sync.md) | Data Dragon、Portrait / Splash Art、分路和 alias 维护 |
 | [Research Index](research/README.md) | 当前 LoL 数据研究入口 |
+| [系统架构](design/architecture.md) | authoritative state、坐标模型、Recognition 与 Overlay 边界 |
 | [Validation History](validation/history.md) | 历史构建、测试与浏览器验证记录 |
 
 ## 架构边界
