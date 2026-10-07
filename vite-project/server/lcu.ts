@@ -447,25 +447,58 @@ export class LcuBridge {
         lastError: undefined,
       };
 
-      const byPhase = new Map(mapped.actions.map(action => [action.phaseIndex, action]));
+      let byPhase = new Map(mapped.actions.map(action => [action.phaseIndex, action]));
 
-      // Never silently merge two different drafts. Manual fallback is safe only
-      // while the already-recorded prefix matches the League Client session.
-      for (let index = 0; index < state.currentPhase; index++) {
-        const expectedPhase = expected[index];
-        const action = byPhase.get(index);
-        const localValue = currentValues[index];
-
-        if (mapped.mode === 'pick-only-practice' && expectedPhase.action === 'ban') {
-          if (localValue !== null) throw new Error(`LCU practice room differs at phase ${index + 1}`);
-          continue;
+      if (mapped.mode === 'pick-only-practice') {
+        // Practice/blind rooms do not have a meaningful tournament pick order.
+        // Build the deterministic prefix we *would* render from the latest roster.
+        // If an older bridge version (or a hover change) wrote the same champions
+        // in a different phase order, repair the uncommitted draft automatically
+        // instead of surfacing a false "phase N differs" error.
+        let desiredPhase = 0;
+        const desiredValues: Array<number | null> = [];
+        for (let index = 0; index < expected.length; index++) {
+          const phase = expected[index];
+          if (phase.action === 'ban') {
+            desiredValues[index] = null;
+            desiredPhase = index + 1;
+            continue;
+          }
+          const action = byPhase.get(index);
+          if (!action?.completed || action.championId <= 0) break;
+          desiredValues[index] = action.championId;
+          desiredPhase = index + 1;
         }
 
-        if (!action || !action.completed || action.side !== expectedPhase.team || action.action !== expectedPhase.action) {
-          throw new Error(`LCU draft differs at phase ${index + 1}`);
+        const currentPracticeValues = currentDraftValues(this.store.data.state);
+        const practiceMatches = this.store.data.state.currentPhase === desiredPhase
+          && Array.from({ length: desiredPhase }, (_, index) => currentPracticeValues[index] === desiredValues[index]).every(Boolean);
+
+        if (!practiceMatches && !this.store.data.state.committedGameId) {
+          this.store.apply(
+            `lcu-practice-rebuild-${this.store.data.revision}`,
+            this.store.data.revision,
+            { type: 'reset_draft' },
+          );
+          this.statusValue.lastSyncAt = Date.now();
+          this.statusValue.lastError = undefined;
+          this.onChanged();
+          // State/revision changed; mapped roster remains valid for this poll.
+          byPhase = new Map(mapped.actions.map(action => [action.phaseIndex, action]));
         }
-        const remoteValue = action.action === 'ban' && action.championId <= 0 ? null : action.championId;
-        if (localValue !== remoteValue) throw new Error(`LCU draft differs at phase ${index + 1}`);
+      } else {
+        // Tournament rooms are strict: never silently merge a different draft.
+        for (let index = 0; index < state.currentPhase; index++) {
+          const expectedPhase = expected[index];
+          const action = byPhase.get(index);
+          const localValue = currentValues[index];
+
+          if (!action || !action.completed || action.side !== expectedPhase.team || action.action !== expectedPhase.action) {
+            throw new Error(`LCU draft differs at phase ${index + 1}`);
+          }
+          const remoteValue = action.action === 'ban' && action.championId <= 0 ? null : action.championId;
+          if (localValue !== remoteValue) throw new Error(`LCU draft differs at phase ${index + 1}`);
+        }
       }
 
       while (this.store.data.state.currentPhase < expected.length) {
