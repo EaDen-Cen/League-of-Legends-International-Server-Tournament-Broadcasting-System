@@ -74,7 +74,7 @@ test('substitutes survive restart and legacy roster updates; old libraries migra
   const legacy=JSON.parse(readFileSync(file,'utf8'));delete legacy.teams[0].substitutes;writeFileSync(file,JSON.stringify(legacy));
   assert.deepEqual(new TeamPresetStore(file).get(team.id)?.substitutes,[]);
 });
-test('live reserve substitution preserves draft, team identity and library, remains delayed and supports undo', () => {
+test('live reserve substitution preserves draft/team identity and reaches Caster metadata immediately', () => {
   const lib=library(); const reserve={id:randomUUID(),name:'Bench Player',role:'support' as const,portrait:'/bench.png'};
   const team=lib.create({...initialState().blueTeam,players:['Starter','B','C','D','E'],substitutes:[reserve]});
   let now=1000000; const s=new Store(undefined,()=>now,lib);
@@ -84,7 +84,7 @@ test('live reserve substitution preserves draft, team identity and library, rema
   apply(s,{type:'settings',settings:{...s.data.state,blueTeam:{...old,players:[reserve.name,...old.players.slice(1)],playerRoles:[reserve.role,...old.playerRoles.slice(1)],playerPortraits:[reserve.portrait,...old.playerPortraits.slice(1)]}}});
   assert.equal(s.data.state.currentPhase,1);assert.equal(s.data.state.blueTeam.id,team.id);
   assert.equal(s.snapshot('overlay').state.blueTeam.players[0],reserve.name);
-  assert.equal(s.snapshot('caster').state.blueTeam.players[0],'Starter');
+  assert.equal(s.snapshot('caster').state.blueTeam.players[0],reserve.name);
   assert.equal(lib.get(team.id)?.players[0],'Starter');
   now+=180000;assert.equal(s.snapshot('caster').state.blueTeam.playerPortraits[0],reserve.portrait);
   apply(s,{type:'undo'});assert.deepEqual(s.data.state.blueTeam,old);
