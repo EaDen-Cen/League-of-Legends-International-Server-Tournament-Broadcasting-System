@@ -2003,32 +2003,51 @@
 }
 
 .broadcast-overlay.role-icons-ornate .position-icon {
-  width:30px;
-  height:30px;
+  width:34px;
+  height:34px;
   overflow:visible;
 }
 .broadcast-overlay.role-icons-ornate .position-icon-medallion {
   fill:#101820;
   stroke:#b89b62;
-  stroke-width:.9;
+  stroke-width:1;
 }
 .broadcast-overlay.role-icons-ornate .position-icon-inner-frame,
-.broadcast-overlay.role-icons-ornate .position-icon-ring {
+.broadcast-overlay.role-icons-ornate .position-icon-ring,
+.broadcast-overlay.role-icons-ornate .position-icon-diamond {
   fill:none;
   stroke:#d6bf86;
-  stroke-width:.55;
+  stroke-width:.5;
+  opacity:.92;
+}
+.broadcast-overlay.role-icons-ornate .position-icon-diamond {
+  opacity:.42;
+}
+.broadcast-overlay.role-icons-ornate .position-icon-wing {
+  fill:none;
+  stroke:#b89b62;
+  stroke-width:.8;
+  stroke-linecap:round;
+  stroke-linejoin:round;
   opacity:.9;
+}
+.broadcast-overlay.role-icons-ornate .position-icon-jewel {
+  fill:#d6bf86;
+  stroke:#5e4a27;
+  stroke-width:.25;
 }
 .broadcast-overlay.role-icons-ornate .position-icon-accent {
   fill:none;
   stroke:#d6bf86;
-  stroke-width:.7;
+  stroke-width:.65;
   stroke-linecap:round;
   opacity:.95;
 }
 .broadcast-overlay.role-icons-ornate .position-icon-glyph {
-  color:#f0e6d2;
-  filter:drop-shadow(0 1px 1px #0008);
+  color:#f5ead3;
+  transform:scale(.62);
+  transform-origin:center;
+  filter:drop-shadow(0 1px 1px #000a);
 }
 .broadcast-overlay.role-icon-bg-light.role-icons-ornate .position-icon-medallion {
   fill:#29323a;
@@ -2036,15 +2055,20 @@
 }
 .broadcast-overlay.role-icon-bg-light.role-icons-ornate .position-icon-inner-frame,
 .broadcast-overlay.role-icon-bg-light.role-icons-ornate .position-icon-ring,
-.broadcast-overlay.role-icon-bg-light.role-icons-ornate .position-icon-accent {
+.broadcast-overlay.role-icon-bg-light.role-icons-ornate .position-icon-diamond,
+.broadcast-overlay.role-icon-bg-light.role-icons-ornate .position-icon-accent,
+.broadcast-overlay.role-icon-bg-light.role-icons-ornate .position-icon-wing {
   stroke:#c7ad71;
+}
+.broadcast-overlay.role-icon-bg-light.role-icons-ornate .position-icon-jewel {
+  fill:#c7ad71;
 }
 .broadcast-overlay.role-icon-bg-light.role-icons-ornate .position-icon-glyph {
   color:#f3ead7;
 }
 .broadcast-side.role-icons-ornate .position-icon {
-  width:26px;
-  height:26px;
+  width:29px;
+  height:29px;
 }
 
 /* Mirror the right-side ban strip around the center axis.
