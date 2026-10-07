@@ -46,6 +46,31 @@ function Board({ state, lang, compact = false }: { state: MatchState; lang: Lang
     <div className="team-grid">{displaySides(state).map(side => <section key={side} className={`team ${side} ${phase?.team === side ? 'active' : ''}`}><header>{state[`${side}Team`].logo && <img className="logo" src={state[`${side}Team`].logo} alt="" />}<h2>{teamName(state, side)}</h2><Score state={state} side={side} /></header><div className="picks">{Array.from({ length: 5 }, (_, i) => <HeroSlot key={i} state={state} id={state[`${side}Picks`][i]} lang={lang} />)}</div><div className="bans"><small>{t('ban')}</small>{Array.from({ length: state.draftMode === 'match' ? 5 : 2 }, (_, i) => <HeroSlot key={i} state={state} id={state[`${side}Bans`][i]} ban lang={lang} />)}</div></section>)}</div>
     <footer className={`phase ${phase?.team || ''}`} key={state.currentPhase}>{phase ? `${phaseName(state, lang)} · ${t('phaseStep', { step: state.currentPhase + 1, total: phases(state.draftMode, state.firstPickSide).length })}` : t('draftComplete')}</footer></section>;
 }
+function CasterRoster({ state, lang, delaySeconds }: { state: MatchState; lang: Language; delaySeconds: number }) {
+  const t = translator(lang);
+  return <section className="panel caster-roster">
+    <header className="caster-roster-header">
+      <div><h2>{t('casterRosterTitle')}</h2><p className="muted">{t('casterRosterHint')}</p></div>
+      {delaySeconds > 0 && <span className="caster-delay-badge">{t('delayedFeed', { seconds: delaySeconds })}</span>}
+    </header>
+    {delaySeconds > 0 && <p className="caster-delay-note">{t('casterDelayWaiting', { seconds: delaySeconds })}</p>}
+    <div className="caster-roster-grid">
+      {displaySides(state).map(side => {
+        const team=state[`${side}Team`];
+        return <section key={team.id} className={`caster-roster-team ${side}`}>
+          <header>{team.logo && <img src={team.logo} alt="" />}<div><small>{t(side === 'blue' ? 'blueSide' : 'redSide')}</small><strong>{teamName(state, side)}</strong></div></header>
+          <div className="caster-player-list">
+            {team.players.map((player,index)=><div className="caster-player" key={index}>
+              <span className="caster-role">{t(team.playerRoles[index])}</span>
+              <b>{player || t('playerNumber',{number:index+1})}</b>
+            </div>)}
+          </div>
+        </section>;
+      })}
+    </div>
+  </section>;
+}
+
 function TeamAnalysis({
   state,
   lang,
@@ -265,7 +290,7 @@ export default function BroadcastApp() {
     {connected && !compatible && <p className="notice">{t('backendUpgrade')}</p>}
     {error && <p role="alert" className="error">{errorMessage(error, lang)}</p>}
     {state ? <>
-      {role === 'caster' && <Board state={state} lang={lang} />}
+      {role === 'caster' && <><Board state={state} lang={lang} /><CasterRoster state={state} lang={lang} delaySeconds={snapshot?.casterDelaySeconds ?? 0} /></>}
       {role === 'control' && <>
         <ControlDraftWorkspace monitor={<>
           <Board state={state} lang={lang} compact />
