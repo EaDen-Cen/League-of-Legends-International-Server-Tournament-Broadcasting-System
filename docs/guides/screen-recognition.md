@@ -1,8 +1,8 @@
-# LoL Screen Recognition
+# Legacy LoL Screen Recognition
 
 [返回文档索引](../README.md)
 
-Screen Recognition 是导播辅助工具，不应绕过人工确认。
+Screen Recognition 已退出普通 Match Settings，当前只作为 LCU 不可用时的兼容/维护方案保留。它仍要求人工确认，不应绕过 Review。
 
 ## 启用
 
