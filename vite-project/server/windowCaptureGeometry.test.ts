@@ -5,6 +5,8 @@ import {
   normalizeCaptureRegion,
   regionFromDrag,
   regionToPixels,
+  fitCapturePreview,
+  captureAspectRatioDrift,
 } from '../src/control/windowCaptureGeometry.js';
 
 test('normalized capture region scales with source resolution',()=>{
@@ -33,4 +35,17 @@ test('default region is a valid visible relative crop',()=>{
   assert.ok(pixels.x>=0&&pixels.y>=0);
   assert.ok(pixels.x+pixels.width<=1600);
   assert.ok(pixels.y+pixels.height<=900);
+});
+
+
+test('capture preview preserves source aspect ratio across browser-sized boxes',()=>{
+  assert.deepEqual(fitCapturePreview(1920,1080,960,700),{width:960,height:540});
+  assert.deepEqual(fitCapturePreview(1920,1080,700,300),{width:533,height:300});
+  assert.deepEqual(fitCapturePreview(1280,720,400,1000),{width:400,height:225});
+  assert.deepEqual(fitCapturePreview(0,720,400,300),{width:0,height:0});
+});
+
+test('aspect-ratio drift ignores resolution-only changes and detects layout changes',()=>{
+  assert.equal(captureAspectRatioDrift({width:1920,height:1080},{width:1280,height:720}),0);
+  assert.ok(captureAspectRatioDrift({width:1920,height:1080},{width:1600,height:1200})>.2);
 });
