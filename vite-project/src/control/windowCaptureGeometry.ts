@@ -12,6 +12,11 @@ export interface PixelCaptureRegion {
   height: number;
 }
 
+export interface PreviewSize {
+  width: number;
+  height: number;
+}
+
 export const defaultNormalizedCaptureRegion: NormalizedCaptureRegion = {
   x: .35,
   y: .35,
@@ -56,4 +61,40 @@ export function regionToPixels(
   const right=Math.max(x+1,Math.min(width,Math.ceil((normalized.x+normalized.width)*width)));
   const bottom=Math.max(y+1,Math.min(height,Math.ceil((normalized.y+normalized.height)*height)));
   return {x,y,width:right-x,height:bottom-y};
+}
+
+/**
+ * Fits the capture preview into the available CSS box while preserving the
+ * source's exact aspect ratio. Recognition overlays are positioned inside this
+ * fitted stage, never inside a letterboxed video element.
+ */
+export function fitCapturePreview(
+  sourceWidth:number,
+  sourceHeight:number,
+  maxWidth:number,
+  maxHeight:number,
+):PreviewSize {
+  if (![sourceWidth,sourceHeight,maxWidth,maxHeight].every(value => Number.isFinite(value) && value > 0)) {
+    return {width:0,height:0};
+  }
+  const scale=Math.min(maxWidth/sourceWidth,maxHeight/sourceHeight,1);
+  return {
+    width:Math.max(1,Math.floor(sourceWidth*scale)),
+    height:Math.max(1,Math.floor(sourceHeight*scale)),
+  };
+}
+
+export function captureAspectRatio(width:number,height:number) {
+  return width>0&&height>0 ? width/height : 0;
+}
+
+export function captureAspectRatioDrift(
+  previous:{width:number;height:number}|undefined,
+  current:{width:number;height:number}|undefined,
+) {
+  if(!previous||!current) return 0;
+  const before=captureAspectRatio(previous.width,previous.height);
+  const after=captureAspectRatio(current.width,current.height);
+  if(!before||!after) return 0;
+  return Math.abs(after-before)/before;
 }
