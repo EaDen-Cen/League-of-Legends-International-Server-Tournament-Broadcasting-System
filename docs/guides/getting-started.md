@@ -64,7 +64,17 @@ npm run lint
 
 要更新版本时显式传入新的 Data Dragon 版本号。不要重新启用旧 HOK Hero Sync 工具。
 
-## 6. 浏览器缩放与画面尺寸
+## 6. BP 自动输入
+
+推荐在 Match Settings 中使用 **League Client 房间 API 自动同步**。League Client 与 Broadcast Server 在同一台电脑时通常不需要额外配置。
+
+进入 Champ Select 后，Control 会显示 League Client / Champ Select / 阵营映射 / 最近同步状态。只有锁定完成的 Ban / Pick 才会进入比赛状态；Hover 不会提交。
+
+详见 [League Client 自动 BP](lcu-auto-bp.md)。
+
+旧 Screen Recognition 已退出正常设置入口，仅作为兼容实现保留。
+
+## 7. 浏览器缩放与画面尺寸
 
 Control / Caster 可以正常使用浏览器缩放。Screen Recognition 的 Browser Window Capture 不使用网页像素保存校准框，因此缩放 Control 页面不会移动 ROI。
 
@@ -75,7 +85,7 @@ Control / Caster 可以正常使用浏览器缩放。Screen Recognition 的 Brow
 
 OBS Overlay 是固定 1920×1080 设计画布。OBS Browser Source 请直接设置 1920×1080，不要靠浏览器 Zoom 调整布局。
 
-## 7. 运行数据
+## 8. 运行数据
 
 默认：
 
