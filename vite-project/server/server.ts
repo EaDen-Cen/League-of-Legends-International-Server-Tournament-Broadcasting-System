@@ -9,6 +9,7 @@ import { TeamPresetStore } from './teamPresets.js';
 import { Store } from './store.js';
 import { uploadPortrait, servePortrait } from './portraits.js';
 import { captureRegion, captureRegions, localCaptureRequest, recognizeClientFrame, recognizeLineup, recognizeScreen } from './capture.js';
+import { LcuBridge } from './lcu.js';
 
 const production = process.env.NODE_ENV === 'production';
 const tokens: Record<Role, string> = {
@@ -23,6 +24,7 @@ const dataFile = resolve(process.env.DATA_FILE || resolve(project, 'data/lol/mat
 const presets = new TeamPresetStore(resolve(dirname(dataFile), 'team-presets.json'));
 const store = new Store(dataFile, Date.now, presets);
 const uploadDirectory = resolve(process.env.UPLOAD_DIR || resolve(dirname(dataFile), 'uploads/player-portraits'));
+let lcu: LcuBridge | undefined;
 const allowedOrigins = (process.env.ALLOWED_ORIGINS || '').split(',').filter(Boolean);
 const server = createServer(async (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
@@ -140,6 +142,10 @@ const server = createServer(async (req, res) => {
       if (!role) { json(401, { error: '访问口令缺失或无效，请重新输入' }); return; }
       if (url.pathname === '/api/match') json(200, store.snapshot(role));
       else if (url.pathname === '/api/heroes') json(200, heroes);
+      else if (url.pathname === '/api/lcu/status') {
+        if (role !== 'control') json(403, { error: 'Control only' });
+        else json(200, lcu?.status() ?? { clientConnected:false, sessionActive:false });
+      }
       else json(404, { error: '找不到请求的内容' });
       return;
     }
@@ -164,6 +170,9 @@ function update(ws: WebSocket, force = false) {
     ws.send(payload); c.last = payload;
   }
 }
+lcu = new LcuBridge(store, () => {
+  for (const client of clients.keys()) update(client);
+});
 wss.on('connection', (ws, req) => {
   const origin = req.headers.origin;
   if (production && origin && !allowedOrigins.includes(origin)) { ws.close(1008, '此页面地址无权连接'); return; }
@@ -200,9 +209,10 @@ wss.on('connection', (ws, req) => {
   });
 });
 const tick = setInterval(() => { for (const ws of clients.keys()) update(ws); }, 200);
+const lcuTick = setInterval(() => { void lcu?.poll(); }, 750);
 const heartbeat = setInterval(() => { for (const [ws, c] of clients) { if (!c.alive) ws.terminate(); else { c.alive = false; ws.ping(); } } }, 15000);
 server.listen(Number(process.env.PORT || 3001), process.env.HOST || (production ? '0.0.0.0' : '127.0.0.1'), () => console.log('LoL Broadcast server ready on port ' + (process.env.PORT || 3001)));
 for (const signal of ['SIGINT', 'SIGTERM'] as const) process.on(signal, () => {
-  clearInterval(tick); clearInterval(heartbeat); for (const ws of clients.keys()) ws.close(1001, '服务器正在停止');
+  clearInterval(tick); clearInterval(lcuTick); clearInterval(heartbeat); for (const ws of clients.keys()) ws.close(1001, '服务器正在停止');
   server.close(() => process.exit(0)); setTimeout(() => process.exit(0), 2000).unref();
 });
