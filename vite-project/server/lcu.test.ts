@@ -120,3 +120,41 @@ test('LCU AI room with dummy ban action is still detected as pick-only practice'
   assert.ok(mapped.actions.every(action=>action.action==='pick'));
   assert.ok(!mapped.actions.some(action=>action.id===dummyBan.id));
 });
+
+
+test('LCU finalization with one dummy ban and one local pick syncs ten roster champions',()=>{
+  const state=initialState();
+  state.firstPickSide='blue';
+  const session:LcuChampSelectSession={
+    timer:{phase:'FINALIZATION'},
+    actions:[
+      [{id:1,actorCellId:1,championId:0,completed:true,type:'ban',isAllyAction:true}],
+      [{id:2,actorCellId:1,championId:54,completed:true,type:'pick',isAllyAction:true}],
+      [],
+    ],
+    myTeam:[
+      {cellId:1,championId:54},
+      {cellId:2,championId:115},
+      {cellId:3,championId:147},
+      {cellId:4,championId:131},
+      {cellId:5,championId:32},
+    ],
+    theirTeam:[
+      {cellId:11,championId:31},
+      {cellId:12,championId:82},
+      {cellId:13,championId:902},
+      {cellId:14,championId:127},
+      {cellId:15,championId:236},
+    ],
+  };
+  const mapped=mapLcuSession(session,state);
+  assert.equal(mapped.mode,'pick-only-practice');
+  assert.equal(mapped.localSide,'blue');
+  assert.equal(mapped.actions.length,10);
+  assert.deepEqual(
+    new Set(mapped.actions.map(action=>action.championId)),
+    new Set([54,115,147,131,32,31,82,902,127,236]),
+  );
+  assert.ok(mapped.actions.every(action=>action.action==='pick'));
+  assert.ok(mapped.actions.every(action=>action.completed));
+});
