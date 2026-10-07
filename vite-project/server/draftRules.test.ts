@@ -185,7 +185,7 @@ test('Player BP requires all player IDs before the first ban and cannot silently
 });
 
 
-test('live roster edits preserve draft and committed history, follow delay and support undo', () => {
+test('live roster metadata reaches Caster immediately while draft/history remain authoritative and undoable', () => {
   let now = 1000000;
   const s = setup('global', new Store(undefined, () => now)); fill(s);
   now += 180000;
@@ -194,7 +194,7 @@ test('live roster edits preserve draft and committed history, follow delay and s
   assert.deepEqual(s.data.state.bluePicks, before.bluePicks);
   assert.equal(s.data.state.currentPhase, before.currentPhase);
   assert.equal(s.snapshot('overlay').state.blueTeam.players[0], 'Sub');
-  assert.equal(s.snapshot('caster').state.blueTeam.players[0], 'A1');
+  assert.equal(s.snapshot('caster').state.blueTeam.players[0], 'Sub');
   now += 180000;
   assert.equal(s.snapshot('caster').state.blueTeam.players[0], 'Sub');
   act(s, { type: 'undo' }); assert.deepEqual(s.data.state, before);
