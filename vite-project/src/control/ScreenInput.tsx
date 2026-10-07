@@ -501,20 +501,23 @@ export function ScreenInput({ state, revision, token, disabled, send }: { state:
         <span className={videoReady?'window-capture-status connected':'window-capture-status'}>{videoReady?'●':'○'} {windowInfo?.label||t('windowCaptureDisconnected')}</span>
       </div>
 
-      <div
-        className={`window-capture-preview ${videoReady?'ready':''} ${calibratingSlot?'calibrating':''}`}
-        onPointerDown={pointerDown}
-        onPointerMove={pointerMove}
-        onPointerUp={pointerUp}
-        onPointerCancel={()=>{dragStart.current=null;}}
-      >
-        <video ref={videoRef} playsInline muted />
-        {videoReady&&captureSlotKeys.map(key=><div
-          key={key}
-          className={`capture-explicit-slot ${key.startsWith('blue')?'blue':'red'} ${key.includes('Ban')?'ban':'pick'} ${target?.key===key?'active':''} ${calibratingSlot===key?'editing':''}`}
-          style={percentageStyle(slots[key])}
-        ><span>{captureSlotLabel(key)}</span></div>)}
-        {!videoReady&&<div className="window-capture-placeholder">{t('windowCaptureChooseHint')}</div>}
+      <div ref={previewHostRef} className="window-capture-preview-host">
+        <div
+          className={`window-capture-preview ${videoReady?'ready':''} ${calibratingSlot?'calibrating':''}`}
+          style={videoReady&&previewSize.width&&previewSize.height?{width:`${previewSize.width}px`,height:`${previewSize.height}px`}:undefined}
+          onPointerDown={pointerDown}
+          onPointerMove={pointerMove}
+          onPointerUp={pointerUp}
+          onPointerCancel={()=>{dragStart.current=null;}}
+        >
+          <video ref={videoRef} playsInline muted />
+          {videoReady&&captureSlotKeys.map(key=><div
+            key={key}
+            className={`capture-explicit-slot ${key.startsWith('blue')?'blue':'red'} ${key.includes('Ban')?'ban':'pick'} ${target?.key===key?'active':''} ${calibratingSlot===key?'editing':''}`}
+            style={percentageStyle(slots[key])}
+          ><span>{captureSlotLabel(key)}</span></div>)}
+          {!videoReady&&<div className="window-capture-placeholder">{t('windowCaptureChooseHint')}</div>}
+        </div>
       </div>
 
       <div className="explicit-slot-calibration">
@@ -527,6 +530,7 @@ export function ScreenInput({ state, revision, token, disabled, send }: { state:
             const next=normalizeCaptureSlots(defaultCaptureSlots);
             setSlots(next);
             localStorage.setItem(SLOTS_STORAGE,JSON.stringify(next));
+            if(windowInfo?.width&&windowInfo?.height) localStorage.setItem(PROFILE_STORAGE,JSON.stringify({width:windowInfo.width,height:windowInfo.height,savedAt:Date.now()} satisfies CaptureProfile));
             setCalibratingSlot(undefined);
             setMessage(t('captureExplicitSlotsReset'));
           }}>{t('captureResetAllSlots')}</button>
