@@ -45,29 +45,32 @@ function validateScores(blue: number, red: number, format: MatchState['seriesFor
   const wins = (Number(format.slice(2)) + 1) / 2;
   if (blue > wins || red > wins || (blue === wins && red === wins)) throw new Error('比分或局数不符合当前赛制');
 }
-function casterBaseline(current: MatchState): MatchState {
-  const baseline = initialState();
-  baseline.blueTeam = copy(current.blueTeam);
-  baseline.redTeam = copy(current.redTeam);
-  baseline.seriesFormat = current.seriesFormat;
-  baseline.stage = current.stage;
-  baseline.language = current.language;
-  baseline.overlayLayout = current.overlayLayout;
-  baseline.scoreDisplay = current.scoreDisplay;
-  baseline.bpInputMode = current.bpInputMode;
-  baseline.roleIconStyle = current.roleIconStyle;
-  baseline.roleIconBackground = current.roleIconBackground;
-  baseline.showHeroName = current.showHeroName;
-  baseline.artSourceMode = current.artSourceMode;
-  baseline.heroArtOverrides = copy(current.heroArtOverrides || {});
-  baseline.heroDataOverrides = copy(current.heroDataOverrides || {});
-  baseline.draftMode = current.draftMode;
-  baseline.displayLeftSide = current.displayLeftSide;
-  baseline.firstPickSide = current.firstPickSide;
-  baseline.sideSwapMode = current.sideSwapMode;
-  baseline.draftRuleMode = current.draftRuleMode;
-  baseline.flowbornFormsIndependent = current.flowbornFormsIndependent;
-  return baseline;
+function casterViewState(current: MatchState, delayed?: MatchState): MatchState {
+  const view = copy(delayed ?? initialState());
+
+  // Tournament identity and presentation are configuration, not hidden gameplay.
+  // Keep them live so the caster desk is useful immediately, while draft
+  // progress, scores and committed history continue to follow the delay buffer.
+  view.blueTeam = copy(current.blueTeam);
+  view.redTeam = copy(current.redTeam);
+  view.seriesFormat = current.seriesFormat;
+  view.stage = current.stage;
+  view.language = current.language;
+  view.overlayLayout = current.overlayLayout;
+  view.scoreDisplay = current.scoreDisplay;
+  view.bpInputMode = current.bpInputMode;
+  view.roleIconStyle = current.roleIconStyle;
+  view.roleIconBackground = current.roleIconBackground;
+  view.showHeroName = current.showHeroName;
+  view.artSourceMode = current.artSourceMode;
+  view.heroArtOverrides = copy(current.heroArtOverrides || {});
+  view.heroDataOverrides = copy(current.heroDataOverrides || {});
+  view.draftMode = current.draftMode;
+  view.firstPickSide = current.firstPickSide;
+  view.sideSwapMode = current.sideSwapMode;
+  view.draftRuleMode = current.draftRuleMode;
+  view.flowbornFormsIndependent = current.flowbornFormsIndependent;
+  return view;
 }
 
 function validateLineup(state: MatchState, requireComplete = state.draftComplete) {
@@ -113,7 +116,7 @@ export class Store {
         // Before the delayed timeline has any eligible event, expose only
         // non-sensitive tournament/team metadata instead of an empty default
         // board. Draft progress, scores and history remain delayed.
-        state: copy(event?.resultingState ?? casterBaseline(this.data.state)),
+        state: casterViewState(this.data.state, event?.resultingState),
         revision: event?.revision ?? 0,
         casterDelaySeconds: this.data.delay,
       };
