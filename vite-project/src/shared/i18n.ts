@@ -529,6 +529,7 @@ const messages = {
     "zh": "三局两胜",
     "eng": "Best of 3"
   },
+  "bo7": { "zh": "七局四胜", "eng": "Best of 7" },
   "bo5": {
     "zh": "五局三胜",
     "eng": "Best of 5"

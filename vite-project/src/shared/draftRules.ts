@@ -1,3 +1,4 @@
+import { eligibleHistory } from './gameRules.js';
 import { initialState, type GameDraftRecord, type MatchState, type Side, type Team } from './types.js';
 
 export const playerIdentity = (name: string) => name.normalize('NFKC').trim().toLocaleLowerCase('en-US');
@@ -35,7 +36,7 @@ export function pickRestriction(state: MatchState, side: Side, playerIndex: numb
   if (state.draftRuleMode === 'normal') return;
   const team = state[`${side}Team`];
   if (state.draftRuleMode === 'global') {
-    if (state.draftHistory.some(record => {
+    if (eligibleHistory(state).some(record => {
       const picks = historyForTeam(record, team.id)?.picks ?? [];
       return record.id !== state.committedGameId && historyIncludesHero(state, picks, heroId);
     })) return 'usedByTeam';
@@ -44,7 +45,7 @@ export function pickRestriction(state: MatchState, side: Side, playerIndex: numb
   const identity = playerIdentity(team.players[playerIndex] || '');
   if (!identity) return 'playerMissing';
   // Identity follows the person when a substitute changes slots or a team changes sides.
-  if (state.draftHistory.some(record => record.id !== state.committedGameId && (['blue', 'red'] as const).some(recordSide =>
+  if (eligibleHistory(state).some(record => record.id !== state.committedGameId && (['blue', 'red'] as const).some(recordSide =>
     record[`${recordSide}Team`].players.some((player, index) => {
       const assigned = record[`${recordSide}Assignments`][index];
       return playerIdentity(player) === identity && sameDraftHero(state, assigned, heroId);
@@ -55,7 +56,7 @@ export function pickRestriction(state: MatchState, side: Side, playerIndex: numb
 export function banRestriction(state: MatchState, side: Side, heroId: number): 'opponentAlreadyUsed' | undefined {
   if (state.draftRuleMode !== 'global') return;
   const opponent = state[side === 'blue' ? 'redTeam' : 'blueTeam'];
-  if (state.draftHistory.some(record => {
+  if (eligibleHistory(state).some(record => {
     const picks = historyForTeam(record, opponent.id)?.picks ?? [];
     return record.id !== state.committedGameId && historyIncludesHero(state, picks, heroId);
   })) return 'opponentAlreadyUsed';
