@@ -1,5 +1,5 @@
-import { eligibleHistory } from './gameRules.js';
-import { initialState, type GameDraftRecord, type MatchState, type Side, type Team } from './types.js';
+import { draftPhases, eligibleHistory } from './gameRules.js';
+import { initialState, type DraftSlot, type GameDraftRecord, type MatchState, type Side, type Team } from './types.js';
 
 export const playerIdentity = (name: string) => name.normalize('NFKC').trim().toLocaleLowerCase('en-US');
 export const seriesWins = (state: MatchState) => (Number(state.seriesFormat.slice(2)) + 1) / 2;
@@ -12,8 +12,8 @@ export function draftHeroGroupKey(_state: Pick<MatchState, 'flowbornFormsIndepen
   return `hero:${heroId}`;
 }
 
-export function sameDraftHero(state: Pick<MatchState, 'flowbornFormsIndependent'>, leftId: number, rightId: number) {
-  return draftHeroGroupKey(state, leftId) === draftHeroGroupKey(state, rightId);
+export function sameDraftHero(state: Pick<MatchState, 'flowbornFormsIndependent'>, leftId: number | null, rightId: number | null) {
+  return leftId !== null && rightId !== null && draftHeroGroupKey(state, leftId) === draftHeroGroupKey(state, rightId);
 }
 
 export function draftHeroUsed(state: MatchState, heroId: number) {
@@ -21,7 +21,7 @@ export function draftHeroUsed(state: MatchState, heroId: number) {
     .some(id => id !== null && sameDraftHero(state, id, heroId));
 }
 
-function historyIncludesHero(state: MatchState, ids: number[], heroId: number) {
+function historyIncludesHero(state: MatchState, ids: Array<number | null>, heroId: number) {
   return ids.some(id => sameDraftHero(state, id, heroId));
 }
 
@@ -32,7 +32,8 @@ export function historyForTeam(record: GameDraftRecord, teamId: string) {
 }
 
 /** Current-game bans/duplicates are checked separately. History never consumes ban slots. */
-export function pickRestriction(state: MatchState, side: Side, playerIndex: number, heroId: number): 'playerMissing' | 'usedByPlayer' | 'usedByTeam' | undefined {
+export function pickRestriction(state: MatchState, side: Side, playerIndex: number, heroId: number | null): 'playerMissing' | 'usedByPlayer' | 'usedByTeam' | undefined {
+  if (heroId === null) return;
   if (state.draftRuleMode === 'normal') return;
   const team = state[`${side}Team`];
   if (state.draftRuleMode === 'global') {
@@ -43,17 +44,21 @@ export function pickRestriction(state: MatchState, side: Side, playerIndex: numb
     return;
   }
   const identity = playerIdentity(team.players[playerIndex] || '');
+  const playerId = team.playerIds?.[playerIndex];
   if (!identity) return 'playerMissing';
-  // Identity follows the person when a substitute changes slots or a team changes sides.
+  // Names are a legacy fallback; changing a display name must not reset a known player's history.
   if (eligibleHistory(state).some(record => record.id !== state.committedGameId && (['blue', 'red'] as const).some(recordSide =>
     record[`${recordSide}Team`].players.some((player, index) => {
+      const recordedId = record[`${recordSide}Team`].playerIds?.[index];
       const assigned = record[`${recordSide}Assignments`][index];
-      return playerIdentity(player) === identity && sameDraftHero(state, assigned, heroId);
+      return (playerId && recordedId ? playerId === recordedId : playerIdentity(player) === identity)
+        && sameDraftHero(state, assigned, heroId);
     })))) return 'usedByPlayer';
 }
 
 /** Avoid spending a ban on a hero the opposing team cannot reuse in Global BP. */
-export function banRestriction(state: MatchState, side: Side, heroId: number): 'opponentAlreadyUsed' | undefined {
+export function banRestriction(state: MatchState, side: Side, heroId: number | null): 'opponentAlreadyUsed' | undefined {
+  if (heroId === null) return;
   if (state.draftRuleMode !== 'global') return;
   const opponent = state[side === 'blue' ? 'redTeam' : 'blueTeam'];
   if (eligibleHistory(state).some(record => {
@@ -75,18 +80,21 @@ export function draftRestriction(state: MatchState, side: Side, action: 'ban' | 
 }
 
 /** Upgrade every saved snapshot, including undo and delayed events. Never infer history from picks. */
-export function normalizeState(raw: MatchState): MatchState {
+export function normalizeState(raw: MatchState, matchId?: string): MatchState {
   const defaults = initialState();
-  const normalizeTeam = (team: Partial<Team> | undefined, side: Side): Team => {
+  // Imported backups are a trust boundary; unknown fields must never enter any public snapshot.
+  raw = sanitizeState(raw, defaults);
+  const normalizeTeam = (team: Partial<Team> | undefined, side: Side, current = true): Team => {
     const fallback = defaults[`${side}Team`];
     return { ...fallback, ...team, id: team?.id || fallback.id,
       players: Array.from({ length: 5 }, (_, i) => team?.players?.[i] ?? ''),
+      playerIds: !current && !team?.playerIds ? undefined : Array.from({ length: 5 }, (_, i) => team?.playerIds?.[i] || `${team?.id || fallback.id}-p${i + 1}`),
       playerRoles: Array.from({ length: 5 }, (_, i) => team?.playerRoles?.[i] ?? fallback.playerRoles[i]),
       playerPortraits: Array.from({ length: 5 }, (_, i) => team?.playerPortraits?.[i] ?? ''),
     };
   };
-  const normalizeAssignments = (value: Array<number | null> | undefined, picks: number[]) =>
-    Array.from({ length: 5 }, (_, index) => value?.[index] ?? picks[index] ?? null);
+  const normalizeAssignments = (value: Array<number | null> | undefined, picks: Array<number | null>) =>
+    Array.from({ length: 5 }, (_, index) => value ? (value[index] ?? null) : (picks[index] ?? null));
   const state = { ...defaults, ...raw,
     blueTeam: normalizeTeam(raw.blueTeam, 'blue'), redTeam: normalizeTeam(raw.redTeam, 'red'),
     blueAssignments: normalizeAssignments(raw.blueAssignments, raw.bluePicks ?? []),
@@ -99,7 +107,7 @@ export function normalizeState(raw: MatchState): MatchState {
     heroDataOverrides: raw.heroDataOverrides ?? {},
     draftHistory: (raw.draftHistory ?? []).map(record => ({ ...record,
       firstPickSide: record.firstPickSide ?? 'blue',
-      blueTeam: normalizeTeam(record.blueTeam, 'blue'), redTeam: normalizeTeam(record.redTeam, 'red'),
+      blueTeam: normalizeTeam(record.blueTeam, 'blue', false), redTeam: normalizeTeam(record.redTeam, 'red', false),
       blueBans: [...(record.blueBans ?? [])],
       redBans: [...(record.redBans ?? [])],
       blueAssignments: [...(record.blueAssignments ?? record.bluePicks)],
@@ -108,12 +116,75 @@ export function normalizeState(raw: MatchState): MatchState {
   };
   // Old archives use independent games. Upgrading must not silently impose Global BP.
   state.draftRuleMode = raw.draftRuleMode ?? 'normal';
-  // Migrate the former user-facing screen-capture mode to the new LCU workflow.
-  state.bpInputMode = raw.bpInputMode === 'screen' ? 'lcu' : (raw.bpInputMode ?? 'manual');
+  // Old automatic-input archives must never reactivate a BP writer.
+  state.bpInputMode = 'manual';
   state.flowbornFormsIndependent = raw.flowbornFormsIndependent ?? true;
   state.displayLeftSide = raw.displayLeftSide ?? 'blue';
   state.firstPickSide = raw.firstPickSide ?? 'blue';
   state.sideSwapMode = raw.sideSwapMode ?? 'moveTeams';
   state.draftGameNumber = raw.draftGameNumber ?? (raw.currentPhase > 0 ? raw.gameNumber : null);
+  state.matchId = raw.matchId || matchId || defaults.matchId;
+  state.gameId = raw.gameId || raw.committedGameId || `${state.matchId}-game-${state.draftGameNumber ?? state.gameNumber}`;
+  state.bpPaused = raw.bpPaused ?? false;
+  state.ruleConflicts = raw.ruleConflicts ?? [];
+  state.lineupConfirmedTeamIds = raw.lineupConfirmedTeamIds ?? [];
+  state.draftSlots = raw.draftSlots ?? slotsFromLegacy(state);
+  state.draftHistory = state.draftHistory.map(record => ({ ...record,
+    draftSlots: record.draftSlots ?? slotsFromLegacy({ ...state, ...record, currentGameRules: record.rules,
+      draftMode: record.rules?.draftMode ?? state.draftMode, firstPickSide: record.firstPickSide,
+      currentPhase: Number.MAX_SAFE_INTEGER }),
+  }));
   return state;
+}
+
+function fields<T>(value: T, names: readonly string[]): T {
+  return Object.fromEntries(Object.entries(value && typeof value === 'object' ? value : {}).filter(([key]) => names.includes(key))) as T;
+}
+const teamFields = ['id','name','logo','players','playerIds','playerRoles','playerPortraits'];
+const ruleFields = ['draftMode','draftRuleMode','firstPickSide','sideSwapMode','enforcePreviousHistory','contributeToFutureHistory','stages','heroPool','allowDuplicates'];
+const recordFields = ['id','gameNumber','committedAt','blueTeam','redTeam','rules','firstPickSide','blueBans','redBans','bluePicks','redPicks','blueAssignments','redAssignments','draftSlots','currentPhase','draftComplete','lineupConfirmedTeamIds'];
+export function sanitizeGameRules<T extends Partial<import('./types.js').GameRules>>(input: T): T {
+  const value = fields(input, ruleFields);
+  if (Array.isArray(value.stages)) value.stages = value.stages.map(stage => fields(stage, ['team','action','count']));
+  return value;
+}
+const cleanSlots = (input: Record<string, DraftSlot> | undefined) => input && Object.fromEntries(Object.entries(input).map(([id, slot]) => [id, fields(slot, ['status','heroId','assignmentIndex'])]));
+function sanitizeState(input: MatchState, defaults: MatchState): MatchState {
+  const value = fields(input, [...Object.keys(defaults),'seriesRules','currentGameRules']);
+  value.blueTeam = fields(value.blueTeam, teamFields);
+  value.redTeam = fields(value.redTeam, teamFields);
+  if (value.currentGameRules) value.currentGameRules = sanitizeGameRules(value.currentGameRules);
+  if (value.seriesRules) value.seriesRules = {defaultGameRules:sanitizeGameRules(value.seriesRules.defaultGameRules),
+    games:Object.fromEntries(Object.entries(value.seriesRules.games ?? {}).map(([key, rules]) => [key,sanitizeGameRules(rules)]))};
+  if (value.draftSlots) value.draftSlots = cleanSlots(value.draftSlots)!;
+  if (Array.isArray(value.ruleConflicts)) value.ruleConflicts = value.ruleConflicts.map(conflict => fields(conflict,['gameId','reason']));
+  if (value.heroDataOverrides) value.heroDataOverrides = Object.fromEntries(Object.entries(value.heroDataOverrides).map(([id, override]) => [id,fields(override,['englishName','chineseName','occupation','altOccupation','aliases','imageLink','artLink'])]));
+  if (value.heroArtOverrides) value.heroArtOverrides = Object.fromEntries(Object.entries(value.heroArtOverrides).map(([id, override]) => {
+    const art = fields(override,['useLegacyImage','panel','side']);
+    if (art.panel) art.panel = fields(art.panel,['x','y','scale']);
+    if (art.side) art.side = fields(art.side,['x','y','scale']);
+    return [id,art];
+  }));
+  if (Array.isArray(value.draftHistory)) value.draftHistory = value.draftHistory.map(rawRecord => {
+    const record = fields(rawRecord,recordFields);
+    record.blueTeam = fields(record.blueTeam,teamFields); record.redTeam = fields(record.redTeam,teamFields);
+    if (record.rules) record.rules = sanitizeGameRules(record.rules);
+    if (record.draftSlots) record.draftSlots = cleanSlots(record.draftSlots);
+    return record;
+  });
+  return value;
+}
+
+/** Slot identity survives clearing; null in the legacy arrays is never used to infer a skip. */
+export function slotsFromLegacy(state: MatchState): Record<string, DraftSlot> {
+  const offsets = { blueban: 0, redban: 0, bluepick: 0, redpick: 0 };
+  const slots: Record<string, DraftSlot> = {};
+  draftPhases(state).forEach((phase, step) => phase.slots.forEach(slotId => {
+    const ids = state[`${phase.team}${phase.action === 'ban' ? 'Bans' : 'Picks'}`];
+    const index = offsets[`${phase.team}${phase.action}`]++;
+    const heroId = ids[index];
+    slots[slotId] = typeof heroId === 'number' ? { status: 'selected', heroId }
+      : heroId === null && phase.action === 'ban' && step < state.currentPhase ? { status: 'skipped' } : { status: 'empty' };
+  }));
+  return slots;
 }

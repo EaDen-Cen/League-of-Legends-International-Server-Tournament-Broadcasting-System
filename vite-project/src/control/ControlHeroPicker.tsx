@@ -1,103 +1,63 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { heroesForState } from '../shared/heroData';
 import { draftHeroUsed, draftRestriction } from '../shared/draftRules';
+import { draftPhases } from '../shared/gameRules';
 import { lanes, laneName, phaseName } from '../shared/display';
 import { translator } from '../shared/i18n';
-import { phases, type Action, type MatchState } from '../shared/types';
-import { heroSortModes, sortHeroes, type HeroSortMode } from './heroSort';
-import { enterTarget, heroMatchesSearch } from './heroSearch';
+import { portraitAssetURL } from '../shared/config';
+import type { Action, MatchState } from '../shared/types';
+import { sortHeroes } from './heroSort';
+import { heroMatchesSearch } from './heroSearch';
 
-export function ControlHeroPicker({ state, disabled, active, send, acknowledged }: {
-  state: MatchState; disabled: boolean; active: boolean; send: (action: Action) => void;
-  acknowledged?: { id: string; action: Action };
+export function ControlHeroPicker({ state, disabled, send, acknowledged, readOnlyReason = '', captain = false }: {
+  state: MatchState; disabled: boolean; active?: boolean; send: (action: Action) => void;
+  acknowledged?: { id: string; action: Action }; readOnlyReason?: string; captain?: boolean;
 }) {
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('all');
-  const [sortMode, setSortMode] = useState<HeroSortMode>(() => {
-    const saved = globalThis.localStorage?.getItem('lol-hero-sort-mode') as HeroSortMode | null;
-    return saved && heroSortModes.includes(saved) ? saved : (state.language === 'zh' ? 'name-zh' : 'name-en');
-  });
-  const [recorded, setRecorded] = useState<Action>();
-  const searchInput = useRef<HTMLInputElement>(null);
-  const activeRef = useRef(active); activeRef.current = active;
-  const t = translator(state.language), phase = phases(state.draftMode, state.firstPickSide)[state.currentPhase];
+  const [selected, setSelected] = useState<number[]>([]);
+  const zh = state.language === 'zh', t = translator(state.language);
+  const phases = draftPhases(state), phase = phases[state.currentPhase];
   const heroes = heroesForState(state);
-  const unavailable = (id: number) => disabled || !phase || !!state.committedGameId || draftHeroUsed(state, id) || !!draftRestriction(state, phase.team, phase.action, id);
-  const filtered = heroes.filter(h => (filter === 'all' || h.occupation === filter || h.altOccupation === filter)
-    && heroMatchesSearch(h, search, state.language));
-  const visible = sortHeroes(filtered, sortMode, unavailable);
-  const eligible = visible.filter(h => !unavailable(h.id));
-  const enterHero = enterTarget(eligible, search);
-  useEffect(() => {
-    if (!acknowledged || !['draft_action','skip_ban'].includes(acknowledged.action.type)) { setRecorded(undefined); return; }
-    setSearch(''); setRecorded(acknowledged.action);
-    const frame = requestAnimationFrame(() => { if (activeRef.current) searchInput.current?.focus({ preventScroll: true }); });
-    const timer = setTimeout(() => setRecorded(undefined), 1000);
-    return () => { cancelAnimationFrame(frame); clearTimeout(timer); };
-  }, [acknowledged]);
-  useEffect(() => {
-    function shortcut(event: KeyboardEvent) {
-      if (!active || event.isComposing || event.repeat || document.querySelector('dialog[open]')) return;
-      const target = event.target as HTMLElement;
-      const editing = target.closest('input, textarea, select, [contenteditable="true"]');
-      if (editing && target !== searchInput.current) return;
-      if ((!event.ctrlKey && !event.metaKey && event.key === '/') || ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k')) {
-        event.preventDefault(); searchInput.current?.focus({ preventScroll: true }); searchInput.current?.select();
-      }
-      if (event.key === 'Escape') { event.preventDefault(); setSearch(''); }
-    }
-    document.addEventListener('keydown', shortcut);
-    return () => document.removeEventListener('keydown', shortcut);
-  }, [active]);
-  const recordedHero = recorded?.type === 'draft_action' ? heroes.find(h => h.id === recorded.heroId) : undefined;
+  useEffect(() => { setSelected([]); }, [state.gameId, state.currentPhase, disabled]);
+  useEffect(() => { if (acknowledged?.action.type === 'draft_group') setSelected([]); }, [acknowledged]);
+  const reason = (id: number) => {
+    if (!phase || state.draftComplete) return zh ? 'BP 已完成' : 'Draft complete';
+    if (state.currentGameRules?.heroPool && !state.currentGameRules.heroPool.includes(id)) return zh ? '不在本局英雄池' : 'Outside game pool';
+    if (state.blueBans.includes(id) || state.redBans.includes(id)) return zh ? '已禁用' : 'Banned';
+    if ((phase.action === 'ban' || !state.currentGameRules?.allowDuplicates) && draftHeroUsed(state, id)) return zh ? '已禁用或已选择' : 'Already banned or picked';
+    const restriction = draftRestriction(state, phase.team, phase.action, id);
+    return restriction ? t(restriction) : '';
+  };
+  const visible = sortHeroes(heroes.filter(h => (filter === 'all' || h.occupation === filter || h.altOccupation === filter)
+    && heroMatchesSearch(h, search, state.language)), zh ? 'name-zh' : 'name-en', id => !!reason(id));
+  const locked = disabled || state.bpPaused || !phase || !!state.committedGameId || !!readOnlyReason;
+  const toggle = (id: number) => setSelected(previous => previous.includes(id) ? previous.filter(value => value !== id)
+    : previous.length < (phase?.count ?? 1) ? [...previous, id] : (phase?.count ?? 1) === 1 ? [id] : previous);
   return <section className="panel control-hero-picker">
     <div className={`picker-heading side-${phase?.team || 'none'}`}>
-      <div className="current-phase" aria-live="polite">
-        <h2>{phaseName(state, state.language)}</h2>
-        {phase && <span>{phase.action === 'ban' ? t('banCount', {number:state[`${phase.team}Bans`].length + 1,total:state.draftMode === 'match' ? 5 : 2}) : t('pickingFor', {player:state[`${phase.team}Team`].players[state[`${phase.team}Picks`].length] || t('playerNumber',{number:state[`${phase.team}Picks`].length + 1}),slot:state[`${phase.team}Picks`].length + 1})}</span>}
-        {phase && <small>{t('phaseStep',{step:state.currentPhase+1,total:phases(state.draftMode,state.firstPickSide).length})}</small>}
-      </div>
-      <input ref={searchInput} aria-label={t('searchHeroes')} placeholder={t('searchHeroes')} value={search} onChange={e => setSearch(e.target.value)} onKeyDown={e => {
-        if (e.key !== 'Enter' || e.nativeEvent.isComposing || e.repeat) return;
-        e.preventDefault();
-        if (active && phase && enterHero) send({type:'draft_action',...phase,heroId:enterHero.id});
-      }} />
-      <p className="quick-input-hint">{t('quickInputHint')}</p>
-      <div className="record-feedback" role="status">
-        {recorded?.type === 'draft_action' && recordedHero && t('recordAccepted',{side:t(recorded.team === 'blue' ? 'blueSide' : 'redSide'),action:t(recorded.action === 'ban' ? 'banAction' : 'pickAction'),hero:state.language === 'zh' ? recordedHero.chineseName : recordedHero.englishName})}
-        {recorded?.type === 'skip_ban' && t('emptyBanRecorded',{side:t(recorded.team === 'blue' ? 'blueSide' : 'redSide')})}
-      </div>
-      {phase?.action === 'ban' && <div className="empty-ban-control">
-        <button
-          type="button"
-          className="empty-ban-button"
-          disabled={disabled || !!state.committedGameId}
-          onClick={() => send({type:'skip_ban',team:phase.team})}
-        >{t('emptyBanButton')}</button>
-        <small>{t('emptyBanManualHint')}</small>
-      </div>}
-      <div className="picker-tools">
-        <div className="filters">{lanes.map(r => <button key={r} className={filter === r ? 'selected' : ''} onClick={() => setFilter(r)}>{laneName(r,state.language)}</button>)}</div>
-        <label className="hero-sort-control">{t('heroSort')}
-          <select value={sortMode} onChange={event => {
-            const next = event.target.value as HeroSortMode;
-            setSortMode(next);
-            globalThis.localStorage?.setItem('lol-hero-sort-mode', next);
-          }}>
-            <option value="name-zh">{t('heroSortChinese')}</option>
-            <option value="name-en">{t('heroSortEnglish')}</option>
-            <option value="lane">{t('heroSortLane')}</option>
-          </select>
-        </label>
+      <h2>{phaseName(state)}</h2>
+      <p role="status" className="draft-access-status">{readOnlyReason || (state.bpPaused ? (zh ? 'BP 已暂停，等待导播恢复' : 'Paused by director')
+        : phase ? `${zh ? '本步需确认' : 'Confirm'} ${phase.count} ${zh ? '个英雄' : 'champion(s)'} · ${state.currentPhase + 1}/${phases.length}` : (zh ? 'BP 完成' : 'Draft complete'))}</p>
+      <input aria-label={t('searchHeroes')} placeholder={t('searchHeroes')} value={search} onChange={event => setSearch(event.target.value)} />
+      <div className="filters">{lanes.map(lane => <button key={lane} className={filter === lane ? 'selected' : ''} onClick={() => setFilter(lane)}>{laneName(lane, state.language)}</button>)}</div>
+      <div className="draft-confirmation" aria-live="polite">
+        <span>{zh ? '本机预选（对手与 OBS 不可见）' : 'Local preview (private)'}: {selected.map(id => {
+          const hero = heroes.find(item => item.id === id); return zh ? hero?.chineseName : hero?.englishName;
+        }).join(' / ') || '—'}</span>
+        <button className="primary" disabled={locked || selected.length !== phase?.count} onClick={() => phase && send({ type: 'draft_group', team: phase.team, action: phase.action, heroIds: selected })}>
+          {disabled ? (zh ? '等待连接或服务器确认' : 'Waiting for connection / confirmation') : phase?.action === 'ban' ? (zh ? '确认禁用' : 'Confirm Ban') : (zh ? '确认选择' : 'Confirm Pick')}
+        </button>
+        {!captain && phase?.action === 'ban' && <button disabled={locked} onClick={() => send({ type: 'skip_ban', team: phase.team })}>{zh ? '明确跳过本步 Ban' : 'Skip Ban step'}</button>}
+        {acknowledged?.action.type === 'draft_group' && <small>{zh ? '服务器已确认上一手' : 'Previous selection confirmed by server'}</small>}
       </div>
     </div>
-    <div className="hero-grid-scroll"><div className="hero-grid">{visible.map(h => {
-      const reason = phase && draftRestriction(state,phase.team,phase.action,h.id);
-      const label = state.language === 'zh' ? h.chineseName : h.englishName;
-      return <button key={h.id} title={label} className={enterHero?.id === h.id ? 'enter-target' : ''} disabled={unavailable(h.id)} onClick={() => phase && send({type:'draft_action',...phase,heroId:h.id})}>
-        <img src={h.imageLink} alt=""/><span>{label}</span>{reason && <small className="eligibility-reason">{t(reason)}</small>}
+    <div className="hero-grid-scroll"><div className="hero-grid">{visible.map(hero => {
+      const unavailable = reason(hero.id), label = zh ? hero.chineseName : hero.englishName;
+      return <button key={hero.id} aria-label={label} aria-pressed={selected.includes(hero.id)} title={unavailable || label}
+        className={selected.includes(hero.id) ? 'selected enter-target' : ''} disabled={locked || !!unavailable} onClick={() => toggle(hero.id)}>
+        <img src={portraitAssetURL(hero.imageLink)} alt="" /><span>{label}</span>{unavailable && <small className="eligibility-reason">{unavailable}</small>}
       </button>;
-    })}</div>{!visible.length && <p className="muted">{t('noMatchingHeroes')}</p>}</div>
-    <small className="picker-note">{t('availabilityHint')}</small>
+    })}</div>{!visible.length && <p>{t('noMatchingHeroes')}</p>}</div>
   </section>;
 }

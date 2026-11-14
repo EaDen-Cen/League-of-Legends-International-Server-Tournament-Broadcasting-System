@@ -1,3 +1,5 @@
+> 旧版说明：本页描述人工BP改造前的行为。当前启动、权限、纠错、采集和恢复请以 [人工BP指南](../guides/manual-bp.md) 为准；解说端、图像识别与LCU自动BP已移除。
+
 # Legacy LoL Screen Recognition
 
 [返回文档索引](../README.md)

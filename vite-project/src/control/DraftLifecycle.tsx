@@ -38,7 +38,7 @@ export function DraftLifecycle({ state, disabled, send }: { state: MatchState; d
           </button>
 
           <button
-            disabled={disabled || state.currentPhase > 0 || !!state.committedGameId}
+            disabled={disabled || ((state.currentPhase > 0 || !!state.committedGameId) && !state.bpPaused)}
             onClick={() => confirm(t(state.sideSwapMode === 'colorsOnly' ? 'confirmColorsSwap' : 'confirmSwap')) && send({ type: 'swap_sides' })}
           >
             {t('swapSides')}

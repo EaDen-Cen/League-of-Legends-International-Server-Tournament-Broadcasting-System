@@ -1,15 +1,15 @@
 # League of Legends Tournament Broadcast System
 
-面向社区赛事的 **英雄联盟 BP / 导播 / 解说同步 / OBS 图形系统**。项目使用 React + TypeScript + Node.js + WebSocket，当前 LoL 版本拥有独立的英雄数据、赛事规则、视觉语言和运行目录，不再把 HOK 的 UI 或英雄数据当作生产依赖。
+面向社区赛事的 **英雄联盟 人工 BP / 队长终端 / 导播 / OBS 图形系统**。项目使用 React + TypeScript + Node.js + WebSocket，当前 LoL 版本拥有独立的英雄数据、赛事规则、视觉语言和运行目录，不再把 HOK 的 UI 或英雄数据当作生产依赖。
 
 ## HOK 工作流适配升级
 
-新增 **BO7、逐局规则管理、P1–P5 开播核对、OBS 图片预解码揭幕**。逐局规则支持系列默认与单局覆盖，冻结已开始局，保存当局历史快照，并分别控制 Fearless 历史的执行与累积；保留 LoL 的英雄与 LCU 同步。操作和本轮范围见 [逐局规则与开播核对](docs/guides/game-rules-manager.md)。
+新增 **BO7、逐局规则管理、P1–P5 开播核对、OBS 图片预解码揭幕**。逐局规则支持系列默认与单局覆盖，冻结已开始局，保存当局历史快照，并分别控制 Fearless 历史的执行与累积；保留 LoL 的英雄数据与只读 LCU 连接。操作和本轮范围见 [逐局规则与开播核对](docs/guides/game-rules-manager.md)。
 
 ## 当前能力
 
-- **Control**：比赛设置、BP、比分、换边、最终阵容归属、队伍资料库、替补、Champion Studio、League Client 自动 BP。
-- **Caster**：只读延迟状态，适合异地解说。
+- **Control**：比赛设置、BP、比分、换边、最终阵容归属、队伍资料库、替补、Champion Studio、队长授权与锁定后纠错。
+- **Captain**：仅本队当前步骤预选与人工确认；导播可随时撤权和接管。
 - **OBS Overlay**：固定 1920×1080 透明画布，支持 Panel / Side 两种布局。
 - **赛事状态**：BO1 / BO3 / BO5 / BO7、Stage、Game、Series Score、Undo、Draft History。
 - **LoL BP**：默认每方 5 Ban + 5 Pick，支持蓝 / 红先手与跨局自定义规则。
@@ -61,10 +61,10 @@ npm run server
 本地开发入口：
 
 - Control: `http://127.0.0.1:3001/control#token=local-control`
-- Caster: `http://127.0.0.1:3001/caster#token=local-caster`
+- Captain：从导播面板生成每队专属链接；没有通用队长口令。
 - OBS: `http://127.0.0.1:3001/overlay/draft#token=local-overlay`
 
-公网环境必须设置三个不同的强口令。参考 `vite-project/.env.example`。
+公网环境必须设置两个不同的强口令。参考 `vite-project/.env.example`。
 
 Windows 一键启动与 Cloudflare：见 [Windows 启动指南](docs/guides/windows-launcher.md)。
 
@@ -74,6 +74,8 @@ LoL 运行数据与其他游戏隔离：
 
 ```text
 vite-project/data/lol/match.json
+vite-project/data/lol/match.json.access.json       # 队长授权；不得用旧副本回滚
+vite-project/data/lol/match.json.telemetry.json    # 独立遥测与人工修正
 vite-project/data/lol/team-presets.json
 vite-project/data/lol/uploads/player-portraits/
 ```
@@ -95,22 +97,13 @@ npm run lint
 
 详细说明见 [LoL Champion Data Pipeline](docs/research/hero-sync.md)。
 
-## League Client Auto BP
+## 人工 BP 与游戏采集
 
-比赛设置现在提供：
+正式 BP 只能来自导播或本队已授权队长。LCU 只提供本机连接诊断，不再写入 BP；游戏机桥接程序读取 Live Client 结构化数据并上传到独立遥测存储。游戏未运行时，人工 BP 和人工数据补录仍可使用。采集不会修改比分、归档、切局或正式英雄。
 
-- **Manual Selection**：手动录入；
-- **League Client 房间 API 自动同步**：推荐。
+队长链接按真实 teamId 绑定，换边后继续跟随本队。重新生成或撤销链接后，旧网页与连接失去写权限；导播接管/纠错后需明确重新授权。OBS 仅使用独立只读口令。
 
-当 League Client 与 Broadcast Server 在同一台电脑运行时，Server 会本地读取 `/lol-champ-select/v1/session`，只同步已经 `completed` 的 Ban / Pick。Champion ID 直接进入现有 authoritative Store，因此 Overlay、Caster、Undo、历史和 BP 规则仍使用同一套状态逻辑。
-
-自动同步不会覆盖不一致的比赛状态：如果 LCU 已完成的 BP 前缀和程序当前记录不同，会停止并提示导播核对；Hero Picker 始终保留作为手动 fallback。
-
-LCU 连接凭证只留在 Server 进程中，不发送到浏览器。普通 Windows 安装会自动发现 League Client；特殊安装可参考 `.env.example` 设置 lockfile / port / token。
-
-详细说明见 [League Client 房间 API 自动 BP](docs/guides/lcu-auto-bp.md)。
-
-旧 Screen Recognition 代码暂时保留作兼容/维护 fallback，但已退出正常 Match Settings 流程。
+规则、纠错、权限、存档与恢复见 [人工 BP 操作指南](docs/guides/manual-bp.md)；游戏采集的支持字段、桥接命令和限制见 [游戏数据桥接](docs/guides/game-data-bridge.md)。
 
 ## 验证
 
@@ -130,8 +123,8 @@ GitHub Actions 使用 `.github/workflows/lol-checks.yml` 进行 LoL 专用检查
 - [快速开始](docs/guides/getting-started.md)
 - [导播操作指南](docs/guides/operator-guide.md)
 - [Windows / Cloudflare](docs/guides/windows-launcher.md)
-- [League Client 自动 BP](docs/guides/lcu-auto-bp.md)
-- [Legacy Screen Recognition](docs/guides/screen-recognition.md)
+- [人工 BP、授权与纠错](docs/guides/manual-bp.md)
+- [游戏数据采集桥接](docs/guides/game-data-bridge.md)
 - [系统架构与坐标模型](docs/design/architecture.md)
 - [Champion Data Pipeline](docs/research/hero-sync.md)
 - [项目里程碑](MILESTONES.md)

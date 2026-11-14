@@ -1,3 +1,10 @@
+# 当前文档入口
+
+- [人工BP、队长与导播、部署恢复](guides/manual-bp.md)
+- [独立游戏数据与桥接](guides/game-data-bridge.md)
+
+以下列表含历史资料，带旧版提示的页面不代表当前功能。
+
 # LoL Broadcast 文档索引
 
 [返回项目首页](../README.md)

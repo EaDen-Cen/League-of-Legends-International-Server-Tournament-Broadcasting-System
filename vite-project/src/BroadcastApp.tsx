@@ -1,120 +1,54 @@
-import { GameRulesManager } from './control/GameRulesManager';
-import { PreflightStatus } from './control/PreflightStatus';
 import { useEffect, useState } from 'react';
 import './broadcast.css';
 import './BroadcastApp.css';
+import './manualDraft.css';
 import { heroForState } from './shared/heroData';
-import {
-  phases,
-  type Action,
-  type Language,
-  type MatchSettings,
-  type MatchState,
-  type Role,
-  type Side,
-} from './shared/types';
+import type { Action, Language, MatchSettings, MatchState, Role, Side } from './shared/types';
 import { useMatch } from './shared/useMatch';
-import { connectionLabel, phaseName, seriesName, stageName, teamName, draftRuleName } from './shared/display';
+import { draftPhases } from './shared/gameRules';
+import { connectionLabel, phaseName, seriesName, stageName } from './shared/display';
 import { translator } from './shared/i18n';
 import { errorMessage } from './shared/errorMessages';
 import { currentGame, displaySides, normalizeState, ruleLocked } from './shared/draftRules';
+import { portraitAssetURL } from './shared/config';
 import { TeamLibrary } from './control/TeamLibrary';
 import { PortraitField } from './control/PortraitField';
 import { ControlHeroPicker } from './control/ControlHeroPicker';
 import { ControlDraftWorkspace } from './control/ControlDraftWorkspace';
 import { SettingsDialog } from './control/SettingsDialog';
 import { TeamSettingsDialog } from './control/TeamSettingsDialog';
-import { ScreenInput } from './control/ScreenInput';
-import { LcuInput } from './control/LcuInput';
 import { HeroArtEditorDialog } from './control/HeroArtEditorDialog';
 import { LineupAssignments } from './control/LineupAssignments';
 import { Score } from './shared/Score';
 import { DraftHistory } from './shared/DraftHistory';
 import { DraftLifecycle } from './control/DraftLifecycle';
 import { DraftOverlay } from './overlay/DraftOverlay';
-const name = (state: MatchState, id: number, lang: Language) => { const h = heroForState(state, id); return h ? (lang === 'zh' ? h.chineseName : h.englishName) : '—'; };
-function HeroSlot({ state, id, ban = false, lang }: { state: MatchState; id?: number | null; ban?: boolean; lang: Language }) {
-  const t = translator(lang);
-  const skipped = ban && id === null;
-  return <div className={`hero-slot ${ban ? 'ban' : ''} ${id ? 'filled' : ''} ${skipped ? 'skipped-ban' : ''}`} key={id ?? (skipped ? 'skipped' : 'empty')}>
-    {id ? <><img src={heroForState(state,id)?.imageLink} alt={name(state,id, lang)} /><span>{name(state,id, lang)}</span>{ban && <b className="ban-mark">╱</b>}</>
-      : <span className={skipped ? 'empty skipped-ban-label' : 'empty'}>{skipped ? t('emptyBan') : t(ban ? 'ban' : 'emptyPick')}</span>}
-  </div>;
-}
-function Board({ state, lang, compact = false }: { state: MatchState; lang: Language; compact?: boolean }) {
-  const t = translator(lang);
-  const phase = phases(state.draftMode, state.firstPickSide)[state.currentPhase];
-  return <section className={`board ${compact ? 'compact-board' : ''}`}><div className="match-strip"><span>{t('gameTitle')}</span><span>{stageName(state.stage, lang)} · {t('gameNumber', { number: currentGame(state) })} · {seriesName(state.seriesFormat, lang)} · {draftRuleName(state, lang)}</span></div>
-    <div className="team-grid">{displaySides(state).map(side => <section key={side} className={`team ${side} ${phase?.team === side ? 'active' : ''}`}><header>{state[`${side}Team`].logo && <img className="logo" src={state[`${side}Team`].logo} alt="" />}<h2>{teamName(state, side)}</h2><Score state={state} side={side} /></header><div className="picks">{Array.from({ length: 5 }, (_, i) => <HeroSlot key={i} state={state} id={state[`${side}Picks`][i]} lang={lang} />)}</div><div className="bans"><small>{t('ban')}</small>{Array.from({ length: state.draftMode === 'match' ? 5 : 2 }, (_, i) => <HeroSlot key={i} state={state} id={state[`${side}Bans`][i]} ban lang={lang} />)}</div></section>)}</div>
-    <footer className={`phase ${phase?.team || ''}`} key={state.currentPhase}>{phase ? `${phaseName(state, lang)} · ${t('phaseStep', { step: state.currentPhase + 1, total: phases(state.draftMode, state.firstPickSide).length })}` : t('draftComplete')}</footer></section>;
-}
-function CasterRoster({ state, lang, delaySeconds }: { state: MatchState; lang: Language; delaySeconds: number }) {
-  const t = translator(lang);
-  return <section className="panel caster-roster">
-    <header className="caster-roster-header">
-      <div><h2>{t('casterRosterTitle')}</h2><p className="muted">{t('casterRosterHint')}</p></div>
-      {delaySeconds > 0 && <span className="caster-delay-badge">{t('delayedFeed', { seconds: delaySeconds })}</span>}
-    </header>
-    {delaySeconds > 0 && <p className="caster-delay-note">{t('casterDelayWaiting', { seconds: delaySeconds })}</p>}
-    <div className="caster-roster-grid">
-      {displaySides(state).map(side => {
-        const team=state[`${side}Team`];
-        return <section key={team.id} className={`caster-roster-team ${side}`}>
-          <header>{team.logo && <img src={team.logo} alt="" />}<div><small>{t(side === 'blue' ? 'blueSide' : 'redSide')}</small><strong>{teamName(state, side)}</strong></div></header>
-          <div className="caster-player-list">
-            {team.players.map((player,index)=><div className="caster-player" key={index}>
-              <span className="caster-role">{t(team.playerRoles[index])}</span>
-              <b>{player || t('playerNumber',{number:index+1})}</b>
-            </div>)}
-          </div>
-        </section>;
-      })}
-    </div>
+import { PreflightStatus } from './control/PreflightStatus';
+import { GameRulesManager } from './control/GameRulesManager';
+import { CaptainManager } from './control/CaptainManager';
+import { DraftCorrection } from './control/DraftCorrection';
+import { TelemetryPanel } from './control/TelemetryPanel';
+import { GameHud } from './overlay/GameHud';
+import { MatchBackup } from './control/MatchBackup';
+
+function Board({ state, compact = false }: { state: MatchState; compact?: boolean }) {
+  const phases = draftPhases(state), phase = phases[state.currentPhase], zh = state.language === 'zh';
+  return <section className={`board ${compact ? 'compact-board' : ''}`}>
+    <div className="match-strip"><span>{stageName(state.stage, state.language)}</span><span>Game {currentGame(state)} · {seriesName(state.seriesFormat, state.language)}</span></div>
+    <div className="team-grid">{displaySides(state).map(side => <section key={state[`${side}Team`].id} className={`team ${side} ${phase?.team === side ? 'active' : ''}`}>
+      <header>{state[`${side}Team`].logo && <img className="logo" src={portraitAssetURL(state[`${side}Team`].logo)} alt="" />}<h2>{state[`${side}Team`].name}</h2><Score state={state} side={side} /></header>
+      {(['pick', 'ban'] as const).map(action => <div className={action === 'pick' ? 'picks' : 'bans'} key={action}>
+        {phases.filter(step => step.team === side && step.action === action).flatMap(step => step.slots).map(slotId => {
+          const slot = state.draftSlots[slotId], hero = slot?.status === 'selected' && slot.heroId ? heroForState(state, slot.heroId) : undefined;
+          return <div key={slotId} data-slot-id={slotId} data-slot-status={slot?.status ?? 'empty'} className={`hero-slot ${action === 'ban' ? 'ban' : ''} ${slot?.status === 'skipped' ? 'skipped-ban' : ''}`}>
+            {hero ? <><img src={portraitAssetURL(hero.imageLink)} alt={zh ? hero.chineseName : hero.englishName} /><span>{zh ? hero.chineseName : hero.englishName}</span></> : <span className="empty">{slot?.status === 'skipped' ? (zh ? '空 Ban' : 'Skip') : '—'}</span>}
+          </div>;
+        })}
+      </div>)}
+    </section>)}</div><footer className="phase">{state.bpPaused ? (zh ? 'BP 已暂停' : 'Draft paused') : phaseName(state)}</footer>
   </section>;
 }
 
-function TeamAnalysis({
-  state,
-  lang,
-  side,
-}: {
-  state: MatchState;
-  lang: Language;
-  side: Side;
-}) {
-  const t = translator(lang);
-  const picks = state[`${side}Picks`], enemy = state[`${side === 'blue' ? 'red' : 'blue'}Picks`];
-  const selected = [...state.bluePicks, ...state.redPicks];
-  const groups = [
-    { title: t('synergy'), sources: picks, field: 'combo' as const },
-    { title: t('ourCounters'), sources: picks, field: 'counter' as const },
-    { title: t('counteredBy'), sources: picks, field: 'beCountered' as const },
-    { title: t('enemyCounters'), sources: enemy, field: 'beCountered' as const },
-  ];
-  return <section className={`panel analysis analysis-${side}`} data-side={side}>
-    <header className="analysis-team-header">
-      {state[`${side}Team`].logo && <img className="analysis-logo" src={state[`${side}Team`].logo} alt="" />}
-      <div><span className="analysis-side">{t(side === 'blue' ? 'blueAnalysis' : 'redAnalysis')}</span><h2>{teamName(state, side)}</h2></div>
-      <span className="analysis-opponent">{t('opponent', { team: teamName(state, side === 'blue' ? 'red' : 'blue') })}</span>
-    </header>
-    <small>{t('relationshipHint')}</small><div className="analysis-grid">{groups.map(g => {
-      const ids = [...new Set(g.sources.flatMap(id => heroForState(state,id)?.[g.field] || []))].filter(id => heroForState(state,id) && !state.blueBans.includes(id) && !state.redBans.includes(id));
-      return <article key={g.title}><h3>{g.title}</h3>{ids.length ? <div className="recommendations">{ids.map(id => <div className="recommendation" key={id}><img src={heroForState(state,id)?.imageLink} alt="" /><div><b>{name(state,id, lang)}{selected.includes(id) ? ' ✓' : ''}</b><small>{g.sources.filter(s => heroForState(state,s)?.[g.field]?.includes(id)).map(s => name(state,s, lang)).join(' · ')}</small></div></div>)}</div> : <p className="muted">{t('noRelationships')}</p>}</article>;
-    })}</div></section>;
-}
-function Analysis({
-  state,
-  lang,
-}: {
-  state: MatchState;
-  lang: Language;
-}) {
-  return (
-    <section className="dual-analysis">
-      {displaySides(state).map(side => <TeamAnalysis key={state[`${side}Team`].id} state={state} lang={lang} side={side} />)}
-    </section>
-  );
-}
 const settingsFromState = (state: MatchState): MatchSettings => ({
   blueTeam: state.blueTeam,
   redTeam: state.redTeam,
@@ -179,15 +113,8 @@ function MatchSettingsPanel({ state, send, disabled }: { state: MatchState; send
           <option value="zh">{t('chinese')}</option><option value="eng">{t('english')}</option>
         </select><small>{t('languageHint')}</small></label>
         <label>{t('scoreDisplay')}<select value={form.scoreDisplay || 'number'} onChange={e => setForm({ ...form, scoreDisplay: e.target.value as MatchSettings['scoreDisplay'] })}><option value="number">{t('scoreNumber')}</option><option value="boxes">{t('scoreBoxes')}</option></select></label>
-        <label>{t('bpInputMode')}<select value={form.bpInputMode === 'lcu' ? 'lcu' : 'manual'} onChange={e => setForm({ ...form, bpInputMode: e.target.value as MatchSettings['bpInputMode'] })}><option value="manual">{t('manualInput')}</option><option value="lcu">{t('lcuInput')}</option></select><small>{t('lcuInputHint')}</small></label>
         <label>{t('overlayLayout')}<select value={form.overlayLayout} onChange={e => setForm({ ...form, overlayLayout: e.target.value as MatchSettings['overlayLayout'] })}>
           <option value="panel">{t('panelLayout')}</option><option value="side">{t('sideLayout')}</option>
-        </select></label>
-        <label>{t('roleIconStyle')}<select value={form.roleIconStyle} onChange={e => setForm({ ...form, roleIconStyle: e.target.value as MatchSettings['roleIconStyle'] })}>
-          <option value="minimal">{t('roleIconMinimal')}</option><option value="ornate">{t('roleIconOrnate')}</option>
-        </select></label>
-        <label>{t('roleIconBackground')}<select value={form.roleIconBackground} onChange={e => setForm({ ...form, roleIconBackground: e.target.value as MatchSettings['roleIconBackground'] })}>
-          <option value="light">{t('roleIconLight')}</option><option value="dark">{t('roleIconDark')}</option>
         </select></label>
         <label>{t('heroImageSource')}<select value={form.artSourceMode} onChange={e => setForm({ ...form, artSourceMode: e.target.value as MatchSettings['artSourceMode'] })}>
           <option value="auto">{t('heroImageAuto')}</option><option value="legacy">{t('heroImageLegacy')}</option>
@@ -215,7 +142,7 @@ function TeamSettingsPanel({ state, send, disabled, token }: { state: MatchState
       gameNumber: state.gameNumber,
     } });
   }}>
-    <TeamLibrary onRosterApply={(side,index,player) => setForm(previous => {const key = side === 'blue' ? 'blueTeam' : 'redTeam';const team=previous[key];return {...previous,[key]:{...team,players:team.players.map((p,i) => i === index ? player.name : p),playerRoles:team.playerRoles.map((r,i) => i === index ? player.role : r),playerPortraits:team.playerPortraits.map((p,i) => i === index ? player.portrait : p)}};})} state={state} form={form} token={token} disabled={disabled || uploads.size > 0} send={send} />
+    <TeamLibrary onRosterApply={(side,index,player) => setForm(previous => {const key = side === 'blue' ? 'blueTeam' : 'redTeam';const team=previous[key];return {...previous,[key]:{...team,playerIds:team.players.map((_,i) => i === index ? player.id : team.playerIds?.[i] ?? `${team.id}-p${i+1}`),players:team.players.map((p,i) => i === index ? player.name : p),playerRoles:team.playerRoles.map((r,i) => i === index ? player.role : r),playerPortraits:team.playerPortraits.map((p,i) => i === index ? player.portrait : p)}};})} state={state} form={form} token={token} disabled={disabled || uploads.size > 0} send={send} />
     <div className="settings-grid team-settings-grid">
       {displaySides(state).map(side => {
         const teamKey = side === 'blue' ? 'blueTeam' : 'redTeam';
@@ -227,9 +154,7 @@ function TeamSettingsPanel({ state, send, disabled, token }: { state: MatchState
           <b>{t('players')}</b>
           {form[teamKey].players.map((player, index) => <div className="player-setting-row" key={index}>
             <label>{t('playerNumber', { number: index + 1 })}<input maxLength={40} disabled={disabled} value={player} onChange={e => updateTeam({ players: form[teamKey].players.map((p, i) => i === index ? e.target.value : p) })} /></label>
-            <label>{t('lane')}<select disabled={disabled} value={form[teamKey].playerRoles[index]} onChange={e => updateTeam({ playerRoles: form[teamKey].playerRoles.map((r, i) => i === index ? e.target.value as typeof r : r) })}>
-              {(['top', 'jungle', 'mid', 'bot', 'support'] as const).map(role => <option key={role} value={role}>{t(role)}</option>)}
-            </select></label>
+            <div className="seat-label"><span>P{index + 1}</span><button type="button" disabled={disabled} onClick={() => { if (confirm(state.language === 'zh' ? '这是更换为另一位选手（生成新身份），不是修改显示名。原身份的跨局记录仍保留。继续？' : 'Replace this player identity? Renaming alone preserves the existing identity and history.')) updateTeam({ playerIds: form[teamKey].players.map((_, i) => i === index ? crypto.randomUUID() : form[teamKey].playerIds?.[i] ?? `${form[teamKey].id}-p${i + 1}`) }); }}>{state.language === 'zh' ? '更换选手身份' : 'Replace player identity'}</button></div>
             <PortraitField value={form[teamKey].playerPortraits[index]} token={token} lang={state.language} disabled={disabled}
               onChange={url => setForm(previous => ({...previous,[teamKey]:{...previous[teamKey],playerPortraits:previous[teamKey].playerPortraits.map((p,i) => i === index ? url : p)}}))}
               onBusy={busy => setUploads(previous => { const next = new Set(previous); if(busy) next.add(`${side}-${index}`); else next.delete(`${side}-${index}`); return next; })} />
@@ -243,97 +168,70 @@ function TeamSettingsPanel({ state, send, disabled, token }: { state: MatchState
 function initialToken(role: Role) {
   const fragment = new URLSearchParams(location.hash.slice(1)).get('token');
   if (fragment) { sessionStorage.setItem(`lol-${role}`, fragment); history.replaceState(null, '', location.pathname); }
-  return fragment || sessionStorage.getItem(`lol-${role}`) || (import.meta.env.DEV ? `local-${role}` : '');
+  return fragment || sessionStorage.getItem(`lol-${role}`) || (import.meta.env.DEV && role !== 'captain' ? `local-${role}` : '');
 }
 export default function BroadcastApp() {
-  const role: Role = location.pathname === '/caster' ? 'caster' : location.pathname === '/overlay/draft' ? 'overlay' : 'control';
-  const [token, setToken] = useState(() => initialToken(role));
+  const removed = location.pathname === '/caster';
+  const role: Role = location.pathname === '/captain' ? 'captain' : location.pathname.startsWith('/overlay/') || removed ? 'overlay' : 'control';
+  const [token, setToken] = useState(() => removed ? '' : initialToken(role));
   const [tokenInput, setTokenInput] = useState('');
   const [showSettings, setShowSettings] = useState(false);
   const [showTeamSettings, setShowTeamSettings] = useState(false);
   const [showHeroArtEditor, setShowHeroArtEditor] = useState(false);
-  const [delayInput, setDelayInput] = useState(180);
-  const [lastLanguage, setLastLanguage] = useState<Language>(() => sessionStorage.getItem(`lol-language-${role}`) === 'eng' ? 'eng' : 'zh');
   const { snapshot, status, error, pending, send, acknowledged } = useMatch(role, token);
   const connected = status === 'Connected';
-  const compatible = !!snapshot?.state && Array.isArray(snapshot.state.draftHistory) && !!snapshot.state.draftRuleMode && !!snapshot.state.firstPickSide && !!snapshot.state.sideSwapMode && !!snapshot.state.displayLeftSide && typeof snapshot.state.showHeroName === 'boolean' && !!snapshot.state.artSourceMode && !!snapshot.state.heroArtOverrides && typeof snapshot.state.flowbornFormsIndependent === 'boolean';
-  const disabled = !connected || pending || !compatible;
   const state = snapshot?.state ? normalizeState(snapshot.state) : undefined;
-  const lang: Language = token && !['Invalid token', 'Access rejected'].includes(status) ? state?.language ?? lastLanguage : lastLanguage;
-  const t = translator(lang);
-  useEffect(() => {
-    document.documentElement.lang = lang === 'eng' ? 'en' : 'zh-CN';
-    document.title = translator(lang)('appName');
-    sessionStorage.setItem(`lol-language-${role}`, lang);
-    setLastLanguage(lang);
-  }, [lang, role]);
-  if (role === 'overlay') {
-    return <main className="overlay">{state && <DraftOverlay state={state} />}</main>;
+  const lang = state?.language ?? 'zh', zh = lang === 'zh', t = translator(lang);
+  const disabled = !connected || pending || !state;
+  useEffect(() => { document.documentElement.lang = zh ? 'zh-CN' : 'en'; document.title = t('appName'); }, [lang, zh, t]);
+  if (removed) return <main className="login panel"><h1>页面已停用 / Page removed</h1></main>;
+  if (role === 'overlay') return <main className="overlay">{state && (location.pathname === '/overlay/ghud' ? <GameHud state={state} token={token} /> : <DraftOverlay state={state} />)}</main>;
+  if (!token || ['Invalid token', 'Access rejected'].includes(status)) {
+    if (role === 'captain') return <main className="login panel"><h1>{zh ? '队长链接缺失或已失效' : 'Captain invitation is missing or revoked'}</h1><p>{zh ? '请使用导播为本队新生成的链接。' : 'Open the latest invitation supplied by the director.'}</p></main>;
+    return <main className="login panel"><h1>{t('controlLogin')}</h1><form onSubmit={event => { event.preventDefault(); sessionStorage.setItem('lol-control', tokenInput); setToken(tokenInput); }}><label>{t('accessToken')}<input type="password" required value={tokenInput} onChange={event => setTokenInput(event.target.value)} /></label><button className="primary">{t('connect')}</button></form><p>{connectionLabel(status, lang)}</p></main>;
   }
-  if (!token || status === 'Invalid token' || status === 'Access rejected') {
-    return <main className="login panel">
-      <p>{t('appName')}</p><h1>{t(role === 'caster' ? 'casterLogin' : 'controlLogin')}</h1>
-      <form onSubmit={e => { e.preventDefault(); sessionStorage.setItem(`lol-${role}`, tokenInput); setToken(tokenInput); }}>
-        <label>{t('accessToken')}<input type="password" required value={tokenInput} onChange={e => setTokenInput(e.target.value)} /></label>
-        <button className="primary">{t('connect')}</button>
-      </form><p>{connectionLabel(status, lang)}</p>
-    </main>;
-  }
-  return <main className={`workspace ${role === 'control' ? 'control-workspace' : ''}`}>
-    <header className="topbar">
-      <div><span className="eyebrow">{t(role === 'caster' ? 'casterEyebrow' : 'controlEyebrow')}</span><h1>{t('brandTitle')} <span>{t('brandSubtitle')}</span></h1></div>
-      <div className="toolbar">
-        <b className={connected ? 'status live' : 'status'}>{connectionLabel(status, lang)}</b>
-        <span>{role === 'caster' ? t('delayedFeed', { seconds: snapshot?.casterDelaySeconds ?? '—' }) : t('controlRealtime')}</span>
-        <button onClick={() => { sessionStorage.removeItem(`lol-${role}`); setToken(''); }}>{t('logout')}</button>
-      </div>
-    </header>
-    {!connected && <p className="notice">{t('disconnectedNotice')}</p>}
-    {connected && !compatible && <p className="notice">{t('backendUpgrade')}</p>}
-    {error && <p role="alert" className="error">{errorMessage(error, lang)}</p>}
-    {state ? <>
-      {role === 'caster' && <><Board state={state} lang={lang} /><CasterRoster state={state} lang={lang} delaySeconds={snapshot?.casterDelaySeconds ?? 0} /></>}
-      {role === 'control' && <>
-        <ControlDraftWorkspace monitor={<>
-          <Board state={state} lang={lang} compact />
-          <section className="operator-bar panel">
-            <div className="toolbar">
-              <button disabled={disabled || !snapshot?.canUndo} onClick={() => send({ type: 'undo' })}>{t('undo')}</button>
-              <button disabled={disabled} onClick={() => confirm(t('confirmResetDraft')) && send({ type: 'reset_draft' })}>{t('resetDraft')}</button>
-              <button className="danger" disabled={disabled} onClick={() => confirm(t('confirmResetMatch')) && send({ type: 'reset_match' })}>{t('resetMatch')}</button>
-              <button aria-expanded={showSettings} aria-controls="match-settings" onClick={() => setShowSettings(value => !value)}>{t('matchSettings')}</button>
-              <button onClick={() => setShowTeamSettings(true)}>{t('teamSettings')}</button>
-              <button onClick={() => setShowHeroArtEditor(true)}>{t('heroImageSettings')}</button>
-            </div>
-            <div className="delay-controls">
-              <b>{t('casterDelay', { seconds: snapshot?.casterDelaySeconds ?? '—' })}</b>
-              {[-10, -5, -1, 1, 5, 10].map(n => <button key={n}
-                aria-label={t(n > 0 ? 'increaseDelay' : 'decreaseDelay', { seconds: Math.abs(n) })}
-                disabled={disabled || (snapshot?.casterDelaySeconds || 0) + n < 0 || (snapshot?.casterDelaySeconds || 0) + n > 3600}
-                onClick={() => send({ type: 'delay', seconds: (snapshot?.casterDelaySeconds || 0) + n })}>{n > 0 ? '+' : ''}{n} {t('secondsShort')}</button>)}
-              <input aria-label={t('delayInput')} type="number" min={0} max={3600} value={delayInput} onChange={e => setDelayInput(Number(e.target.value))} />
-              <button disabled={disabled} onClick={() => send({ type: 'delay', seconds: delayInput })}>{t('setDelay')}</button>
-            </div>
-          </section>
-
-          <PreflightStatus state={state} connected={connected} />
-          <GameRulesManager key={JSON.stringify([state.seriesRules, state.seriesFormat, state.draftGameNumber, state.gameNumber, state.currentPhase, state.draftHistory.length])} state={state} send={send} disabled={disabled} />
-          <DraftLifecycle state={state} send={send} disabled={disabled} />
-          {showSettings && <SettingsDialog label={t('matchSettings')} closeLabel={t('hideSettings')} onClose={() => setShowSettings(false)}><MatchSettingsPanel key={JSON.stringify([state.seriesFormat, state.stage, state.draftMode, state.draftRuleMode, state.firstPickSide, state.sideSwapMode, state.language, state.overlayLayout, state.scoreDisplay, state.bpInputMode, state.roleIconStyle, state.roleIconBackground, state.showHeroName, state.artSourceMode])} state={state} send={send} disabled={disabled} /></SettingsDialog>}
-          {state.bpInputMode === 'lcu' && <LcuInput state={state} token={token} />}
-          {state.bpInputMode === 'screen' && <ScreenInput state={state} revision={snapshot!.revision} token={token} disabled={disabled} send={send} />}
-          <LineupAssignments state={state} revision={snapshot!.revision} token={token} disabled={disabled} send={send} />
-        </>}>
-          <ControlHeroPicker state={state} disabled={disabled} active={!showSettings && !showTeamSettings && !showHeroArtEditor} send={send} acknowledged={acknowledged} />
-        </ControlDraftWorkspace>
-        {showTeamSettings && <TeamSettingsDialog label={t('teamSettings')} closeLabel={t('closeTeamSettings')} onClose={() => setShowTeamSettings(false)}>
-          <TeamSettingsPanel key={JSON.stringify([state.blueTeam, state.redTeam])} state={state} send={send} disabled={disabled} token={token} />
-        </TeamSettingsDialog>}
-        {showHeroArtEditor && <HeroArtEditorDialog state={state} send={send} disabled={disabled} onClose={() => setShowHeroArtEditor(false)} />}
-      </>}
+  const captain = snapshot?.captain, phase = state && draftPhases(state)[state.currentPhase];
+  const ownSide = state && (['blue', 'red'] as const).find(side => state[`${side}Team`].id === captain?.teamId);
+  const captainReason = !connected ? (zh ? '断线，无法提交' : 'Disconnected; submissions disabled')
+    : pending ? (zh ? '提交中，等待服务器确认' : 'Submitting; waiting for server')
+      : captain?.mode === 'takeover' ? (zh ? '导播已接管本队' : 'Director has taken over')
+        : captain?.mode === 'paused' ? (zh ? '本队权限已暂停' : 'Team permission paused')
+          : captain?.mode !== 'enabled' ? (zh ? '等待导播授权' : 'Waiting for director authorization')
+            : state?.bpPaused ? (zh ? 'BP 暂停' : 'Draft paused')
+              : state?.draftComplete ? (zh ? 'BP 完成，正式选择已锁定' : 'Draft complete; selections locked')
+                : phase?.team !== ownSide ? (zh ? '等待对方确认' : 'Waiting for the other team') : '';
+  return <main className={`workspace ${role === 'control' ? 'control-workspace' : 'captain-workspace'}`}>
+    <header className="topbar"><div><span className="eyebrow">{role === 'captain' ? (zh ? '队长终端' : 'CAPTAIN') : t('controlEyebrow')}</span><h1>{role === 'captain' && state && ownSide ? state[`${ownSide}Team`].name : t('brandTitle')}</h1></div><div className="toolbar"><b className={connected ? 'status live' : 'status'}>{connectionLabel(status, lang)}</b><button onClick={() => { sessionStorage.removeItem(`lol-${role}`); setToken(''); }}>{t('logout')}</button></div></header>
+    {!connected && <p className="notice">{t('disconnectedNotice')}</p>}{error && <p role="alert" className="error">{errorMessage(error, lang)}</p>}
+    {state ? role === 'captain' ? <>
+      <Board state={state} compact /><p className="notice" role="status">{captainReason || (zh ? '轮到己方：点击英雄预选，再确认提交。' : 'Your turn: preview champions, then confirm.')}</p>
+      <ControlHeroPicker key={`${state.gameId}-${captain?.epoch}`} state={state} disabled={disabled} send={send} acknowledged={acknowledged} readOnlyReason={captainReason} captain />
+      {captain?.assignmentsAllowed && <LineupAssignments state={state} disabled={disabled || captain.mode !== 'enabled' || state.bpPaused || !!state.committedGameId} send={send} teamId={captain.teamId} />}
+      {state.draftComplete && ownSide && <section className="panel"><h2>{zh ? '最终阵容确认' : 'Final lineup confirmation'}</h2><p>{state.lineupConfirmedTeamIds?.includes(captain?.teamId ?? '') ? (zh ? '本队已确认' : 'Team confirmed') : (zh ? '本队尚未确认' : 'Team awaiting confirmation')}</p><button disabled={disabled || state.bpPaused || !!state.committedGameId || captain?.mode !== 'enabled' || !captain.finalConfirmationAllowed || state.lineupConfirmedTeamIds?.includes(captain.teamId)} onClick={() => send({ type: 'confirm_lineup', team: ownSide })}>{zh ? '确认本队最终阵容' : 'Confirm final lineup'}</button>{!captain?.finalConfirmationAllowed && <p>{zh ? '等待导播开放最终确认权限' : 'Waiting for director to enable confirmation'}</p>}</section>}
+    </> : <>
+      <ControlDraftWorkspace monitor={<>
+        <Board state={state} compact />
+        <section className="operator-bar panel"><div className="toolbar">
+          <button disabled={disabled} onClick={() => send({ type: 'pause_draft', paused: !state.bpPaused })}>{state.bpPaused ? (zh ? '校验并恢复 BP' : 'Validate and resume BP') : (zh ? '暂停 BP' : 'Pause BP')}</button>
+          <button disabled={disabled || !snapshot?.canUndo} onClick={() => send({ type: 'undo' })}>{t('undo')}</button>
+          <button disabled={disabled} onClick={() => confirm(t('confirmResetDraft')) && send({ type: 'reset_draft' })}>{t('resetDraft')}</button>
+          <button className="danger" disabled={disabled} onClick={() => confirm(t('confirmResetMatch')) && send({ type: 'reset_match' })}>{t('resetMatch')}</button>
+          <button disabled={disabled} onClick={() => send({ type: 'swap_display' })}>{zh ? '交换屏幕左右' : 'Swap display sides'}</button>
+          <button onClick={() => setShowSettings(true)}>{t('matchSettings')}</button><button onClick={() => setShowTeamSettings(true)}>{t('teamSettings')}</button><button onClick={() => setShowHeroArtEditor(true)}>{t('heroImageSettings')}</button>
+          <button disabled={disabled || state.draftComplete} onClick={() => send({ type: 'advance_draft' })}>{zh ? '推进已补齐步骤' : 'Advance filled step'}</button>
+        </div></section>
+        <CaptainManager key={state.matchId} state={state} token={token} captains={snapshot?.captains} disabled={disabled} />
+        <DraftCorrection key={state.gameId} state={state} disabled={disabled} send={send} />
+        <GameRulesManager key={JSON.stringify([state.seriesRules, state.currentGameRules, state.gameId])} state={state} send={send} disabled={disabled} />
+        <PreflightStatus state={state} connected={connected} /><DraftLifecycle state={state} send={send} disabled={disabled} />
+        {showSettings && <SettingsDialog label={t('matchSettings')} closeLabel={t('hideSettings')} onClose={() => setShowSettings(false)}><MatchSettingsPanel key={JSON.stringify([state.seriesFormat, state.stage, state.language, state.overlayLayout])} state={state} send={send} disabled={disabled} /></SettingsDialog>}
+      </>}><ControlHeroPicker state={state} disabled={disabled} send={send} acknowledged={acknowledged} /></ControlDraftWorkspace>
+      <LineupAssignments state={state} disabled={disabled} send={send} />
+      <MatchBackup token={token} disabled={disabled} /><TelemetryPanel key={state.matchId} state={state} token={token} disabled={disabled} />
       <DraftHistory state={state} />
-      <Analysis state={state} lang={lang} />
+      {showTeamSettings && <TeamSettingsDialog label={t('teamSettings')} closeLabel={t('closeTeamSettings')} onClose={() => setShowTeamSettings(false)}><TeamSettingsPanel key={JSON.stringify([state.blueTeam, state.redTeam])} state={state} send={send} disabled={disabled} token={token} /></TeamSettingsDialog>}
+      {showHeroArtEditor && <HeroArtEditorDialog state={state} send={send} disabled={disabled} onClose={() => setShowHeroArtEditor(false)} />}
     </> : <section className="panel"><h2>{t('connectingServer')}</h2></section>}
-    <footer className="page-footer">{t('communitySystem')} · {t(role === 'caster' ? 'readOnlyFooter' : 'serverFooter')} · {t('rosterUpdated', { date: '2026-09-16' })}</footer>
+    <footer className="page-footer">{t('communitySystem')} · {role === 'captain' ? (zh ? '服务器确认后生效' : 'Server-confirmed selections') : t('serverFooter')}</footer>
   </main>;
 }

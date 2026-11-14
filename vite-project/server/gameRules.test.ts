@@ -75,7 +75,7 @@ test('history contribution and enforcement flags independently control fearless 
     assert.equal(pickRestriction(store.data.state, 'blue', 0, id), undefined);
   }
 });
-test('plans survive restart, reset and do not leak future rules into delayed caster phases', () => {
+test('plans survive restart and reset while future rules activate only on next game', () => {
   const directory = mkdtempSync(join(tmpdir(), 'lol-rules-'));
   try {
     const file = join(directory, 'match.json');
@@ -86,7 +86,7 @@ test('plans survive restart, reset and do not leak future rules into delayed cas
     act(store, { type: 'series_rules', rules }); fill(store);
     now += 200_000;
     advance(store);
-    assert.equal(store.snapshot('caster').state.draftMode, 'match');
+    assert.equal(store.snapshot('overlay').state.draftMode, 'normal');
     const restarted = new Store(file);
     assert.deepEqual(restarted.data.state.seriesRules, rules);
     assert.equal(restarted.data.state.currentGameRules?.firstPickSide, 'red');

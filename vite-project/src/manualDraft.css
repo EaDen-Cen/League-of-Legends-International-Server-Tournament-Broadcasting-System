@@ -1,0 +1,24 @@
+.draft-confirmation {display:grid;gap:10px;padding:12px 0;color:#9ce4de;font-size:13px}
+.draft-access-status {margin:10px 0;line-height:1.5}
+.hero-grid button[aria-pressed="true"] {outline:3px solid #67ded4;outline-offset:-3px;background:#174b52}
+.captain-manager-grid,.lineup-team-grid {display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.captain-manager-grid > section {border:1px solid #34435a;padding:12px;border-radius:8px;min-width:0}
+.invite-link {display:flex;gap:6px;margin-top:10px}.invite-link input{min-width:0;flex:1}
+.captain-manager label:has(input[type="checkbox"]),.game-rules-manager label:has(input[type="checkbox"]) {display:flex;flex-direction:row;align-items:center;margin-top:10px}
+.draft-stage-editor {padding-left:24px}.draft-stage-editor li {display:flex;gap:5px;margin:6px 0}.draft-stage-editor select {min-width:0;flex:1}
+.game-rules-manager fieldset {border:0;padding:12px 0;margin:0;min-width:0}
+.draft-correction > label {margin-top:12px}
+.captain-workspace .control-hero-picker.panel {position:static;height:65vh;margin-top:18px}
+.captain-workspace {max-width:1400px;margin:auto}
+.telemetry-panel {display:grid;gap:14px}.telemetry-table-scroll{overflow:auto;max-width:100%}
+.telemetry-table {border-collapse:collapse;font-size:12px;min-width:100%}.telemetry-table th,.telemetry-table td {padding:10px;border-bottom:1px solid #34435a;white-space:nowrap;text-align:left}
+.telemetry-table small {display:block;font-size:10px}.telemetry-table .stale {color:#e6b467}
+.telemetry-manual-form {display:flex;flex-wrap:wrap;gap:12px;align-items:end}.telemetry-manual-form h3{width:100%}
+.telemetry-manual-form label{min-width:130px}.telemetry-manual-form button{margin-bottom:12px}
+.game-hud-overlay{width:1920px;height:1080px;position:relative;color:white;background:transparent}
+.game-hud-scoreboard{position:absolute;top:20px;left:300px;right:300px;display:flex;align-items:center;justify-content:space-around;gap:20px;padding:18px;background:#0c1626ed;border-top:2px solid #98cece;font-size:24px}
+.game-hud-scoreboard small{color:#f5bf68}.game-hud-players{position:absolute;top:300px;left:16px;right:16px;display:flex;justify-content:space-between;pointer-events:none}
+.hud-team{display:grid;gap:8px;width:230px}.hud-team article{display:grid;gap:4px;background:#101b2cee;border-left:3px solid #55baff;padding:12px;font-size:16px}.hud-team.CHAOS article{border-color:#ff657c;text-align:right}
+.game-hud-overlay footer{position:absolute;bottom:25px;left:700px;right:700px;display:flex;justify-content:center;gap:20px;align-items:center;padding:10px;background:#101b2cee}.game-hud-overlay footer img{width:30px;height:30px;object-fit:contain}
+.broadcast-bans .bans{flex-wrap:nowrap}.seat-label{align-self:center;color:#9eb2c9}
+@media(max-width:700px){.captain-manager-grid,.lineup-team-grid{grid-template-columns:1fr}.captain-workspace{padding:12px}.captain-workspace .control-hero-picker.panel{height:auto}.captain-workspace .hero-grid-scroll{overflow:visible}.captain-workspace .picker-heading{position:static}.telemetry-manual-form{display:grid;grid-template-columns:1fr}.telemetry-manual-form label{min-width:0}.team-grid{grid-template-columns:1fr}.hero-grid{grid-template-columns:repeat(auto-fill,minmax(68px,1fr))}.draft-stage-editor select{padding:5px}.topbar h1{font-size:24px}}

@@ -87,7 +87,7 @@ exit /b 1
 :tunnel_ready
 > "artifacts\current-public-url.txt" echo !PUBLIC_URL!
 >>"artifacts\current-public-url.txt" echo !PUBLIC_URL!/control
->>"artifacts\current-public-url.txt" echo !PUBLIC_URL!/caster
+>>"artifacts\current-public-url.txt" echo !PUBLIC_URL!/captain
 >>"artifacts\current-public-url.txt" echo !PUBLIC_URL!/overlay/draft
 
 echo [6/6] Opening local Control...
@@ -102,8 +102,8 @@ echo.
 echo Public:
 echo   !PUBLIC_URL!
 echo.
-echo Caster:
-echo   !PUBLIC_URL!/caster
+echo Captain links: generate per team from Control.
+echo   !PUBLIC_URL!/control
 echo.
 echo Overlay:
 echo   !PUBLIC_URL!/overlay/draft

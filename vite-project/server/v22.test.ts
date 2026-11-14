@@ -32,11 +32,11 @@ test('both formats mirror every phase for red first, complete, and record the st
     assert.equal(s.data.state.draftComplete, true);
   }
 });
-test('first pick locks after the first ban, unlocks on reset, and changes remain delayed and undoable', () => {
+test('first pick locks after the first ban, unlocks on reset, and changes remain authoritative and undoable', () => {
   let now = 1000000; const s = new Store(undefined, () => now);
   act(s, { type: 'settings', settings: { ...s.data.state, firstPickSide: 'red' } });
-  assert.equal(s.snapshot('caster').state.firstPickSide, 'red');
-  now += 180000; assert.equal(s.snapshot('caster').state.firstPickSide, 'red');
+  assert.equal(s.snapshot('overlay').state.firstPickSide, 'red');
+  now += 180000; assert.equal(s.snapshot('overlay').state.firstPickSide, 'red');
   act(s, { type: 'draft_action', team: 'red', action: 'ban', heroId: 1 });
   assert.throws(() => act(s, { type: 'settings', settings: { ...s.data.state, firstPickSide: 'blue' } }), /firstPickLocked/);
   act(s, { type: 'reset_draft' }); act(s, { type: 'settings', settings: { ...s.data.state, firstPickSide: 'blue' } });
@@ -64,7 +64,7 @@ test('global and personal histories survive colors-only swaps and are enforced f
     act(s, { type: 'settings', settings: { ...s.data.state, draftRuleMode, sideSwapMode: 'colorsOnly',
       blueTeam: { ...s.data.state.blueTeam, players: ['a', 'b', 'c', 'd', 'e'] }, redTeam: { ...s.data.state.redTeam, players: ['f', 'g', 'h', 'i', 'j'] },
     } });
-    fill(s); const forbidden = s.data.state.bluePicks[0];
+    fill(s); const forbidden = s.data.state.bluePicks[0]!;
     act(s, { type: 'commit_game' }); act(s, { type: 'score', team: 'blue', delta: 1 }); act(s, { type: 'next_game' });
     act(s, { type: 'swap_sides' }); act(s, { type: 'settings', settings: { ...s.data.state, firstPickSide: 'red' } });
     for (let i = 0; i < 6; i++) act(s, { type: 'draft_action', ...phases('match', 'red')[i], heroId: heroes[80 + i].id });
@@ -94,7 +94,7 @@ test('portrait validation accepts HTTPS/local files, rejects malformed arrays an
   assert.throws(() => act(s, { type: 'settings', settings: short }), /portraitsInvalid/);
   assert.equal(s.data.state.blueTeam.playerPortraits[1], '/playerImg/a.png');
 });
-test('V2 migration normalizes new fields in state, undo, delayed events and nested committed teams', () => {
+test('V2 migration normalizes new fields in state, undo, archived events and nested committed teams', () => {
   const s = new Store(); fill(s); act(s, { type: 'commit_game' });
   const legacy = JSON.parse(JSON.stringify(s.data));
   for (const state of [legacy.state, ...legacy.history, ...legacy.events.map((e: {resultingState: MatchState}) => e.resultingState)]) {
@@ -104,7 +104,7 @@ test('V2 migration normalizes new fields in state, undo, delayed events and nest
   }
   const file = join(mkdtempSync(join(tmpdir(), 'lol-v22-')), 'match.json'); writeFileSync(file, JSON.stringify(legacy));
   const restored = new Store(file, () => Date.now() + 999999);
-  for (const state of [restored.data.state, ...restored.data.history, restored.snapshot('caster').state]) {
+  for (const state of [restored.data.state, ...restored.data.history, restored.snapshot('overlay').state]) {
     assert.equal(state.displayLeftSide, 'blue'); assert.equal(state.firstPickSide, 'blue'); assert.equal(state.sideSwapMode, 'moveTeams');
     assert.deepEqual(state.blueTeam.playerPortraits, ['', '', '', '', '']);
     for (const game of state.draftHistory) { assert.equal(game.firstPickSide, 'blue'); assert.equal(game.redTeam.playerPortraits.length, 5); }

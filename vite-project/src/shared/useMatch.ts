@@ -1,9 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Action, Role, Snapshot } from './types';
+import { draftPhases } from './gameRules';
+export interface CaptainStatus { teamId: string; mode: 'enabled' | 'disabled' | 'paused' | 'takeover'; epoch: number; assignmentsAllowed: boolean; finalConfirmationAllowed?: boolean; online?: number }
+export interface MatchSnapshot extends Snapshot { captain?: CaptainStatus; captains?: CaptainStatus[] }
 const api = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
 const wsURL = import.meta.env.VITE_WS_URL || `${location.protocol === 'https:' ? 'wss:' : 'ws:'}//${location.host}/ws`;
 export function useMatch(role: Role, token: string) {
-  const [snapshot, setSnapshot] = useState<Snapshot>();
+  const [snapshot, setSnapshot] = useState<MatchSnapshot>();
   const [status, setStatus] = useState('Connecting');
   const [error, setError] = useState('');
   const [pending, setPending] = useState(false);
@@ -29,7 +32,7 @@ export function useMatch(role: Role, token: string) {
         const response = await fetch(`${api}/api/match`, { headers: { Authorization: `Bearer ${token}` }, signal: abort.signal, cache: 'no-store' });
         if (response.status === 401) { setStatus('Invalid token'); return; }
         if (!response.ok) throw new Error('暂时无法连接服务器');
-        const initial: Snapshot = await response.json();
+        const initial: MatchSnapshot = await response.json();
         if (stopped) return;
         setSnapshot(initial);
         const ws = new WebSocket(wsURL); active = ws; socket.current = ws;
@@ -69,9 +72,12 @@ export function useMatch(role: Role, token: string) {
     return () => { stopped = true; clearTimeout(timer); clearTimeout(pendingTimer.current); abort?.abort(); active?.close(); pendingID.current = undefined; setPending(false); };
   }, [role, token]);
   function send(action: Action) {
-    if (role !== 'control' || status !== 'Connected' || !snapshot || pendingID.current || socket.current?.readyState !== WebSocket.OPEN) return;
+    if (!['control', 'captain'].includes(role) || status !== 'Connected' || !snapshot || pendingID.current || socket.current?.readyState !== WebSocket.OPEN) return;
+    if (role === 'captain' && !['draft_group', 'swap_assignments', 'confirm_lineup'].includes(action.type)) return;
     setError(''); const id = crypto.randomUUID(); pendingID.current = id; pendingAction.current = action; setPending(true);
-    socket.current.send(JSON.stringify({ type: 'action', id, revision: snapshot.revision, action }));
+    socket.current.send(JSON.stringify({ type: 'action', id, revision: snapshot.revision, action,
+      matchId: snapshot.state.matchId, gameId: snapshot.state.gameId,
+      stepId: draftPhases(snapshot.state)[snapshot.state.currentPhase]?.stepId ?? 'complete', epoch: snapshot.captain?.epoch }));
     pendingTimer.current = setTimeout(() => { setError('操作确认超时，正在重新加载比赛状态。请确认结果后再重试。'); socket.current?.close(); }, 8000);
   }
   return { snapshot, status, error, pending, send, acknowledged };

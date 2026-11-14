@@ -1,11 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
 import heroes from '../src/components/HeroList.js';
 import { initialState, phases } from '../src/shared/types.js';
 import { heroArtCrop } from '../src/data/heroArtFocus.js';
 import { heroSortModes, sortHeroes } from '../src/control/heroSort.js';
-import { recognizeImage } from './capture.js';
 
 test('standard LoL draft follows both ban rounds and ten picks', () => {
   assert.equal(phases('match').map(p=>p.team[0]+p.action[0]).join(' '),
@@ -32,11 +30,4 @@ test('all sorting modes retain unavailable champions at the end', () => {
   for (const mode of heroSortModes) {
     assert.deepEqual(sortHeroes(heroes,mode,id=>unavailable.has(id)).slice(-2).map(h=>h.id).sort((a,b)=>a-b),[1,103]);
   }
-});
-
-test('recognition templates use LoL portraits and Riot IDs', async () => {
-  const hero = heroes.find(h=>h.id===103)!;
-  const result = await recognizeImage(readFileSync(new URL(`../public${hero.imageLink}`,import.meta.url)));
-  assert.equal(result[0].heroId,103);
-  assert.ok(result[0].confidence > .99);
 });

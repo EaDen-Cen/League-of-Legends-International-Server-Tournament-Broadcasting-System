@@ -269,7 +269,7 @@ export function HeroArtEditorDialog({
               <summary>{t('championAdvancedData')}</summary>
               <label>{t('championPortraitUrl')}<input maxLength={1000} value={dataDraft.imageLink ?? ''} onChange={event => setDataDraft(previous => ({ ...previous, imageLink: event.target.value }))} /><small>{t('championPortraitUrlHint')}</small></label>
               <label>{t('championSplashUrl')}<input maxLength={1000} value={dataDraft.artLink ?? ''} onChange={event => setDataDraft(previous => ({ ...previous, artLink: event.target.value }))} /><small>{t('championSplashUrlHint')}</small></label>
-              <label>{t('heroAliases')}<input maxLength={500} value={(dataDraft.aliases ?? []).join(', ')} onChange={event => setDataDraft(previous => ({ ...previous, aliases: event.target.value.split(',').map(value => value.trim()).filter(Boolean) }))} /><small>{t('heroAliasesHint')}</small></label>
+              <label>{t('heroAliases')}<input aria-label={t('heroAliases')} maxLength={500} value={(dataDraft.aliases ?? []).join(', ')} onChange={event => setDataDraft(previous => ({ ...previous, aliases: event.target.value.split(',').map(value => value.trim()).filter(Boolean) }))} /><small>{t('heroAliasesHint')}</small></label>
             </details>
             <div className="art-editor-actions">
               <button type="button" className="primary" disabled={disabled} onClick={() => send({ type: 'hero_data_override', heroId: hero.id, override: dataDraft })}>{t('saveHeroData')}</button>

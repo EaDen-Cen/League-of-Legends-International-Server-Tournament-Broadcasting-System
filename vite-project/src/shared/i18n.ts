@@ -14,8 +14,8 @@ const messages = {
   heroAliases: {zh:'搜索别名',eng:'Search aliases'},
   heroAliasesHint: {zh:'使用逗号分隔，可用于搜索。',eng:'Comma-separated aliases used by search.'},
   championAdvancedData: {zh:'高级资料与素材',eng:'Advanced data & assets'},
-  championPortraitUrl: {zh:'Portrait / 识别头像来源',eng:'Portrait / recognition source'},
-  championPortraitUrlHint: {zh:'用于选择器、Ban、历史记录和识别模板显示。支持 HTTPS 或站内绝对路径。',eng:'Used by picker, bans and history. Accepts HTTPS or an absolute local path.'},
+  championPortraitUrl: {zh:'Portrait / 英雄头像来源',eng:'Champion portrait'},
+  championPortraitUrlHint: {zh:'用于选择器、Ban、历史记录显示。支持 HTTPS 或站内绝对路径。',eng:'Used by picker, bans and history. Accepts HTTPS or an absolute local path.'},
   championSplashUrl: {zh:'Splash Art / 转播主图来源',eng:'Splash art / broadcast source'},
   championSplashUrlHint: {zh:'用于转播 Champion Card 与裁切预览。支持 HTTPS 或站内绝对路径。',eng:'Used by broadcast cards and crop previews. Accepts HTTPS or an absolute local path.'},
   noSecondaryLane: {zh:'无',eng:'None'},
@@ -63,37 +63,12 @@ const messages = {
   scoreBoxes: {zh:'赛事格子',eng:'Win boxes'},
   bpInputMode: {zh:'BP 输入模式',eng:'BP input mode'},
   manualInput: {zh:'手动选择',eng:'Manual selection'},
-  lcuInput: {zh:'League Client 房间 API 自动同步',eng:'League Client room API auto-sync'},
-  lcuInputHint: {zh:'从本机 League Client 的 Champ Select 会话直接读取已锁定 Ban/Pick；客户端不可用时仍可手动选择。',eng:'Reads locked bans/picks directly from the local League Client Champ Select session. Manual selection remains available if the client is unavailable.'},
-  screenInput: {zh:'旧版屏幕识别（兼容）',eng:'Legacy screen recognition'},
   roleIconStyle: {zh:'分路图标样式',eng:'Role icon style'},
   roleIconMinimal: {zh:'简约',eng:'Minimal'},
   roleIconOrnate: {zh:'华丽',eng:'Ornate'},
   roleIconBackground: {zh:'分路图标底色',eng:'Role icon background'},
   roleIconLight: {zh:'银底',eng:'Silver'},
   roleIconDark: {zh:'黑底',eng:'Dark / black'},
-  lcuPanelTitle: {zh:'League Client 自动 BP',eng:'League Client Auto BP'},
-  lcuPanelHint: {zh:'服务端直接读取本机 League Client 的 Champ Select 会话；锁定后自动写入当前 Ban/Pick。',eng:'The server reads the local League Client Champ Select session and records completed bans/picks automatically.'},
-  lcuRefresh: {zh:'刷新状态',eng:'Refresh status'},
-  lcuRefreshing: {zh:'刷新中…',eng:'Refreshing…'},
-  lcuClient: {zh:'League Client',eng:'League Client'},
-  lcuConnected: {zh:'已连接',eng:'Connected'},
-  lcuNotFound: {zh:'未找到',eng:'Not found'},
-  lcuChampSelect: {zh:'英雄选择房间',eng:'Champ Select'},
-  lcuActive: {zh:'同步中',eng:'Active'},
-  lcuWaiting: {zh:'等待进入 BP',eng:'Waiting'},
-  lcuRoomMode: {zh:'房间 BP 模式',eng:'Room BP mode'},
-  lcuTournamentMode: {zh:'标准赛事 BP',eng:'Tournament draft'},
-  lcuPracticeMode: {zh:'练习 / 人机 Pick-only',eng:'Practice / AI pick-only'},
-  lcuPracticeHint: {zh:'当前房间没有标准 Ban 阶段。程序会把赛事 Ban 槽记为空 Ban，并仅同步实际锁定的 Pick；正式比赛请使用标准赛事 BP 房间。',eng:'This room has no standard ban phase. Tournament ban slots are recorded as empty bans while completed picks are synced. Use a tournament-draft room for production.'},
-  lcuSide: {zh:'本机阵营映射',eng:'Local side mapping'},
-  lcuLastSync: {zh:'最近同步',eng:'Last sync'},
-  lcuActionShape: {zh:'LCU 动作结构',eng:'LCU action shape'},
-  lcuClientPhase: {zh:'客户端阶段',eng:'Client phase'},
-  lcuManualFallback: {zh:'LCU 不可用或出现不一致时不会强行写入；Hero Picker 仍可手动操作。',eng:'If LCU is unavailable or the draft differs, nothing is forced into the match. The Hero Picker remains available for manual fallback.'},
-  casterRosterTitle: {zh:'解说阵容资料',eng:'Caster roster'},
-  casterRosterHint: {zh:'队伍与选手资料实时可见；Ban/Pick、比分与有效局按解说延迟显示。',eng:'Team and player metadata is live; bans, picks, score and committed games follow the caster delay.'},
-  casterDelayWaiting: {zh:'当前 BP 数据按 {seconds} 秒延迟显示。若刚开始测试，英雄选禁不会立刻出现。',eng:'BP data is delayed by {seconds}s. During a fresh test, bans and picks will not appear immediately.'},
   rosterSource: {zh:'选手资料来源',eng:'Roster source'},
   substitutes: {zh:"替补名单",eng:"Substitutes"},
   addSubstitute: {zh:"添加替补",eng:"Add substitute"},
@@ -152,74 +127,7 @@ const messages = {
   emptyBanManualHint: { zh:'只推进当前 Ban 阶段，不会占用任何英雄。可撤销。', eng:'Advances only the current Ban phase without consuming a hero. Undo remains available.' },
   emptyBanRecorded: { zh:'已记录：{side} 空 Ban', eng:'Recorded: {side} empty ban' },
   emptyBanSuspected: { zh:'疑似空 Ban · 稳定检测 {count}/3', eng:'Possible empty ban · stable detection {count}/3' },
-  emptyBanReviewTitle: { zh:'检测到疑似空 Ban', eng:'Possible empty ban detected' },
-  emptyBanReviewHint: { zh:'连续 3 次画面稳定且没有可靠英雄候选。请确认这确实是空 Ban；识别不会自行提交。', eng:'The frame stayed stable for 3 scans with no reliable hero candidate. Confirm that this is really an empty ban; recognition never submits it automatically.' },
   emptyBanConfirm: { zh:'确认空 Ban', eng:'Confirm empty ban' },
-  autoCaptureWatch: { zh:'自动监视当前 BP 槽位', eng:'Auto-watch current BP slot' },
-  autoCaptureWatchHint: { zh:'自动读取当前区域并等待人工审核；空 Ban 只在低置信度且画面连续稳定 3 次后提示。', eng:'Repeatedly reads the current region and waits for review. Empty bans are suggested only after low confidence and 3 stable frames.' },
-  captureSource: { zh:'采集来源', eng:'Capture source' },
-  windowCaptureMode: { zh:'游戏窗口', eng:'Game window' },
-  nativeCaptureMode: { zh:'兼容模式', eng:'Legacy capture' },
-  windowCaptureChoose: { zh:'选择游戏窗口', eng:'Choose game window' },
-  windowCaptureChange: { zh:'更换窗口', eng:'Change window' },
-  windowCaptureDisconnect: { zh:'断开窗口', eng:'Disconnect window' },
-  windowCaptureDisconnected: { zh:'未连接游戏窗口', eng:'No game window connected' },
-  windowCaptureConnected: { zh:'已连接游戏窗口', eng:'Game window connected' },
-  windowCaptureChooseHint: { zh:'点击“选择游戏窗口”，然后在浏览器弹窗中选择英雄联盟游戏窗口。', eng:'Choose the game window, then select the League of Legends game window in the browser share dialog.' },
-  windowCaptureUnsupported: { zh:'当前浏览器不支持窗口采集；请使用 Chrome / Edge 的 HTTPS 或 localhost 页面，或切换兼容模式。', eng:'This browser cannot capture a window. Use Chrome / Edge on HTTPS or localhost, or switch to legacy capture.' },
-  windowCaptureCancelled: { zh:'已取消窗口选择。', eng:'Window selection cancelled.' },
-  windowCaptureFailed: { zh:'无法连接游戏窗口，请重新选择或切换兼容模式。', eng:'Could not connect to the game window. Try again or use legacy capture.' },
-  windowCaptureEnded: { zh:'游戏窗口共享已停止，请重新连接。', eng:'Game-window sharing stopped. Reconnect to continue.' },
-  windowCaptureNotConnected: { zh:'请先连接游戏窗口。', eng:'Connect the game window first.' },
-  windowCaptureRecognitionFailed: { zh:'窗口画面识别失败，请检查连接、识别框或服务器。', eng:'Window-frame recognition failed. Check the connection, recognition box, or server.' },
-  windowCaptureRecognitionArea: { zh:'BP 识别区域', eng:'BP recognition area' },
-  windowCaptureCalibrate: { zh:'框选识别区域', eng:'Calibrate recognition area' },
-  windowCaptureDragNow: { zh:'请在画面上拖拽框选', eng:'Drag on the preview now' },
-  windowCaptureResetArea: { zh:'重置识别框', eng:'Reset area' },
-  windowCaptureRegionSaved: { zh:'识别区域已保存；以后会按窗口比例自动适配。', eng:'Recognition area saved. It will scale with the game window.' },
-  windowCaptureRelativeHint: { zh:'识别框使用源画面归一化坐标保存；网页缩放、Control 面板尺寸和同宽高比的分辨率变化不会改变识别位置。', eng:'Recognition boxes use normalized source coordinates, so browser zoom, Control-panel size, and same-aspect-ratio resolution changes do not move the capture area.' },
-  captureAspectChanged: { zh:'检测到游戏画面宽高比发生变化。原识别框仍保留，但建议快速检查当前槽位后再开启自动监视。', eng:'The captured game aspect ratio changed. Existing boxes are preserved, but verify the active slot before enabling auto-watch.' },
-  captureStaleDiscarded: { zh:'比赛阶段已变化，已丢弃上一阶段的识别结果，避免写入错误槽位。', eng:'The draft phase changed, so the previous recognition result was discarded instead of being applied to the wrong slot.' },
-  windowCaptureAutoHint: { zh:'连接保持期间会直接读取游戏窗口；浏览器刷新或停止共享后需要重新选择窗口。', eng:'Auto-watch reads the selected game window directly. Reconnect after a page refresh or when sharing stops.' },
-  nativeCaptureAdvanced: { zh:'高级兼容模式：Windows 桌面坐标', eng:'Advanced legacy mode: Windows desktop coordinates' },
-  nativeCaptureHint: { zh:'仅在浏览器窗口采集不可用时使用；该模式仍需要本机 Windows 服务和像素坐标。', eng:'Use only if browser window capture is unavailable. This mode still requires the local Windows service and pixel coordinates.' },
-  captureFourZoneHint: { zh:'只需校准蓝/红双方的 Pick 列和 Ban 区共 4 个区域；程序会根据当前 BP 阶段自动截取正在变化的单个槽位，不再把整张 BP 画面拿去匹配英雄。', eng:'Calibrate four regions: blue/red Pick columns and Ban rows. Auto BP then crops only the active slot for the current draft phase instead of matching the whole draft screen.' },
-  captureExplicitSlotsHint: { zh:'改为 20 个独立识别框：蓝/红各 5 个 Ban、各 5 个 Pick。每个框都可以单独拖拽校准，程序不会再根据整列/整行自动均分。', eng:'Uses 20 independent recognition boxes: 5 Ban and 5 Pick slots per side. Every box is calibrated separately; the app no longer auto-splits a row or column.' },
-  captureCalibrateExplicitSlots: { zh:'20 槽位独立校准', eng:'20-slot independent calibration' },
-  captureExplicitCalibrationHint: { zh:'先点击一个 B1–B5 或 P1–P5，再到游戏预览中直接框住该英雄头像区域。识别框绑定源画面比例，不绑定浏览器像素。', eng:'Choose B1–B5 or P1–P5, then drag over that exact portrait. Boxes are bound to source-image proportions, not browser pixels.' },
-  captureExplicitSlot: { zh:'{side} {action} {number}', eng:'{side} {action} {number}' },
-  captureDragSelectedSlot: { zh:'正在校准：{slot}。请直接在预览画面拖出新的识别框。', eng:'Calibrating {slot}. Drag a new recognition rectangle directly on the preview.' },
-  captureExplicitSlotSaved: { zh:'已保存 {slot} 的独立识别框。', eng:'Saved the independent recognition box for {slot}.' },
-  captureExplicitSlotsReset: { zh:'20 个识别框已恢复默认位置；仍可逐个重新校准。', eng:'All 20 boxes were reset to defaults; each can still be recalibrated independently.' },
-  captureResetAllSlots: { zh:'重置全部 20 个框', eng:'Reset all 20 boxes' },
-  captureExplicitAutoHint: { zh:'自动监视只读取当前 BP 阶段对应的那个独立识别框；不会根据其他框的位置推算。', eng:'Auto-watch reads only the independent box assigned to the current BP phase; no position is inferred from neighboring boxes.' },
-  captureZoneBluePick: { zh:'蓝方 Pick 列', eng:'Blue Pick column' },
-  captureZoneRedPick: { zh:'红方 Pick 列', eng:'Red Pick column' },
-  captureZoneBlueBan: { zh:'蓝方 Ban 区', eng:'Blue Ban row' },
-  captureZoneRedBan: { zh:'红方 Ban 区', eng:'Red Ban row' },
-  captureCalibrateFourZones: { zh:'四区域校准', eng:'Four-region calibration' },
-  captureZoneCalibrationHint: { zh:'依次点击一个区域按钮，再在游戏画面上拖框。Pick 列会自动纵向切成 5 个槽位；Ban 区会按当前模式横向切成 2 或 4 个槽位。', eng:'Choose a region and drag over it in the game preview. Pick columns are split vertically into 5 slots; Ban rows are split horizontally into 2 or 4 slots for the current mode.' },
-  captureZoneSaved: { zh:'已保存 {zone}；区域会随游戏窗口缩放。', eng:'Saved {zone}; it will scale with the game window.' },
-  captureZonesReset: { zh:'四个识别区域已恢复默认位置。', eng:'All four recognition regions were reset to defaults.' },
-  captureCurrentSlot: { zh:'{side} {action} {current}/{total}', eng:'{side} {action} {current}/{total}' },
-  capturePhaseLabel: { zh:'当前阶段', eng:'Current phase' },
-  captureSlotLabel: { zh:'识别槽位', eng:'Recognition slot' },
-  captureCandidateLabel: { zh:'英雄候选', eng:'Hero candidate' },
-  captureEmptyBanLabel: { zh:'空 Ban 检测', eng:'Empty-ban check' },
-  captureWaiting: { zh:'等待画面', eng:'Waiting for frame' },
-  captureNoCandidate: { zh:'暂无可靠候选', eng:'No reliable candidate' },
-  captureHeroCandidate: { zh:'{hero} · {confidence}% · 稳定 {count}/2', eng:'{hero} · {confidence}% · stable {count}/2' },
-  captureHeroStable: { zh:'{hero} · {confidence}% · 已连续确认 {count} 次', eng:'{hero} · {confidence}% · confirmed for {count} scans' },
-  captureWaitingForStableHero: { zh:'等待同一英雄连续稳定出现；不会因单帧结果直接弹确认。', eng:'Waiting for the same hero to remain stable across scans; a single frame will not trigger review.' },
-  captureNoActiveSlot: { zh:'当前没有可识别的 BP 槽位。', eng:'There is no active BP slot to recognize.' },
-  captureAutoSlotHint: { zh:'自动监视只读取当前阶段对应的单个英雄槽位；英雄需连续稳定 2 次才弹审核。', eng:'Auto-watch reads only the exact slot for the current phase; a hero must remain stable for 2 scans before review.' },
-  captureNotApplicable: { zh:'不适用', eng:'N/A' },
-  capturePromptedOnce: { zh:'本阶段已询问过，不会再次弹出', eng:'Already asked this phase; will not prompt again' },
-  captureGraceThenCheck: { zh:'保护等待 {seconds}s 后才开始判断', eng:'Starts checking after {seconds}s grace' },
-  emptyBanGraceWaiting: { zh:'空 Ban 保护期：还需等待约 {seconds}s；期间只识别正常英雄。', eng:'Empty-ban grace period: about {seconds}s remaining. Normal hero recognition stays active.' },
-  emptyBanSuppressed: { zh:'本 Ban 阶段已经询问过空 Ban，不会重复询问；英雄识别继续运行。', eng:'Empty ban was already reviewed this phase and will not be asked again; hero recognition continues.' },
-  emptyBanReviewHintOnce: { zh:'当前 Ban 阶段已经等待超过保护时间，并连续 3 次看到稳定的低置信度空槽。请确认是否空 Ban；如果拒绝，本阶段不会再次询问，但仍会继续识别正常英雄。', eng:'This Ban phase passed the grace period and showed the same low-confidence empty slot for 3 scans. Confirm an empty ban if correct. If rejected, this phase will not ask again, while normal hero recognition continues.' },
-  captureNow: { zh:'立即识别', eng:'Recognize now' },
   emptyBanOnlyDuringBan: { zh:'只有当前阶段为 Ban 时才能记录空 Ban。', eng:'An empty ban can only be recorded during a Ban phase.' },
   quickInputHint: { zh: '/ 或 Ctrl+K 搜索 · 中文模式支持拼音声母（如 lplp）· Enter 录入当前第一个可用结果 · Esc 清空', eng: '/ or Ctrl+K to search · Enter submits the first available filtered result · Esc clears' },
   recordAccepted: { zh: '已记录：{side} {action} · {hero}', eng: 'Recorded: {side} {action} · {hero}' },
@@ -297,17 +205,9 @@ const messages = {
     "zh": "社区赛事转播系统",
     "eng": "Community Broadcast System"
   },
-  "casterEyebrow": {
-    "zh": "社区赛事 · 解说工作台",
-    "eng": "COMMUNITY ESPORTS · CASTER DESK"
-  },
   "controlEyebrow": {
     "zh": "社区赛事 · 导播控制台",
     "eng": "COMMUNITY ESPORTS · PRODUCTION"
-  },
-  "casterLogin": {
-    "zh": "解说工作台登录",
-    "eng": "Caster access"
   },
   "controlLogin": {
     "zh": "赛事控制台登录",
@@ -329,10 +229,6 @@ const messages = {
     "zh": "控制台 · 实时状态",
     "eng": "CONTROL · REALTIME"
   },
-  "delayedFeed": {
-    "zh": "解说画面 · 延迟 {seconds} 秒",
-    "eng": "CASTER · DELAYED {seconds}s"
-  },
   "disconnectedNotice": {
     "zh": "连接未就绪，操作已禁用。现有画面保留，正在恢复服务器状态。",
     "eng": "Connection unavailable. Controls are disabled while the current picture is held and server state reloads."
@@ -340,10 +236,6 @@ const messages = {
   "connectingServer": {
     "zh": "正在连接比赛服务器…",
     "eng": "Connecting to match server…"
-  },
-  "readOnlyFooter": {
-    "zh": "只读解说视图 · 延迟时间轴",
-    "eng": "Read-only caster view · Delayed timeline"
   },
   "serverFooter": {
     "zh": "比赛数据由服务器统一同步",
@@ -428,10 +320,6 @@ const messages = {
   "enemyCounters": {
     "zh": "克制对手的推荐",
     "eng": "Counters to enemy picks"
-  },
-  "relationshipHint": {
-    "zh": "结合双方已选英雄展示关系，原有数据供解说参考。",
-    "eng": "Relationships based on both teams' picks. Original data for caster reference."
   },
   "noRelationships": {
     "zh": "暂无关系数据",
@@ -605,30 +493,6 @@ const messages = {
   "confirmResetMatch": {
     "zh": "确定重置整场比赛？队伍、比分、选禁和历史会清空；赛事名称/阶段、赛制、比分显示和 BP 规则会保留。",
     "eng": "Reset the entire match? Teams, scores and draft will be cleared."
-  },
-  "casterDelay": {
-    "zh": "解说延迟 · {seconds} 秒",
-    "eng": "Caster delay · {seconds}s"
-  },
-  "increaseDelay": {
-    "zh": "增加解说延迟 {seconds} 秒",
-    "eng": "Increase caster delay by {seconds} seconds"
-  },
-  "decreaseDelay": {
-    "zh": "减少解说延迟 {seconds} 秒",
-    "eng": "Decrease caster delay by {seconds} seconds"
-  },
-  "secondsShort": {
-    "zh": "秒",
-    "eng": "s"
-  },
-  "delayInput": {
-    "zh": "解说延迟秒数",
-    "eng": "Caster delay seconds"
-  },
-  "setDelay": {
-    "zh": "设置延迟",
-    "eng": "Set delay"
   },
   "selectHero": {
     "zh": "点击一位英雄确认",
