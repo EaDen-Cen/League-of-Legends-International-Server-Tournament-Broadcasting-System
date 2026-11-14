@@ -32,12 +32,12 @@ test('library failed persistence never changes acknowledged in-memory teams', ()
   const lib = new TeamPresetStore(file);mkdirSync(file+'.tmp');
   assert.throws(()=>lib.create(initialState().blueTeam));assert.deepEqual(lib.list(),[]);
 });
-test('loading presets is authoritative, copied, delayed, locked and cannot duplicate identities', () => {
+test('loading presets is authoritative, copied, locked and cannot duplicate identities', () => {
   const lib=library(),team=lib.create({...initialState().blueTeam,name:'Alpha',players:['a','b','c','d','e'],playerPortraits:['/photo.png','','','','']});
   const s=new Store(undefined,()=>1000000,lib);
   apply(s,{type:'load_team_preset',side:'blue',presetId:team.id});
-  assert.deepEqual(s.data.state.blueTeam,{id:team.id,name:team.name,logo:team.logo,players:team.players,playerRoles:team.playerRoles,playerPortraits:team.playerPortraits});
-  assert.equal(s.snapshot('caster').state.blueTeam.id,team.id);
+  assert.deepEqual(s.data.state.blueTeam,{id:team.id,name:team.name,logo:team.logo,players:team.players,playerIds:team.players.map((_,i)=>`${team.id}-p${i+1}`),playerRoles:team.playerRoles,playerPortraits:team.playerPortraits});
+  assert.equal(s.snapshot('overlay').state.blueTeam.id,team.id);
   assert.throws(()=>apply(s,{type:'load_team_preset',side:'red',presetId:team.id}),/presetDuplicate/);
   apply(s,{type:'settings',settings:{...s.data.state,blueTeam:{...s.data.state.blueTeam,id:'forged',players:['sub','b','c','d','e']}}});
   assert.equal(s.data.state.blueTeam.id,team.id);assert.equal(lib.get(team.id)?.players[0],'a');
@@ -74,7 +74,7 @@ test('substitutes survive restart and legacy roster updates; old libraries migra
   const legacy=JSON.parse(readFileSync(file,'utf8'));delete legacy.teams[0].substitutes;writeFileSync(file,JSON.stringify(legacy));
   assert.deepEqual(new TeamPresetStore(file).get(team.id)?.substitutes,[]);
 });
-test('live reserve substitution preserves draft/team identity and reaches Caster metadata immediately', () => {
+test('live reserve substitution preserves draft/team identity and reaches OBS immediately', () => {
   const lib=library(); const reserve={id:randomUUID(),name:'Bench Player',role:'support' as const,portrait:'/bench.png'};
   const team=lib.create({...initialState().blueTeam,players:['Starter','B','C','D','E'],substitutes:[reserve]});
   let now=1000000; const s=new Store(undefined,()=>now,lib);
@@ -84,8 +84,8 @@ test('live reserve substitution preserves draft/team identity and reaches Caster
   apply(s,{type:'settings',settings:{...s.data.state,blueTeam:{...old,players:[reserve.name,...old.players.slice(1)],playerRoles:[reserve.role,...old.playerRoles.slice(1)],playerPortraits:[reserve.portrait,...old.playerPortraits.slice(1)]}}});
   assert.equal(s.data.state.currentPhase,1);assert.equal(s.data.state.blueTeam.id,team.id);
   assert.equal(s.snapshot('overlay').state.blueTeam.players[0],reserve.name);
-  assert.equal(s.snapshot('caster').state.blueTeam.players[0],reserve.name);
+  assert.equal(s.snapshot('overlay').state.blueTeam.players[0],reserve.name);
   assert.equal(lib.get(team.id)?.players[0],'Starter');
-  now+=180000;assert.equal(s.snapshot('caster').state.blueTeam.playerPortraits[0],reserve.portrait);
+  now+=180000;assert.equal(s.snapshot('overlay').state.blueTeam.playerPortraits[0],reserve.portrait);
   apply(s,{type:'undo'});assert.deepEqual(s.data.state.blueTeam,old);
 });

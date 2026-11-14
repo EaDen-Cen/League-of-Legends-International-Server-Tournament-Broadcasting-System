@@ -7,7 +7,7 @@ import { join } from 'node:path';
 import { Store } from './store.js';
 import heroes from '../src/components/HeroList.js';
 import { phases, type Action, type DraftRuleMode, type MatchState } from '../src/shared/types.js';
-import { pickRestriction, banRestriction, draftHeroUsed, draftRestriction } from '../src/shared/draftRules.js';
+import { pickRestriction, banRestriction, draftHeroUsed, draftRestriction, normalizeState } from '../src/shared/draftRules.js';
 
 const act = (s: Store, action: Action) => s.apply(randomUUID(), s.data.revision, action);
 function setup(mode: DraftRuleMode, s = new Store()) {
@@ -58,7 +58,9 @@ test('Player BP follows player identity across slots, substitutes and side chang
   assert.equal(pickRestriction(s.data.state, 'blue', 0, first.bluePicks[0]), 'usedByPlayer');
   assert.equal(pickRestriction(s.data.state, 'blue', 1, first.bluePicks[0]), undefined);
   assert.equal(pickRestriction(s.data.state, 'red', 0, first.bluePicks[0]), undefined);
-  act(s, { type: 'settings', settings: { ...s.data.state, blueTeam: { ...s.data.state.blueTeam, players: ['Sub', ' a1 ', 'A3', 'A4', 'A5'] } } });
+  act(s, { type: 'settings', settings: { ...s.data.state, blueTeam: { ...s.data.state.blueTeam, players: ['Renamed A1', 'A2', 'A3', 'A4', 'A5'] } } });
+  assert.equal(pickRestriction(s.data.state, 'blue', 0, first.bluePicks[0]), 'usedByPlayer');
+  act(s, { type: 'settings', settings: { ...s.data.state, blueTeam: { ...s.data.state.blueTeam, players: ['Sub', ' a1 ', 'A3', 'A4', 'A5'], playerIds:[randomUUID(),first.blueTeam.playerIds![0],...first.blueTeam.playerIds!.slice(2)] } } });
   assert.equal(pickRestriction(s.data.state, 'blue', 0, first.bluePicks[0]), undefined);
   assert.equal(pickRestriction(s.data.state, 'blue', 1, first.bluePicks[0]), 'usedByPlayer');
   act(s, { type: 'swap_sides' });
@@ -68,16 +70,16 @@ test('Player BP follows player identity across slots, substitutes and side chang
 test('Global BP rejects team-history picks, while own history does not forbid bans', () => {
   const s = setup('global'); fill(s); const previous = s.data.state.bluePicks[0]; advance(s);
   for (let i = 0; i < 6; i++) act(s, { type: 'draft_action', ...phases('match')[i], heroId: heroes[70 + i].id });
-  assert.throws(() => act(s, { type: 'draft_action', team: 'blue', action: 'pick', heroId: previous }), /usedByTeam/);
+  assert.throws(() => act(s, { type: 'draft_action', team: 'blue', action: 'pick', heroId: previous! }), /usedByTeam/);
   act(s, { type: 'reset_draft' });
-  act(s, { type: 'draft_action', team: 'blue', action: 'ban', heroId: previous });
+  act(s, { type: 'draft_action', team: 'blue', action: 'ban', heroId: previous! });
   assert.equal(s.data.state.blueBans[0], previous);
 });
 test('Player BP allows help-picks but validates the final owner before commit', () => {
   const s = setup('player'); fill(s); const previous = s.data.state.blueAssignments[0] as number; advance(s);
   for (let i = 0; i < 6; i++) act(s, { type: 'draft_action', ...phases('match')[i], heroId: heroes[70 + i].id });
   // A teammate may secure A1's old hero during the draft; draft order is not ownership.
-  act(s, { type: 'draft_action', team: 'blue', action: 'pick', heroId: previous });
+  act(s, { type: 'draft_action', team: 'blue', action: 'pick', heroId: previous! });
   fill(s);
   assert.throws(() => act(s, { type: 'commit_game' }), /usedByPlayer/);
   act(s, { type: 'swap_assignments', team: 'blue', from: 0, to: 1 });
@@ -111,22 +113,22 @@ test('rules lock after draft starts and after history; mid-draft side edits are 
   assert.equal(s.data.state.blueTeam.players[0], 'Sub');
   advance(s); assert.throws(() => act(s, { type: 'settings', settings: { ...s.data.state, draftRuleMode: 'global' } }), /rulesLocked/);
 });
-test('score actions publish immediately without renumbering the completed draft; commit and undo are delayed', () => {
+test('score actions preserve the completed game number; commit and undo publish immediately', () => {
   let now = 1000000; const s = setup('global', new Store(undefined, () => now)); fill(s);
   now += 180000;
   act(s, { type: 'score', team: 'blue', delta: 1 });
   assert.equal(s.data.state.gameNumber, 2); assert.equal(s.data.state.draftGameNumber, 1);
-  assert.equal(s.snapshot('caster').state.blueScore, 0);
+  assert.equal(s.snapshot('overlay').state.blueScore, 1);
   act(s, { type: 'commit_game' }); assert.equal(s.data.state.draftHistory[0].gameNumber, 1);
-  assert.equal(s.snapshot('caster').state.draftHistory.length, 0);
-  now += 180000; assert.equal(s.snapshot('caster').state.draftHistory.length, 1);
+  assert.equal(s.snapshot('overlay').state.draftHistory.length, 1);
+  now += 180000; assert.equal(s.snapshot('overlay').state.draftHistory.length, 1);
   act(s, { type: 'undo' }); assert.equal(s.data.state.draftHistory.length, 0);
-  assert.equal(s.snapshot('caster').state.draftHistory.length, 1);
-  now += 180000; assert.equal(s.snapshot('caster').state.draftHistory.length, 0);
+  assert.equal(s.snapshot('overlay').state.draftHistory.length, 0);
+  now += 180000; assert.equal(s.snapshot('overlay').state.draftHistory.length, 0);
   const before = structuredClone(s.data);
   assert.throws(() => act(s, { type: 'score', team: 'red', delta: -1 })); assert.deepEqual(s.data, before);
 });
-test('legacy migration covers active state, old delayed snapshots and undo records without discarding data', () => {
+test('legacy migration covers active state, old audit snapshots and undo records without discarding data', () => {
   const s = new Store(); fill(s);
   const legacy = JSON.parse(JSON.stringify(s.data));
   for (const st of [legacy.state, ...legacy.history, ...legacy.events.map((e: {resultingState: MatchState}) => e.resultingState)]) {
@@ -135,7 +137,7 @@ test('legacy migration covers active state, old delayed snapshots and undo recor
   }
   const file = join(mkdtempSync(join(tmpdir(), 'lol-legacy-')), 'match.json'); writeFileSync(file, JSON.stringify(legacy));
   const restored = new Store(file, () => Date.now() + 3600000);
-  for (const st of [restored.data.state, restored.snapshot('caster').state, ...restored.data.history]) {
+  for (const st of [restored.data.state, restored.snapshot('overlay').state, ...restored.data.history]) {
     assert.equal(st.draftRuleMode, 'normal'); assert.deepEqual(st.draftHistory, []);
     assert.equal(st.blueTeam.playerRoles.length, 5); assert.equal(st.redTeam.players.length, 5);
   }
@@ -185,7 +187,7 @@ test('Player BP requires all player IDs before the first ban and cannot silently
 });
 
 
-test('live roster metadata reaches Caster immediately while draft/history remain authoritative and undoable', () => {
+test('live roster metadata reaches OBS while draft/history remain authoritative and undoable', () => {
   let now = 1000000;
   const s = setup('global', new Store(undefined, () => now)); fill(s);
   now += 180000;
@@ -194,9 +196,9 @@ test('live roster metadata reaches Caster immediately while draft/history remain
   assert.deepEqual(s.data.state.bluePicks, before.bluePicks);
   assert.equal(s.data.state.currentPhase, before.currentPhase);
   assert.equal(s.snapshot('overlay').state.blueTeam.players[0], 'Sub');
-  assert.equal(s.snapshot('caster').state.blueTeam.players[0], 'Sub');
+  assert.equal(s.snapshot('overlay').state.blueTeam.players[0], 'Sub');
   now += 180000;
-  assert.equal(s.snapshot('caster').state.blueTeam.players[0], 'Sub');
+  assert.equal(s.snapshot('overlay').state.blueTeam.players[0], 'Sub');
   act(s, { type: 'undo' }); assert.deepEqual(s.data.state, before);
   act(s, { type: 'commit_game' });
   const history = structuredClone(s.data.state.draftHistory);
@@ -207,13 +209,13 @@ test('live roster metadata reaches Caster immediately while draft/history remain
 
 test('live player ID changes revalidate selected heroes atomically against personal history', () => {
   const s = setup('player'); fill(s);
-  const used = s.data.state.bluePicks[0]; advance(s);
-  act(s, { type: 'settings', settings: { ...s.data.state, blueTeam: { ...s.data.state.blueTeam, players: ['Sub','A2','A3','A4','A5'] } } });
+  const used = s.data.state.bluePicks[0], originalId=s.data.state.blueTeam.playerIds![0]; advance(s);
+  act(s, { type: 'settings', settings: { ...s.data.state, blueTeam: { ...s.data.state.blueTeam, players: ['Sub','A2','A3','A4','A5'], playerIds:[randomUUID(),...s.data.state.blueTeam.playerIds!.slice(1)] } } });
   for (let i=0;i<6;i++) act(s,{type:'draft_action',...phases('match')[i],heroId:heroes[80+i].id});
-  act(s,{type:'draft_action',team:'blue',action:'pick',heroId:used});
+  act(s,{type:'draft_action',team:'blue',action:'pick',heroId:used!});
   fill(s);
   const before = structuredClone(s.data);
-  assert.throws(() => act(s,{type:'settings',settings:{...s.data.state,blueTeam:{...s.data.state.blueTeam,players:['A1','A2','A3','A4','A5']}}}), /usedByPlayer/);
+  assert.throws(() => act(s,{type:'settings',settings:{...s.data.state,blueTeam:{...s.data.state.blueTeam,players:['A1','A2','A3','A4','A5'],playerIds:[originalId,...s.data.state.blueTeam.playerIds!.slice(1)]}}}), /usedByPlayer/);
   assert.deepEqual(s.data,before);
   assert.throws(() => act(s,{type:'settings',settings:{...s.data.state,blueTeam:{...s.data.state.blueTeam,players:['','A2','A3','A4','A5']}}}), /playerMissing/);
   assert.deepEqual(s.data,before);
@@ -226,19 +228,19 @@ test('Global BP blocks opponent history bans after either swap, without consumin
     const first = structuredClone(s.data.state);
     advance(s);
     const before = structuredClone(s.data);
-    assert.throws(() => act(s, {type:'draft_action',team:'blue',action:'ban',heroId:first.redPicks[0]}), /opponentAlreadyUsed/);
+    assert.throws(() => act(s, {type:'draft_action',team:'blue',action:'ban',heroId:first.redPicks[0]!}), /opponentAlreadyUsed/);
     assert.deepEqual(s.data, before);
-    act(s,{type:'draft_action',team:'blue',action:'ban',heroId:first.bluePicks[0]});
+    act(s,{type:'draft_action',team:'blue',action:'ban',heroId:first.bluePicks[0]!});
     const redTurn = structuredClone(s.data);
-    assert.throws(() => act(s,{type:'draft_action',team:'red',action:'ban',heroId:first.bluePicks[1]}), /opponentAlreadyUsed/);
+    assert.throws(() => act(s,{type:'draft_action',team:'red',action:'ban',heroId:first.bluePicks[1]!}), /opponentAlreadyUsed/);
     assert.deepEqual(s.data,redTurn);
     act(s,{type:'undo'});
     assert.equal(banRestriction(s.data.state,'blue',first.redPicks[0]),'opponentAlreadyUsed');
     act(s,{type:'settings',settings:{...s.data.state,sideSwapMode,firstPickSide:'red'}});
     act(s,{type:'swap_sides'});
     assert.equal(banRestriction(s.data.state,'red',first.redPicks[0]),'opponentAlreadyUsed');
-    assert.throws(() => act(s,{type:'draft_action',team:'red',action:'ban',heroId:first.redPicks[0]}), /opponentAlreadyUsed/);
-    act(s,{type:'draft_action',team:'red',action:'ban',heroId:first.bluePicks[0]});
+    assert.throws(() => act(s,{type:'draft_action',team:'red',action:'ban',heroId:first.redPicks[0]!}), /opponentAlreadyUsed/);
+    act(s,{type:'draft_action',team:'red',action:'ban',heroId:first.bluePicks[0]!});
     act(s,{type:'reset_draft'});
     assert.equal(banRestriction(s.data.state,'red',first.redPicks[0]),'opponentAlreadyUsed');
     act(s,{type:'reset_match'});
@@ -254,8 +256,34 @@ test('opponent-ban protection only uses committed picks in Global BP, not bans o
     assert.equal(banRestriction(s.data.state,'blue',first.redBans[0]!),undefined);
     if(mode==='global') assert.equal(banRestriction(s.data.state,'blue',first.redPicks[0]),'opponentAlreadyUsed');
     else {
-      act(s,{type:'draft_action',team:'blue',action:'ban',heroId:first.redPicks[0]});
+      act(s,{type:'draft_action',team:'blue',action:'ban',heroId:first.redPicks[0]!});
       assert.equal(s.data.state.blueBans[0],first.redPicks[0]);
     }
   }
+});
+
+test('personal history follows stable IDs through rename, roster reorder and side changes', () => {
+  const s=setup('player'); fill(s);
+  const hero=s.data.state.bluePicks[0]!, playerId=s.data.state.blueTeam.playerIds![0];
+  advance(s);
+  act(s,{type:'settings',settings:{...s.data.state,blueTeam:{...s.data.state.blueTeam,players:['Different display name','A2','A3','A4','A5']}}});
+  assert.equal(pickRestriction(s.data.state,'blue',0,hero),'usedByPlayer');
+  act(s,{type:'reorder_players',team:'blue',from:0,to:3});
+  assert.equal(s.data.state.blueTeam.playerIds![3],playerId);
+  assert.equal(pickRestriction(s.data.state,'blue',3,hero),'usedByPlayer');
+  act(s,{type:'swap_sides'});
+  assert.equal(pickRestriction(s.data.state,'red',3,hero),'usedByPlayer');
+  const ids=[...s.data.state.redTeam.playerIds!]; ids[3]=randomUUID();
+  act(s,{type:'settings',settings:{...s.data.state,redTeam:{...s.data.state.redTeam,playerIds:ids}}});
+  assert.equal(pickRestriction(s.data.state,'red',3,hero),undefined);
+});
+
+test('legacy historical rosters without player IDs retain name fallback during normalization', () => {
+  const s=setup('player'); fill(s); act(s,{type:'commit_game'});
+  const hero=s.data.state.bluePicks[0]!;
+  delete s.data.state.draftHistory[0].blueTeam.playerIds;
+  s.data.state=normalizeState(s.data.state);
+  assert.equal(s.data.state.draftHistory[0].blueTeam.playerIds,undefined);
+  act(s,{type:'score',team:'blue',delta:1}); act(s,{type:'next_game'});
+  assert.equal(pickRestriction(s.data.state,'blue',0,hero),'usedByPlayer');
 });

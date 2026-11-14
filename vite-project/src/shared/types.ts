@@ -24,6 +24,9 @@ export interface HeroDataOverride {
   artLink?: string;
 }
 export type DraftRuleMode = 'normal' | 'player' | 'global';
+export interface DraftStage { team: Side; action: 'ban' | 'pick'; count: 1 | 2 }
+export interface DraftSlot { status: 'empty' | 'skipped' | 'selected'; heroId?: number; assignmentIndex?: number }
+export interface DraftPhase extends DraftStage { stepId: string; slots: string[] }
 export interface GameRules {
   draftMode: 'match' | 'normal';
   draftRuleMode: DraftRuleMode;
@@ -31,6 +34,9 @@ export interface GameRules {
   sideSwapMode: SideSwapMode;
   enforcePreviousHistory: boolean;
   contributeToFutureHistory: boolean;
+  stages?: DraftStage[];
+  heroPool?: number[];
+  allowDuplicates?: boolean;
 }
 export interface SeriesRules {
   defaultGameRules: GameRules;
@@ -51,6 +57,7 @@ export interface Team {
   name: string;
   logo: string;
   players: string[];
+  playerIds?: string[];
   playerRoles: PlayerRole[];
   playerPortraits: string[];
 }
@@ -69,6 +76,10 @@ export interface TeamPreset extends Team {
 }
 
 export interface GameDraftRecord {
+  lineupConfirmedTeamIds?: string[];
+  draftSlots?: Record<string, DraftSlot>;
+  currentPhase?: number;
+  draftComplete?: boolean;
   rules?: GameRules;
   firstPickSide: Side;
   id: string;
@@ -79,14 +90,20 @@ export interface GameDraftRecord {
   /** Immutable draft-order history. */
   blueBans?: Array<number | null>;
   redBans?: Array<number | null>;
-  bluePicks: number[];
-  redPicks: number[];
+  bluePicks: Array<number | null>;
+  redPicks: Array<number | null>;
   /** Final hero ownership by player slot after help-picks / swaps. */
-  blueAssignments: number[];
-  redAssignments: number[];
+  blueAssignments: Array<number | null>;
+  redAssignments: Array<number | null>;
 }
 
 export interface MatchState {
+  matchId: string;
+  gameId: string;
+  bpPaused: boolean;
+  draftSlots: Record<string, DraftSlot>;
+  ruleConflicts: Array<{ gameId: string; reason: string }>;
+  lineupConfirmedTeamIds: string[];
   blueTeam: Team;
   redTeam: Team;
 
@@ -102,7 +119,7 @@ export interface MatchState {
   language: Language;
   overlayLayout: OverlayLayout;
   scoreDisplay?: 'number' | 'boxes';
-  /** `screen` is retained only for legacy snapshots/tests; new UI exposes manual/lcu. */
+  /** Legacy screen/lcu values are read only during migration; every current state uses manual. */
   bpInputMode?: 'manual' | 'lcu' | 'screen';
   roleIconStyle: RoleIconStyle;
   roleIconBackground: RoleIconBackground;
@@ -128,8 +145,8 @@ export interface MatchState {
   blueBans: Array<number | null>;
   redBans: Array<number | null>;
   /** Pick order is immutable draft history; assignments drive player cards. */
-  bluePicks: number[];
-  redPicks: number[];
+  bluePicks: Array<number | null>;
+  redPicks: Array<number | null>;
   blueAssignments: Array<number | null>;
   redAssignments: Array<number | null>;
 }
@@ -159,6 +176,16 @@ export type MatchSettings = Pick<
 >;
 
 export type Action =
+  | { type: 'draft_group'; team: Side; action: 'ban' | 'pick'; heroIds: number[] }
+  | { type: 'pause_draft'; paused: boolean }
+  | { type: 'confirm_lineup'; team: Side }
+  | { type: 'advance_draft' }
+  | { type: 'swap_display' }
+  | { type: 'reorder_players'; team: Side; from: number; to: number }
+  | { type: 'correct_slot'; gameId: string; slotId: string; heroId: number | null | 'skip'; reason: string }
+  | { type: 'rewind_draft'; gameId: string; step: number; reason: string }
+  | { type: 'current_rules'; rules: GameRules }
+  | { type: 'history_assignments'; gameId: string; blue: number[]; red: number[]; reason: string }
   | { type: 'clear_series_rules' }
   | { type: 'series_rules'; rules: SeriesRules }
   | { type: 'load_team_preset'; side: Side; presetId: string }
@@ -175,24 +202,30 @@ export type Action =
   | { type: 'reset_hero_art_override'; heroId: number; layout?: HeroArtLayout }
   | { type: 'hero_data_override'; heroId: number; override: HeroDataOverride }
   | { type: 'reset_hero_data_override'; heroId: number }
-  | { type: 'delay'; seconds: number };
+  ;
 
-export type Role = 'control' | 'caster' | 'overlay';
+export type Role = 'control' | 'captain' | 'overlay';
 
 export interface Snapshot {
   type: 'match_state_update';
   state: MatchState;
   revision: number;
-  casterDelaySeconds?: number;
   canUndo?: boolean;
 }
 
 export const initialState = (): MatchState => ({
+  matchId: globalThis.crypto.randomUUID(),
+  gameId: globalThis.crypto.randomUUID(),
+  bpPaused: false,
+  draftSlots: {},
+  ruleConflicts: [],
+  lineupConfirmedTeamIds: [],
   blueTeam: {
     id: 'team-a',
     name: '蓝方队伍',
     logo: '',
     players: ['', '', '', '', ''],
+    playerIds: ['team-a-p1', 'team-a-p2', 'team-a-p3', 'team-a-p4', 'team-a-p5'],
     playerRoles: ['top', 'jungle', 'mid', 'bot', 'support'],
     playerPortraits: ['', '', '', '', ''],
   },
@@ -202,6 +235,7 @@ export const initialState = (): MatchState => ({
     name: '红方队伍',
     logo: '',
     players: ['', '', '', '', ''],
+    playerIds: ['team-b-p1', 'team-b-p2', 'team-b-p3', 'team-b-p4', 'team-b-p5'],
     playerRoles: ['top', 'jungle', 'mid', 'bot', 'support'],
     playerPortraits: ['', '', '', '', ''],
   },

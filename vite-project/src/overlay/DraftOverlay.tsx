@@ -9,41 +9,10 @@ import { currentGame, displaySides } from '../shared/draftRules';
 import { DraftHistory } from '../shared/DraftHistory';
 import { draftRuleName, phaseName, stageName } from '../shared/display';
 import { translator } from '../shared/i18n';
-import { phases, type MatchState, type PlayerRole, type RoleIconStyle, type Side } from '../shared/types';
+import { type MatchState, type Side } from '../shared/types';
+import { draftPhases } from '../shared/gameRules';
+import { portraitAssetURL } from '../shared/config';
 import { heroArtCrop } from '../data/heroArtFocus';
-
-const rolePaths: Record<PlayerRole, string> = {
-  top: 'M7 4 20 17l-3 3L4 7V4h3Zm13 0h-3L4 17l3 3L20 7V4ZM3 21l4-4m10 0 4 4',
-  jungle: 'M12 22C4 16 3 10 4 4l6 6L12 2l2 8 6-6c1 6 0 12-8 18ZM12 11v9',
-  mid: 'm3 17 14-14 4 4L7 21l-4-4Zm0-9V3h5m8 18h5v-5',
-  bot: 'M5 3c15 1 15 17 0 18l8-9L5 3Zm0 0v18M3 12h18m-3-3 3 3-3 3',
-  support: 'M12 2 3 6v6c0 5 9 10 9 10s9-5 9-10V6l-9-4Zm0 4v11m-4-7h8',
-};
-const ornateAccents: Record<PlayerRole, string> = {
-  top: 'M5.4 5.4 8 4.2M18.6 5.4 16 4.2M5.4 18.6 8 19.8M18.6 18.6 16 19.8',
-  jungle: 'M7 5.5 9 7M17 5.5 15 7M6.4 16.8 8.8 15.8M17.6 16.8 15.2 15.8',
-  mid: 'M5 8 8 5M16 19 19 16M5 16 8 19M16 5 19 8',
-  bot: 'M5.5 7.2 8.3 6M18.5 16.8 15.7 18M5.5 16.8 8.3 18M18.5 7.2 15.7 6',
-  support: 'M7 5.5 9 4.5M17 5.5 15 4.5M7 18.5 9 19.5M17 18.5 15 19.5',
-};
-
-export function PositionIcon({ role, label, style = 'minimal' }: { role: PlayerRole; label: string; style?: RoleIconStyle }) {
-  return <svg className={`position-icon position-icon-${style}`} viewBox="0 0 24 24" role="img" aria-label={label}>
-    <title>{label}</title>
-    {style === 'ornate' && <>
-      <path className="position-icon-wing position-icon-wing-left" d="M3.8 7.4 1.4 10.2 3.2 12 1.4 13.8 3.8 16.6" />
-      <path className="position-icon-wing position-icon-wing-right" d="M20.2 7.4 22.6 10.2 20.8 12 22.6 13.8 20.2 16.6" />
-      <path className="position-icon-medallion" d="M12 1.1 19.7 4.4 22.9 12l-3.2 7.6L12 22.9l-7.7-3.3L1.1 12l3.2-7.6L12 1.1Z" />
-      <path className="position-icon-inner-frame" d="M12 3.5 18.5 6.2 20.5 12l-2 5.8L12 20.5l-6.5-2.7L3.5 12l2-5.8L12 3.5Z" />
-      <path className="position-icon-diamond" d="M12 5.1 18.9 12 12 18.9 5.1 12 12 5.1Z" />
-      <circle className="position-icon-ring" cx="12" cy="12" r="5.25" />
-      <path className="position-icon-accent" d={ornateAccents[role]} />
-      <circle className="position-icon-jewel" cx="12" cy="2.6" r=".72" />
-      <circle className="position-icon-jewel" cx="12" cy="21.4" r=".72" />
-    </>}
-    <path className="position-icon-glyph" d={rolePaths[role]} fill="none" stroke="currentColor" strokeWidth={style === 'ornate' ? '1.45' : '1.8'} strokeLinecap="round" strokeLinejoin="round" />
-  </svg>;
-}
 
 function AutoFitPlayerId({ value, layout }: { value: string; layout: MatchState['overlayLayout'] }) {
   const ref = useRef<HTMLSpanElement>(null);
@@ -115,7 +84,6 @@ function PickCard({ state, side, index, position }: { state: MatchState; side: S
   const id = state[`${side}Assignments`][index] ?? undefined, hero = id ? heroForState(state, id) : undefined;
   const heroName = hero ? (state.language === 'zh' ? hero.chineseName : hero.englishName) : t('emptyPick');
   const player = team.players[index] || t('playerNumber', { number: index + 1 });
-  const role = team.playerRoles[index];
   return <article className={`broadcast-card ${hero ? 'filled' : ''}`} data-slot={index} data-team-id={team.id}>
     <HeroReveal heroId={id} layout={state.overlayLayout} position={position} prepareArt={async nextId => {
       const next = heroForState(state, nextId);
@@ -134,11 +102,11 @@ function PickCard({ state, side, index, position }: { state: MatchState; side: S
         ? <span className="player-id" title={player}>{player}</span>
         : <AutoFitPlayerId value={player} layout={state.overlayLayout} />}
     </>} />
-    <div className="position-bar"><PositionIcon role={role} label={t(role)} style={state.roleIconStyle} /></div>
+    <div className="position-bar"><span>P{index + 1}</span></div>
   </article>;
 }
 export function DraftOverlay({ state }: { state: MatchState }) {
-  const t = translator(state.language), phase = phases(state.draftMode, state.firstPickSide)[state.currentPhase];
+  const t = translator(state.language), phase = draftPhases(state)[state.currentPhase];
   const sides = displaySides(state), [left, right] = sides;
   return <section className={`broadcast-overlay broadcast-${state.overlayLayout} ${state.showHeroName ? 'hero-names-visible' : 'hero-names-hidden'} role-icons-${state.roleIconStyle} role-icon-bg-${state.roleIconBackground} ${phase ? `draft-action-${phase.action} draft-team-${phase.team}` : 'draft-complete'}`}>
     <div className="broadcast-top"><header className="broadcast-header">
@@ -146,7 +114,7 @@ export function DraftOverlay({ state }: { state: MatchState }) {
       <div className="broadcast-draft-label">{state.committedGameId ? t('gameCommitted') : phaseName(state)}</div>
       <div className="broadcast-meta">{stageName(state.stage, state.language)} · {state.seriesFormat} · {t('gameNumber', { number: currentGame(state) })} · {draftRuleName(state)}</div>
       {sides.map((side, position) => <div key={state[`${side}Team`].id} className={`broadcast-team ${side} display-${position === 0 ? 'left' : 'right'}`}>
-        {state[`${side}Team`].logo && <img src={state[`${side}Team`].logo} alt="" />}
+        {state[`${side}Team`].logo && <img src={portraitAssetURL(state[`${side}Team`].logo)} alt="" />}
         <h2>{state[`${side}Team`].name}</h2>
       </div>)}
       <div className={`broadcast-score ${state.scoreDisplay === 'boxes' ? 'box-score' : 'number-score'}`} aria-label={t('seriesScore')}><Score state={state} side={left} />{state.scoreDisplay !== 'boxes' && <span>:</span>}<Score state={state} side={right} /></div>
@@ -155,20 +123,21 @@ export function DraftOverlay({ state }: { state: MatchState }) {
     <div className="broadcast-bottom">
       {state.draftHistory.length > 0 && <DraftHistory state={state} compact />}
       <div className="broadcast-bans">{sides.map((side, position) => <div className={`ban-team ${side} display-${position === 0 ? 'left' : 'right'}`} key={state[`${side}Team`].id}><span>{t(side === 'blue' ? 'blueSide' : 'redSide')} · {t('ban')}</span><div className="bans">
-        {Array.from({ length: state.draftMode === 'match' ? 5 : 2 }, (_, index) => {
-          const value = state[`${side}Bans`][index];
-          const skipped = value === null;
+        {draftPhases(state).filter(step => step.team === side && step.action === 'ban').flatMap(step => step.slots).map((slotId, index) => {
+          const slot = state.draftSlots[slotId];
+          const value = slot?.status === 'selected' ? slot.heroId : undefined;
+          const skipped = slot?.status === 'skipped';
           const hero = typeof value === 'number' ? heroForState(state, value) : undefined;
           const label = skipped ? t('emptyBan') : hero ? (state.language === 'zh' ? hero.chineseName : hero.englishName) : t('ban');
-          return <div className={`hero-slot ban ${skipped ? 'skipped-ban' : ''}`} key={index} title={label}>
-            {hero ? <><img src={hero.imageLink} alt={label} /><b className="ban-mark">╱</b>{state.showHeroName && <span className="ban-name">{label}</span>}</>
+          return <div data-slot-id={slotId} data-slot-status={slot?.status ?? 'empty'} className={`hero-slot ban ${skipped ? 'skipped-ban' : ''}`} key={index} title={label}>
+            {hero ? <><img src={portraitAssetURL(hero.imageLink)} alt={label} /><b className="ban-mark">╱</b>{state.showHeroName && <span className="ban-name">{label}</span>}</>
               : <span className={skipped ? 'empty skipped-ban-label' : 'empty'}>{skipped ? t('emptyBan') : '—'}</span>}
           </div>;
         })}</div></div>)}</div>
       <div className="broadcast-picks">{sides.map((side, position) => <div key={state[`${side}Team`].id} className={`pick-team ${side} display-${position === 0 ? 'left' : 'right'} ${phase?.team === side ? 'acting' : ''}`}>
         {Array.from({ length: 5 }, (_, index) => <PickCard key={index} state={state} side={side} index={index} position={position === 0 ? 'left' : 'right'} />)}
       </div>)}</div>
-      <footer className={`phase ${phase?.team || ''}`}><small>{phase ? `${state.currentPhase + 1} / ${phases(state.draftMode, state.firstPickSide).length}` : ''}</small></footer>
+      <footer className={`phase ${phase?.team || ''}`}><small>{phase ? `${state.currentPhase + 1} / ${draftPhases(state).length}` : ''}</small></footer>
     </div>
   </section>;
 }

@@ -2,7 +2,7 @@ import heroes from '../components/HeroList';
 import type { Hero } from '../data/heroTypes';
 import type { MatchState } from './types';
 
-export function heroForState(state: Pick<MatchState, 'heroDataOverrides'>, id: number): Hero | undefined {
+export function heroForState(state: Pick<MatchState, 'heroDataOverrides'>, id: number | null | undefined): Hero | undefined {
   const base = heroes.find(hero => hero.id === id);
   if (!base) return undefined;
   const override = state.heroDataOverrides?.[String(id)];
