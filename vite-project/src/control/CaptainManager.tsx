@@ -20,11 +20,11 @@ export function CaptainManager({ state, token, captains = [], disabled }: { stat
     finally { setBusy(false); }
   }
   const names = { enabled: zh ? '已授权' : 'Enabled', disabled: zh ? '等待导播授权' : 'Disabled', paused: zh ? '暂停' : 'Paused', takeover: zh ? '导播接管' : 'Director takeover' };
-  return <section className="panel captain-manager"><h2>{zh ? '队长终端与授权' : 'Captain terminals'}</h2>
+  return <section className="panel captain-manager"><h2 className="panel-heading">{zh ? '队长终端与授权' : 'Captain terminals'}</h2>
     <p>{zh ? '链接跟随真实队伍。重新生成后旧链接和现有连接失去权限；新链接只在本面板显示。' : 'Links follow team identity. Rotating a link revokes existing credentials.'}</p>
     <div className="captain-manager-grid">{(['blue', 'red'] as const).map(side => {
       const team = state[`${side}Team`], access = captains.find(item => item.teamId === team.id);
-      return <section key={team.id}><h3>{team.name}</h3><p>{names[access?.mode ?? 'disabled']} · {access?.online ?? 0} {zh ? '个连接' : 'connections'}</p>
+      return <section key={team.id} className={`captain-team side-${side}`}><header className="captain-team-header"><h3 className="team-heading">{team.name}</h3><p className="captain-team-status"><span className={`captain-access-badge mode-${access?.mode ?? 'disabled'}`}>{names[access?.mode ?? 'disabled']}</span><span className="captain-online"> · {access?.online ?? 0} {zh ? '个连接' : 'connections'}</span></p></header>
         <div className="toolbar">
           {(['rotate', 'enable', 'pause', 'disable', 'takeover'] as const).map(operation => <button key={operation} disabled={disabled || busy} onClick={() => void update(team.id, operation)}>{({ rotate: zh ? '生成/轮换链接' : 'Rotate invite', enable: zh ? '授权操作' : 'Enable', pause: zh ? '暂停本队' : 'Pause', disable: zh ? '撤销写入' : 'Disable', takeover: zh ? '接管本队' : 'Take over' })[operation]}</button>)}
         </div>

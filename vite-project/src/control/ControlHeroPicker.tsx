@@ -36,19 +36,23 @@ export function ControlHeroPicker({ state, disabled, send, acknowledged, readOnl
     : previous.length < (phase?.count ?? 1) ? [...previous, id] : (phase?.count ?? 1) === 1 ? [id] : previous);
   return <section className="panel control-hero-picker">
     <div className={`picker-heading side-${phase?.team || 'none'}`}>
-      <h2>{phaseName(state)}</h2>
-      <p role="status" className="draft-access-status">{readOnlyReason || (state.bpPaused ? (zh ? 'BP 已暂停，等待导播恢复' : 'Paused by director')
-        : phase ? `${zh ? '本步需确认' : 'Confirm'} ${phase.count} ${zh ? '个英雄' : 'champion(s)'} · ${state.currentPhase + 1}/${phases.length}` : (zh ? 'BP 完成' : 'Draft complete'))}</p>
+      <div className="current-phase"><span className="section-kicker">CHAMPION SELECT</span><h2>{phaseName(state)}</h2>
+        <p role="status" className="draft-access-status">{readOnlyReason || (state.bpPaused ? (zh ? 'BP 已暂停，等待导播恢复' : 'Paused by director')
+          : phase ? `${zh ? '本步需确认' : 'Confirm'} ${phase.count} ${zh ? '个英雄' : 'champion(s)'} · ${state.currentPhase + 1}/${phases.length}` : (zh ? 'BP 完成' : 'Draft complete'))}</p></div>
       <input aria-label={t('searchHeroes')} placeholder={t('searchHeroes')} value={search} onChange={event => setSearch(event.target.value)} />
       <div className="filters">{lanes.map(lane => <button key={lane} className={filter === lane ? 'selected' : ''} onClick={() => setFilter(lane)}>{laneName(lane, state.language)}</button>)}</div>
       <div className="draft-confirmation" aria-live="polite">
-        <span>{zh ? '本机预选（对手与 OBS 不可见）' : 'Local preview (private)'}: {selected.map(id => {
-          const hero = heroes.find(item => item.id === id); return zh ? hero?.chineseName : hero?.englishName;
-        }).join(' / ') || '—'}</span>
-        <button className="primary" disabled={locked || selected.length !== phase?.count} onClick={() => phase && send({ type: 'draft_group', team: phase.team, action: phase.action, heroIds: selected })}>
-          {disabled ? (zh ? '等待连接或服务器确认' : 'Waiting for connection / confirmation') : phase?.action === 'ban' ? (zh ? '确认禁用' : 'Confirm Ban') : (zh ? '确认选择' : 'Confirm Pick')}
-        </button>
-        {!captain && phase?.action === 'ban' && <button disabled={locked} onClick={() => send({ type: 'skip_ban', team: phase.team })}>{zh ? '明确跳过本步 Ban' : 'Skip Ban step'}</button>}
+        <span className="draft-preview-label">{zh ? '本机预选（对手与 OBS 不可见）' : 'Local preview (private)'}</span>
+        <div className="draft-preview-champions">{selected.length ? selected.map(id => {
+          const hero = heroes.find(item => item.id === id);
+          return <span className="preview-champion" key={id}><img src={portraitAssetURL(hero?.imageLink ?? '')} alt="" />{zh ? hero?.chineseName : hero?.englishName}</span>;
+        }) : <span className="preview-empty">{zh ? '选择英雄后，在此确认' : 'Choose champions, then confirm here'}</span>}</div>
+        <div className="draft-confirmation-actions">
+          <button className="primary" disabled={locked || selected.length !== phase?.count} onClick={() => phase && send({ type: 'draft_group', team: phase.team, action: phase.action, heroIds: selected })}>
+            {disabled ? (zh ? '等待连接或服务器确认' : 'Waiting for connection / confirmation') : phase?.action === 'ban' ? (zh ? '确认禁用' : 'Confirm Ban') : (zh ? '确认选择' : 'Confirm Pick')}
+          </button>
+          {!captain && phase?.action === 'ban' && <button disabled={locked} onClick={() => send({ type: 'skip_ban', team: phase.team })}>{zh ? '明确跳过本步 Ban' : 'Skip Ban step'}</button>}
+        </div>
         {acknowledged?.action.type === 'draft_group' && <small>{zh ? '服务器已确认上一手' : 'Previous selection confirmed by server'}</small>}
       </div>
     </div>

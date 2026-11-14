@@ -201,7 +201,7 @@ export default function BroadcastApp() {
               : state?.draftComplete ? (zh ? 'BP 完成，正式选择已锁定' : 'Draft complete; selections locked')
                 : phase?.team !== ownSide ? (zh ? '等待对方确认' : 'Waiting for the other team') : '';
   return <main className={`workspace ${role === 'control' ? 'control-workspace' : 'captain-workspace'}`}>
-    <header className="topbar"><div><span className="eyebrow">{role === 'captain' ? (zh ? '队长终端' : 'CAPTAIN') : t('controlEyebrow')}</span><h1>{role === 'captain' && state && ownSide ? state[`${ownSide}Team`].name : t('brandTitle')}</h1></div><div className="toolbar"><b className={connected ? 'status live' : 'status'}>{connectionLabel(status, lang)}</b><button onClick={() => { sessionStorage.removeItem(`lol-${role}`); setToken(''); }}>{t('logout')}</button></div></header>
+    <header className="topbar"><div className="brand"><span className="brand-mark" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M24 2 46 24 24 46 2 24Z" /><path d="M24 8 40 24 24 40 8 24Z" /><path className="brand-glyph" d="M19 15v18h13v-4h-8V15Z" /></svg></span><div><span className="eyebrow">{role === 'captain' ? (zh ? '队长终端' : 'CAPTAIN') : t('controlEyebrow')}</span><h1>{role === 'captain' && state && ownSide ? state[`${ownSide}Team`].name : t('brandTitle')}</h1></div></div><div className="toolbar">{state && <span className="session-badge">{state.seriesFormat}<span>GAME {currentGame(state)}</span></span>}<b className={connected ? 'status live' : 'status'}>{connectionLabel(status, lang)}</b><button onClick={() => { sessionStorage.removeItem(`lol-${role}`); setToken(''); }}>{t('logout')}</button></div></header>
     {!connected && <p className="notice">{t('disconnectedNotice')}</p>}{error && <p role="alert" className="error">{errorMessage(error, lang)}</p>}
     {state ? role === 'captain' ? <>
       <Board state={state} compact /><p className="notice" role="status">{captainReason || (zh ? '轮到己方：点击英雄预选，再确认提交。' : 'Your turn: preview champions, then confirm.')}</p>
@@ -211,21 +211,28 @@ export default function BroadcastApp() {
     </> : <>
       <ControlDraftWorkspace monitor={<>
         <Board state={state} compact />
-        <section className="operator-bar panel"><div className="toolbar">
-          <button disabled={disabled} onClick={() => send({ type: 'pause_draft', paused: !state.bpPaused })}>{state.bpPaused ? (zh ? '校验并恢复 BP' : 'Validate and resume BP') : (zh ? '暂停 BP' : 'Pause BP')}</button>
+        <section className="operator-bar panel"><h2>{zh ? '导播控制' : 'Director controls'}</h2><div className="toolbar operator-live-actions">
+          <button className="pause-control" disabled={disabled} onClick={() => send({ type: 'pause_draft', paused: !state.bpPaused })}>{state.bpPaused ? (zh ? '校验并恢复 BP' : 'Validate and resume BP') : (zh ? '暂停 BP' : 'Pause BP')}</button>
           <button disabled={disabled || !snapshot?.canUndo} onClick={() => send({ type: 'undo' })}>{t('undo')}</button>
+          <button disabled={disabled} onClick={() => send({ type: 'swap_display' })}>{zh ? '交换屏幕左右' : 'Swap display sides'}</button>
+        </div><div className="toolbar operator-settings-actions">
+          <button onClick={() => setShowSettings(true)}>{t('matchSettings')}</button><button onClick={() => setShowTeamSettings(true)}>{t('teamSettings')}</button><button onClick={() => setShowHeroArtEditor(true)}>{t('heroImageSettings')}</button>
+        </div><div className="toolbar operator-reset-actions">
+          <button disabled={disabled || state.draftComplete} onClick={() => send({ type: 'advance_draft' })}>{zh ? '推进已补齐步骤' : 'Advance filled step'}</button>
           <button disabled={disabled} onClick={() => confirm(t('confirmResetDraft')) && send({ type: 'reset_draft' })}>{t('resetDraft')}</button>
           <button className="danger" disabled={disabled} onClick={() => confirm(t('confirmResetMatch')) && send({ type: 'reset_match' })}>{t('resetMatch')}</button>
-          <button disabled={disabled} onClick={() => send({ type: 'swap_display' })}>{zh ? '交换屏幕左右' : 'Swap display sides'}</button>
-          <button onClick={() => setShowSettings(true)}>{t('matchSettings')}</button><button onClick={() => setShowTeamSettings(true)}>{t('teamSettings')}</button><button onClick={() => setShowHeroArtEditor(true)}>{t('heroImageSettings')}</button>
-          <button disabled={disabled || state.draftComplete} onClick={() => send({ type: 'advance_draft' })}>{zh ? '推进已补齐步骤' : 'Advance filled step'}</button>
         </div></section>
-        <CaptainManager key={state.matchId} state={state} token={token} captains={snapshot?.captains} disabled={disabled} />
-        <DraftCorrection key={state.gameId} state={state} disabled={disabled} send={send} />
-        <GameRulesManager key={JSON.stringify([state.seriesRules, state.currentGameRules, state.gameId])} state={state} send={send} disabled={disabled} />
-        <PreflightStatus state={state} connected={connected} /><DraftLifecycle state={state} send={send} disabled={disabled} />
+        <DraftLifecycle state={state} send={send} disabled={disabled} />
         {showSettings && <SettingsDialog label={t('matchSettings')} closeLabel={t('hideSettings')} onClose={() => setShowSettings(false)}><MatchSettingsPanel key={JSON.stringify([state.seriesFormat, state.stage, state.language, state.overlayLayout])} state={state} send={send} disabled={disabled} /></SettingsDialog>}
       </>}><ControlHeroPicker state={state} disabled={disabled} send={send} acknowledged={acknowledged} /></ControlDraftWorkspace>
+      <div className="director-support-grid">
+        <CaptainManager key={state.matchId} state={state} token={token} captains={snapshot?.captains} disabled={disabled} />
+        <div className="director-tools">
+          <DraftCorrection key={state.gameId} state={state} disabled={disabled} send={send} />
+          <GameRulesManager key={JSON.stringify([state.seriesRules, state.currentGameRules, state.gameId])} state={state} send={send} disabled={disabled} />
+          <PreflightStatus state={state} connected={connected} />
+        </div>
+      </div>
       <LineupAssignments state={state} disabled={disabled} send={send} />
       <MatchBackup token={token} disabled={disabled} /><TelemetryPanel key={state.matchId} state={state} token={token} disabled={disabled} />
       <DraftHistory state={state} />

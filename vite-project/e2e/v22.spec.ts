@@ -37,6 +37,12 @@ test('Champion Studio edits aliases without changing Riot IDs and fits a laptop 
   const h = await harness(baseURL);
   try {
     await h.reset(); await page.setViewportSize({ width: 1366, height: 768 }); await page.goto('/control#token=e2e-control');
+    await expect(page.locator('.compact-board .hero-slot')).toHaveCount(20);
+    const boardBounds = (await page.locator('.compact-board').boundingBox())!;
+    const slotBounds = await page.locator('.compact-board .hero-slot').evaluateAll(slots => slots.map(slot => {
+      const box = slot.getBoundingClientRect(); return { left: box.left, right: box.right };
+    }));
+    expect(slotBounds.every(box => box.left >= boardBounds.x && box.right <= boardBounds.x + boardBounds.width)).toBe(true);
     await page.getByRole('button', { name: 'Champion Studio', exact: true }).click();
     const dialog = page.locator('.hero-art-editor-dialog'); await expect(dialog).toBeVisible();
     const box = (await dialog.boundingBox())!;
