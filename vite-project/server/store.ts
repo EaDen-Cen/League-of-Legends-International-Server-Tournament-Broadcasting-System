@@ -1,3 +1,4 @@
+import { applyGameRules, gameRulesFor, gameRulesLocked, legacyGameRules, sameGameRules, validateSeriesRules } from '../src/shared/gameRules.js';
 import { existsSync, mkdirSync, readFileSync, renameSync, openSync, writeSync, fsyncSync, closeSync } from 'node:fs';
 import type { TeamPresetStore } from './teamPresets.js';
 import { dirname } from 'node:path';
@@ -41,7 +42,7 @@ function clearDraft(state: MatchState) {
   });
 }
 function validateScores(blue: number, red: number, format: MatchState['seriesFormat']) {
-  integer(blue, 0, 3); integer(red, 0, 3);
+  integer(blue, 0, 4); integer(red, 0, 4);
   const wins = (Number(format.slice(2)) + 1) / 2;
   if (blue > wins || red > wins || (blue === wins && red === wins)) throw new Error('比分或局数不符合当前赛制');
 }
@@ -65,10 +66,12 @@ function casterViewState(current: MatchState, delayed?: MatchState): MatchState 
   view.artSourceMode = current.artSourceMode;
   view.heroArtOverrides = copy(current.heroArtOverrides || {});
   view.heroDataOverrides = copy(current.heroDataOverrides || {});
-  view.draftMode = current.draftMode;
-  view.firstPickSide = current.firstPickSide;
-  view.sideSwapMode = current.sideSwapMode;
-  view.draftRuleMode = current.draftRuleMode;
+  if (!delayed) {
+    view.draftMode = current.draftMode;
+    view.firstPickSide = current.firstPickSide;
+    view.sideSwapMode = current.sideSwapMode;
+    view.draftRuleMode = current.draftRuleMode;
+  }
   view.flowbornFormsIndependent = current.flowbornFormsIndependent;
   return view;
 }
@@ -142,6 +145,25 @@ export class Store {
     const next = copy(this.data);
     const state = next.state;
     switch (action.type) {
+    case 'clear_series_rules': {
+      if (state.currentPhase > 0 || state.committedGameId || state.draftHistory.length) throw new Error('rulesLocked');
+      next.history.push(copy(state));
+      delete state.seriesRules;
+      delete state.currentGameRules;
+      break;
+    }
+    case 'series_rules': {
+      validateSeriesRules(action.rules, Number(state.seriesFormat.slice(2)));
+      const proposed = { ...state, seriesRules: action.rules };
+      for (let game = 1; game <= Number(state.seriesFormat.slice(2)); game++) {
+        if (gameRulesLocked(state, game) && !sameGameRules(gameRulesFor(state, game), gameRulesFor(proposed, game)))
+          throw new Error('已开始或完成的对局规则不可修改 / Started game rules are locked');
+      }
+      next.history.push(copy(state));
+      state.seriesRules = copy(action.rules);
+      if (!gameRulesLocked(state, currentGame(state))) applyGameRules(state);
+      break;
+    }
     case 'load_team_preset': {
       if (state.currentPhase !== 0 || state.draftHistory.length || state.committedGameId) throw new Error('presetLocked');
       if (!['blue', 'red'].includes(action.side)) throw new Error('presetInvalid');
@@ -159,7 +181,11 @@ export class Store {
     }
     case 'draft_action': {
       if (state.committedGameId) throw new Error('gameAlreadyCommitted');
-      if (state.draftRuleMode === 'player' && [...state.blueTeam.players, ...state.redTeam.players].some(player => !playerIdentity(player))) throw new Error('playerMissing');
+      if (state.draftRuleMode === 'player') {
+        const players = [...state.blueTeam.players, ...state.redTeam.players].map(playerIdentity);
+        if (players.some(player => !player)) throw new Error('playerMissing');
+        if (new Set(players).size !== players.length) throw new Error('duplicatePlayerIds');
+      }
       if (state.currentPhase === 0 && (seriesFinished(state) || state.draftHistory.some(game => game.gameNumber >= state.gameNumber))) throw new Error('updateScoreBeforeNext');
       const phase = phases(state.draftMode, state.firstPickSide)[state.currentPhase];
       if (!phase || phase.team !== action.team || phase.action !== action.action) throw new Error('当前选禁阶段不支持此操作，请确认轮次和队伍');
@@ -180,7 +206,11 @@ export class Store {
     }
     case 'skip_ban': {
       if (state.committedGameId) throw new Error('gameAlreadyCommitted');
-      if (state.draftRuleMode === 'player' && [...state.blueTeam.players, ...state.redTeam.players].some(player => !playerIdentity(player))) throw new Error('playerMissing');
+      if (state.draftRuleMode === 'player') {
+        const players = [...state.blueTeam.players, ...state.redTeam.players].map(playerIdentity);
+        if (players.some(player => !player)) throw new Error('playerMissing');
+        if (new Set(players).size !== players.length) throw new Error('duplicatePlayerIds');
+      }
       if (state.currentPhase === 0 && (seriesFinished(state) || state.draftHistory.some(game => game.gameNumber >= state.gameNumber))) throw new Error('updateScoreBeforeNext');
       const phase = phases(state.draftMode, state.firstPickSide)[state.currentPhase];
       if (!phase || phase.team !== action.team || phase.action !== 'ban') throw new Error('emptyBanOnlyDuringBan');
@@ -197,7 +227,7 @@ export class Store {
       validateLineup(state, true);
       next.history.push(copy(state));
       state.draftHistory.push({
-        id, firstPickSide: state.firstPickSide, gameNumber: currentGame(state), committedAt: this.clock(),
+        id, rules: copy(state.currentGameRules ?? legacyGameRules(state)), firstPickSide: state.firstPickSide, gameNumber: currentGame(state), committedAt: this.clock(),
         blueTeam: copy(state.blueTeam), redTeam: copy(state.redTeam),
         blueBans: [...state.blueBans], redBans: [...state.redBans],
         bluePicks: [...state.bluePicks], redPicks: [...state.redPicks],
@@ -211,7 +241,7 @@ export class Store {
       if (!state.committedGameId) throw new Error('commitBeforeNext');
       if (seriesFinished(state)) throw new Error('seriesHasEnded');
       if (state.gameNumber !== currentGame(state) + 1) throw new Error('updateScoreBeforeNext');
-      next.history.push(copy(state)); clearDraft(state); break;
+      next.history.push(copy(state)); clearDraft(state); if (state.seriesRules) applyGameRules(state); break;
     }
     case 'swap_sides': {
       if (state.currentPhase > 0 || state.committedGameId) throw new Error('swapOnlyBetweenGames');
@@ -251,6 +281,7 @@ export class Store {
       state[`${action.team}Score`] += action.delta;
       validateScores(state.blueScore, state.redScore, state.seriesFormat);
       state.gameNumber = Math.min(state.blueScore + state.redScore + 1, Number(state.seriesFormat.slice(2)));
+      if (state.seriesRules && state.currentPhase === 0 && !state.committedGameId) applyGameRules(state);
       break;
     }
     case 'undo': {
@@ -263,6 +294,7 @@ export class Store {
       if (state.committedGameId) throw new Error('committedDraftReset');
       next.history.push(copy(state));
       clearDraft(state);
+      if (state.seriesRules) applyGameRules(state);
       break;
     case 'reset_match': {
       next.history.push(copy(state));
@@ -270,6 +302,7 @@ export class Store {
 
       // Reset match progress, but keep tournament configuration. A director
       // should not have to rebuild the event identity/rules after clearing a match.
+      reset.seriesRules = copy(state.seriesRules);
       reset.stage = state.stage;
       reset.seriesFormat = state.seriesFormat;
       reset.draftMode = state.draftMode;
@@ -288,6 +321,7 @@ export class Store {
       reset.roleIconStyle = state.roleIconStyle ?? 'minimal';
       reset.roleIconBackground = state.roleIconBackground ?? 'light';
       reset.artSourceMode = state.artSourceMode ?? 'auto';
+      if (reset.seriesRules) applyGameRules(reset);
       next.state = reset;
       break;
     }
@@ -295,7 +329,7 @@ export class Store {
       const s = action.settings;
       if (
         !s ||
-        !['BO1', 'BO3', 'BO5'].includes(s.seriesFormat) ||
+        !['BO1', 'BO3', 'BO5', 'BO7'].includes(s.seriesFormat) ||
         !['match', 'normal'].includes(s.draftMode) ||
         !['normal', 'player', 'global'].includes(s.draftRuleMode ?? state.draftRuleMode) ||
         !['blue', 'red'].includes(s.firstPickSide ?? state.firstPickSide) ||
@@ -312,10 +346,16 @@ export class Store {
       ) {
         throw new Error('比赛设置无效，请检查赛制、语言和画面布局');
       }
-      integer(s.blueScore, 0, 3); integer(s.redScore, 0, 3); integer(s.gameNumber, 1, 5);
+      integer(s.blueScore, 0, 4); integer(s.redScore, 0, 4); integer(s.gameNumber, 1, 7);
       const wins = (Number(s.seriesFormat.slice(2)) + 1) / 2;
       if (s.blueScore > wins || s.redScore > wins || (s.blueScore === wins && s.redScore === wins) || s.gameNumber > Number(s.seriesFormat.slice(2))) throw new Error('比分或局数不符合当前赛制');
       shortText(s.stage, 80);
+      if (state.seriesRules) {
+        validateSeriesRules(state.seriesRules, Number(s.seriesFormat.slice(2)));
+        if (s.draftMode !== state.draftMode || s.draftRuleMode !== state.draftRuleMode
+          || s.firstPickSide !== state.firstPickSide || s.sideSwapMode !== state.sideSwapMode)
+          throw new Error('请在逐局规则管理中修改 BP 规则 / Use Game Rules Manager');
+      }
       const draftRuleMode = s.draftRuleMode ?? state.draftRuleMode;
       const firstPickSide = s.firstPickSide ?? state.firstPickSide;
       const flowbornFormsIndependent = s.flowbornFormsIndependent ?? state.flowbornFormsIndependent;
@@ -413,10 +453,15 @@ export class Store {
         firstPickSide,
         sideSwapMode: s.sideSwapMode ?? state.sideSwapMode,
       });
+      if (state.seriesRules && state.currentPhase === 0 && !state.committedGameId) applyGameRules(state);
       // Live roster corrections must respect the incoming player’s previous picks.
       // Committed records remain immutable snapshots of the game already played.
       if (state.currentPhase > 0 && !state.committedGameId) {
-        if (state.draftRuleMode === 'player' && [...state.blueTeam.players, ...state.redTeam.players].some(player => !playerIdentity(player))) throw new Error('playerMissing');
+        if (state.draftRuleMode === 'player') {
+          const players = [...state.blueTeam.players, ...state.redTeam.players].map(playerIdentity);
+          if (players.some(player => !player)) throw new Error('playerMissing');
+          if (new Set(players).size !== players.length) throw new Error('duplicatePlayerIds');
+        }
         if (state.draftComplete) validateLineup(state, true);
       }
       break;

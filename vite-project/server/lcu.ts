@@ -292,9 +292,9 @@ export function mapLcuSession(session: LcuChampSelectSession, state: MatchState)
 
   const rosterMapped = rosterChampionCount > 0
     ? [
-        ...rosterForSide(session.myTeam || [], localSide),
-        ...rosterForSide(session.theirTeam || [], remoteSide),
-      ].sort((left, right) => left.phaseIndex - right.phaseIndex)
+      ...rosterForSide(session.myTeam || [], localSide),
+      ...rosterForSide(session.theirTeam || [], remoteSide),
+    ].sort((left, right) => left.phaseIndex - right.phaseIndex)
     : [];
 
   // Some practice implementations expose team cell IDs without championId and

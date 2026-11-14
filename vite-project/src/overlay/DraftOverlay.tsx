@@ -1,3 +1,4 @@
+import { prepareArtwork } from './prepareArtwork';
 import { useLayoutEffect, useRef } from 'react';
 import heroes from '../components/HeroList';
 import { heroForState } from '../shared/heroData';
@@ -116,7 +117,12 @@ function PickCard({ state, side, index, position }: { state: MatchState; side: S
   const player = team.players[index] || t('playerNumber', { number: index + 1 });
   const role = team.playerRoles[index];
   return <article className={`broadcast-card ${hero ? 'filled' : ''}`} data-slot={index} data-team-id={team.id}>
-    <HeroReveal heroId={id} layout={state.overlayLayout} position={position} renderArt={shownId => {
+    <HeroReveal heroId={id} layout={state.overlayLayout} position={position} prepareArt={async nextId => {
+      const next = heroForState(state, nextId);
+      if (!next) return;
+      const legacy = state.artSourceMode === 'legacy' || state.heroArtOverrides?.[String(nextId)]?.useLegacyImage || !next.artLink;
+      await Promise.all([prepareArtwork(next.imageLink), ...(!legacy && next.artLink ? [prepareArtwork(next.artLink)] : [])]);
+    }} renderArt={shownId => {
       const shown = typeof shownId === 'number' ? heroForState(state, shownId) : undefined;
       return shown ? <HeroArtwork hero={shown} alt={state.language === 'zh' ? shown.chineseName : shown.englishName} state={state} /> :
         <PlayerPortrait key={team.playerPortraits[index] + team.logo} portrait={team.playerPortraits[index]} logo={team.logo} label={player} slot={index} />;

@@ -2,12 +2,16 @@
 
 面向社区赛事的 **英雄联盟 BP / 导播 / 解说同步 / OBS 图形系统**。项目使用 React + TypeScript + Node.js + WebSocket，当前 LoL 版本拥有独立的英雄数据、赛事规则、视觉语言和运行目录，不再把 HOK 的 UI 或英雄数据当作生产依赖。
 
+## HOK 工作流适配升级
+
+新增 **BO7、逐局规则管理、P1–P5 开播核对、OBS 图片预解码揭幕**。逐局规则支持系列默认与单局覆盖，冻结已开始局，保存当局历史快照，并分别控制 Fearless 历史的执行与累积；保留 LoL 的英雄与 LCU 同步。操作和本轮范围见 [逐局规则与开播核对](docs/guides/game-rules-manager.md)。
+
 ## 当前能力
 
 - **Control**：比赛设置、BP、比分、换边、最终阵容归属、队伍资料库、替补、Champion Studio、League Client 自动 BP。
 - **Caster**：只读延迟状态，适合异地解说。
 - **OBS Overlay**：固定 1920×1080 透明画布，支持 Panel / Side 两种布局。
-- **赛事状态**：BO1 / BO3 / BO5、Stage、Game、Series Score、Undo、Draft History。
+- **赛事状态**：BO1 / BO3 / BO5 / BO7、Stage、Game、Series Score、Undo、Draft History。
 - **LoL BP**：默认每方 5 Ban + 5 Pick，支持蓝 / 红先手与跨局自定义规则。
 - **远程访问**：内置 Windows 启动脚本，可配合 Cloudflare Quick Tunnel。
 

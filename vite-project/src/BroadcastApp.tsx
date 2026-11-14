@@ -1,3 +1,5 @@
+import { GameRulesManager } from './control/GameRulesManager';
+import { PreflightStatus } from './control/PreflightStatus';
 import { useEffect, useState } from 'react';
 import './broadcast.css';
 import './BroadcastApp.css';
@@ -139,7 +141,7 @@ const settingsFromState = (state: MatchState): MatchSettings => ({
 function MatchSettingsPanel({ state, send, disabled }: { state: MatchState; send: (a: Action) => void; disabled: boolean }) {
   const t = translator(state.language);
   const [form, setForm] = useState<MatchSettings>(() => settingsFromState(state));
-  const firstPickLocked = state.currentPhase > 0;
+  const firstPickLocked = state.currentPhase > 0 || !!state.seriesRules;
   return <form className="panel settings match-settings-panel" onSubmit={event => {
     event.preventDefault();
     send({ type: 'settings', settings: {
@@ -155,13 +157,13 @@ function MatchSettingsPanel({ state, send, disabled }: { state: MatchState; send
       <section><h3>{t('matchDisplay')}</h3>
         <label>{t('stage')}<input maxLength={80} value={form.stage} onChange={e => setForm({ ...form, stage: e.target.value })} /></label>
         <label>{t('seriesFormat')}<select disabled={state.draftHistory.length > 0} value={form.seriesFormat} onChange={e => setForm({ ...form, seriesFormat: e.target.value as MatchSettings['seriesFormat'] })}>
-          {(['BO1', 'BO3', 'BO5'] as const).map(format => <option key={format} value={format}>{seriesName(format, state.language)}</option>)}
+          {(['BO1', 'BO3', 'BO5', 'BO7'] as const).map(format => <option key={format} value={format}>{seriesName(format, state.language)}</option>)}
         </select></label>
         <label>{t('currentGame')}<div className="readonly-field">{t('gameNumber', { number: state.gameNumber })} · {t('automatic')}</div></label>
-        <label>{t('draftMode')}<select disabled={state.currentPhase > 0} value={form.draftMode} onChange={e => setForm({ ...form, draftMode: e.target.value as MatchSettings['draftMode'] })}>
+        <label>{t('draftMode')}<select disabled={state.currentPhase > 0 || !!state.seriesRules} value={form.draftMode} onChange={e => setForm({ ...form, draftMode: e.target.value as MatchSettings['draftMode'] })}>
           <option value="match">{t('matchMode')}</option><option value="normal">{t('normalMode')}</option>
         </select></label>
-        <label>{t('draftRules')}<select aria-label={t('draftRules')} disabled={ruleLocked(state)} value={form.draftRuleMode} onChange={e => setForm({ ...form, draftRuleMode: e.target.value as MatchSettings['draftRuleMode'] })}>
+        <label>{t('draftRules')}<select aria-label={t('draftRules')} disabled={ruleLocked(state) || !!state.seriesRules} value={form.draftRuleMode} onChange={e => setForm({ ...form, draftRuleMode: e.target.value as MatchSettings['draftRuleMode'] })}>
           <option value="normal">{t('ruleNormal')}</option><option value="player">{t('rulePlayer')}</option><option value="global">{t('ruleGlobal')}</option>
         </select></label>
         {ruleLocked(state) && <p className="muted">{t('rulesLocked')}</p>}
@@ -170,7 +172,7 @@ function MatchSettingsPanel({ state, send, disabled }: { state: MatchState; send
         <label>{t('firstPickSide')}<select aria-label={t('firstPickSide')} disabled={firstPickLocked} value={form.firstPickSide} onChange={e => setForm({ ...form, firstPickSide: e.target.value as Side })}>
           <option value="blue">{t('blueSide')}</option><option value="red">{t('redSide')}</option>
         </select></label>
-        <label>{t('sideSwapMode')}<select aria-label={t('sideSwapMode')} value={form.sideSwapMode} onChange={e => setForm({ ...form, sideSwapMode: e.target.value as MatchSettings['sideSwapMode'] })}>
+        <label>{t('sideSwapMode')}<select disabled={!!state.seriesRules} aria-label={t('sideSwapMode')} value={form.sideSwapMode} onChange={e => setForm({ ...form, sideSwapMode: e.target.value as MatchSettings['sideSwapMode'] })}>
           <option value="moveTeams">{t('moveTeams')}</option><option value="colorsOnly">{t('colorsOnly')}</option>
         </select></label>
         <label>{t('language')}<select aria-label={t('language')} value={form.language} onChange={e => setForm({ ...form, language: e.target.value as Language })}>
@@ -314,6 +316,8 @@ export default function BroadcastApp() {
             </div>
           </section>
 
+          <PreflightStatus state={state} connected={connected} />
+          <GameRulesManager key={JSON.stringify([state.seriesRules, state.seriesFormat, state.draftGameNumber, state.gameNumber, state.currentPhase, state.draftHistory.length])} state={state} send={send} disabled={disabled} />
           <DraftLifecycle state={state} send={send} disabled={disabled} />
           {showSettings && <SettingsDialog label={t('matchSettings')} closeLabel={t('hideSettings')} onClose={() => setShowSettings(false)}><MatchSettingsPanel key={JSON.stringify([state.seriesFormat, state.stage, state.draftMode, state.draftRuleMode, state.firstPickSide, state.sideSwapMode, state.language, state.overlayLayout, state.scoreDisplay, state.bpInputMode, state.roleIconStyle, state.roleIconBackground, state.showHeroName, state.artSourceMode])} state={state} send={send} disabled={disabled} /></SettingsDialog>}
           {state.bpInputMode === 'lcu' && <LcuInput state={state} token={token} />}

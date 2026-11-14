@@ -24,6 +24,19 @@ export interface HeroDataOverride {
   artLink?: string;
 }
 export type DraftRuleMode = 'normal' | 'player' | 'global';
+export interface GameRules {
+  draftMode: 'match' | 'normal';
+  draftRuleMode: DraftRuleMode;
+  firstPickSide: Side;
+  sideSwapMode: SideSwapMode;
+  enforcePreviousHistory: boolean;
+  contributeToFutureHistory: boolean;
+}
+export interface SeriesRules {
+  defaultGameRules: GameRules;
+  games: Record<string, Partial<GameRules>>;
+}
+
 export type SideSwapMode = 'moveTeams' | 'colorsOnly';
 
 export type PlayerRole =
@@ -56,6 +69,7 @@ export interface TeamPreset extends Team {
 }
 
 export interface GameDraftRecord {
+  rules?: GameRules;
   firstPickSide: Side;
   id: string;
   gameNumber: number;
@@ -80,7 +94,9 @@ export interface MatchState {
   redScore: number;
 
   gameNumber: number;
-  seriesFormat: 'BO1' | 'BO3' | 'BO5';
+  seriesFormat: 'BO1' | 'BO3' | 'BO5' | 'BO7';
+  seriesRules?: SeriesRules;
+  currentGameRules?: GameRules;
   stage: string;
 
   language: Language;
@@ -143,6 +159,8 @@ export type MatchSettings = Pick<
 >;
 
 export type Action =
+  | { type: 'clear_series_rules' }
+  | { type: 'series_rules'; rules: SeriesRules }
   | { type: 'load_team_preset'; side: Side; presetId: string }
   | { type: 'draft_action'; team: Side; action: 'ban' | 'pick'; heroId: number }
   | { type: 'skip_ban'; team: Side }

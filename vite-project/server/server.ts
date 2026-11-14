@@ -24,7 +24,7 @@ const dataFile = resolve(process.env.DATA_FILE || resolve(project, 'data/lol/mat
 const presets = new TeamPresetStore(resolve(dirname(dataFile), 'team-presets.json'));
 const store = new Store(dataFile, Date.now, presets);
 const uploadDirectory = resolve(process.env.UPLOAD_DIR || resolve(dirname(dataFile), 'uploads/player-portraits'));
-let lcu: LcuBridge | undefined;
+
 const allowedOrigins = (process.env.ALLOWED_ORIGINS || '').split(',').filter(Boolean);
 const server = createServer(async (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
@@ -170,7 +170,7 @@ function update(ws: WebSocket, force = false) {
     ws.send(payload); c.last = payload;
   }
 }
-lcu = new LcuBridge(store, () => {
+const lcu = new LcuBridge(store, () => {
   for (const client of clients.keys()) update(client);
 });
 wss.on('connection', (ws, req) => {

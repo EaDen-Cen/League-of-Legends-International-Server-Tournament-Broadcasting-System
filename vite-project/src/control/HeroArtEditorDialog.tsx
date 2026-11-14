@@ -140,7 +140,7 @@ export function HeroArtEditorDialog({
   const t = translator(state.language);
   const dialog = useRef<HTMLDialogElement>(null);
   const currentPicks = [...state.bluePicks, ...state.redPicks];
-  const effectiveHeroes = useMemo(() => heroesForState(state), [state.heroDataOverrides]);
+  const effectiveHeroes = useMemo(() => heroesForState(state), [state]);
   const initialId = currentPicks[0] ?? heroes[0]?.id ?? 1;
   const [heroId, setHeroId] = useState(initialId);
   const [heroQuery, setHeroQuery] = useState('');
